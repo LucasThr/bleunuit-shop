@@ -133,8 +133,14 @@ body {
   }
 }
 
+/* Headings/display: Manrope extrabold with tight tracking (per the Confiance
+   spec — "headings & display use weight 800"). Applied here so every
+   .home-display title is bold from one place, instead of relying on a
+   font-weight utility at each call site (Tailwind preflight otherwise lets
+   headings inherit the 400 body weight). */
 .home-display {
   font-family: var(--font-display);
+  font-weight: 800;
   letter-spacing: -0.02em;
 }
 

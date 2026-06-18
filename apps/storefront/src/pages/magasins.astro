@@ -77,14 +77,14 @@ const storesJsonLd = stores.map((store) => ({
   {storesJsonLd.map((data) => <JsonLd data={data} />)}
   <div class="home-sans">
     <!-- Header -->
-    <section class="relative isolate overflow-hidden bg-[#0f2747] py-20 text-white sm:py-24">
+    <section class="relative isolate overflow-hidden bg-marine py-20 text-white sm:py-24">
       <div
-        class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#f6b88f]/20 blur-3xl"
+        class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gold/20 blur-3xl"
         aria-hidden="true"
       >
       </div>
       <div
-        class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-[#93b7d8]/10 blur-3xl"
+        class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl"
         aria-hidden="true"
       >
       </div>
@@ -93,7 +93,7 @@ const storesJsonLd = stores.map((store) => ({
           class="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/70"
         >
           <svg
-            class="h-3.5 w-3.5 text-[#f6b88f]"
+            class="h-3.5 w-3.5 text-gold"
             viewBox="0 0 24 24"
             fill="currentColor"
             aria-hidden="true"
@@ -121,7 +121,7 @@ const storesJsonLd = stores.map((store) => ({
           <div class="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
             <!-- Store Image -->
             <div class="relative lg:col-span-7">
-              <div class="aspect-[4/3] overflow-hidden rounded-[2rem] shadow-2xl shadow-slate-900/15 sm:aspect-[16/10]">
+              <div class="aspect-[4/3] overflow-hidden rounded-[2rem] shadow-2xl shadow-gray-900/15 sm:aspect-[16/10]">
                 <img
                   src={storeImage}
                   alt={`Magasin ${store.name}`}
@@ -129,8 +129,8 @@ const storesJsonLd = stores.map((store) => ({
                 />
               </div>
               <!-- Location chip -->
-              <div class="absolute bottom-5 left-5 flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-slate-900 shadow-lg backdrop-blur sm:bottom-6 sm:left-6">
-                <svg class="h-4 w-4 text-[#8b4b2a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <div class="absolute bottom-5 left-5 flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm font-semibold text-gray-900 shadow-lg backdrop-blur sm:bottom-6 sm:left-6">
+                <svg class="h-4 w-4 text-marine" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -140,45 +140,45 @@ const storesJsonLd = stores.map((store) => ({
 
             <!-- Store Info -->
             <div class="lg:col-span-5">
-              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8b4b2a]">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.28em] text-marine">
                 Notre showroom
               </p>
-              <h2 class="home-display mt-5 text-balance text-3xl text-slate-900 sm:text-4xl">
+              <h2 class="home-display mt-5 text-balance text-3xl text-gray-900 sm:text-4xl">
                 {store.name}
               </h2>
               {store.description && (
-                <p class="mt-5 text-base leading-relaxed text-slate-600">
+                <p class="mt-5 text-base leading-relaxed text-gray-700">
                   {store.description}
                 </p>
               )}
 
               <!-- Contact details -->
-              <dl class="mt-8 divide-y divide-slate-100 border-y border-slate-100">
+              <dl class="mt-8 divide-y divide-gray-100 border-y border-gray-100">
                 <div class="flex items-start gap-4 py-5">
-                  <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#0f2747]/5 text-[#0f2747]">
+                  <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-marine/5 text-marine">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </span>
                   <div>
-                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400">Adresse</dt>
-                    <dd class="mt-1 text-sm text-slate-700">
+                    <dt class="text-xs font-semibold uppercase tracking-wider text-gray-400">Adresse</dt>
+                    <dd class="mt-1 text-sm text-gray-700">
                       {store.address}<br />{store.postalCode} {store.city}
                     </dd>
                   </div>
                 </div>
 
                 <div class="flex items-start gap-4 py-5">
-                  <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#0f2747]/5 text-[#0f2747]">
+                  <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-marine/5 text-marine">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                   </span>
                   <div>
-                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400">Téléphone</dt>
-                    <dd class="mt-1 text-sm text-slate-700">
-                      <a href={`tel:${store.phone}`} class="transition-colors hover:text-[#0f2747]">
+                    <dt class="text-xs font-semibold uppercase tracking-wider text-gray-400">Téléphone</dt>
+                    <dd class="mt-1 text-sm text-gray-700">
+                      <a href={`tel:${store.phone}`} class="transition-colors hover:text-marine">
                         {store.phone}
                       </a>
                     </dd>
@@ -186,15 +186,15 @@ const storesJsonLd = stores.map((store) => ({
                 </div>
 
                 <div class="flex items-start gap-4 py-5">
-                  <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-[#0f2747]/5 text-[#0f2747]">
+                  <span class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-marine/5 text-marine">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </span>
                   <div>
-                    <dt class="text-xs font-semibold uppercase tracking-wider text-slate-400">Email</dt>
-                    <dd class="mt-1 text-sm text-slate-700">
-                      <a href={`mailto:${store.email}`} class="transition-colors hover:text-[#0f2747]">
+                    <dt class="text-xs font-semibold uppercase tracking-wider text-gray-400">Email</dt>
+                    <dd class="mt-1 text-sm text-gray-700">
+                      <a href={`mailto:${store.email}`} class="transition-colors hover:text-marine">
                         {store.email}
                       </a>
                     </dd>
@@ -208,7 +208,7 @@ const storesJsonLd = stores.map((store) => ({
                   href={store.mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f2747] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition hover:bg-[#16335c]"
+                  class="inline-flex items-center justify-center gap-2 rounded-full bg-marine px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition hover:bg-royal"
                 >
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -217,7 +217,7 @@ const storesJsonLd = stores.map((store) => ({
                 </a>
                 <a
                   href="/contact"
-                  class="inline-flex items-center justify-center rounded-full border border-slate-300 px-7 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                  class="inline-flex items-center justify-center rounded-full border border-gray-200 px-7 py-3 text-sm font-semibold text-gray-700 transition hover:border-gray-400 hover:bg-gray-100"
                 >
                   Nous contacter
                 </a>
@@ -229,37 +229,37 @@ const storesJsonLd = stores.map((store) => ({
     )}
 
     <!-- Opening Hours Section -->
-    <section class="bg-[#f7f2ea] py-20">
+    <section class="bg-page py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="mb-12 text-center">
-          <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+          <p class="text-xs uppercase tracking-[0.3em] text-gray-400">
             Horaires
           </p>
-          <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+          <h2 class="home-display mt-4 text-3xl text-gray-900 sm:text-4xl">
             Quand nous rendre visite.
           </h2>
-          <p class="mt-4 text-sm text-slate-600">
+          <p class="mt-4 text-sm text-gray-700">
             Nos équipes vous accueillent du lundi au samedi.
           </p>
         </div>
 
-        <div class="mx-auto max-w-2xl rounded-3xl border border-slate-200 bg-white p-8 shadow-md sm:p-10">
+        <div class="mx-auto max-w-2xl rounded-3xl border border-gray-200 bg-white p-8 shadow-md sm:p-10">
           <div class="space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-100 py-3">
-              <span class="font-semibold text-slate-900">Lundi - Samedi</span>
-              <span class="text-slate-600">9h30 - 12h00 / 14h00 - 18h30</span>
+            <div class="flex items-center justify-between border-b border-gray-100 py-3">
+              <span class="font-semibold text-gray-900">Lundi - Samedi</span>
+              <span class="text-gray-700">9h30 - 12h00 / 14h00 - 18h30</span>
             </div>
             <div class="flex items-center justify-between py-3">
-              <span class="font-semibold text-slate-900">Dimanche</span>
-              <span class="font-medium text-[#8b4b2a]">Fermé</span>
+              <span class="font-semibold text-gray-900">Dimanche</span>
+              <span class="font-medium text-marine">Fermé</span>
             </div>
           </div>
 
-          <div class="mt-6 flex items-start gap-3 rounded-2xl bg-[#f6b88f]/15 p-4">
-            <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-[#8b4b2a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <div class="mt-6 flex items-start gap-3 rounded-2xl bg-gold/15 p-4">
+            <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-marine" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p class="text-sm text-[#6a4124]">
+            <p class="text-sm text-gray-700">
               <strong class="font-semibold">Conseil :</strong> nous vous
               recommandons de prendre rendez-vous pour bénéficier d'un
               accompagnement personnalisé.
@@ -272,16 +272,16 @@ const storesJsonLd = stores.map((store) => ({
     <!-- CTA Section -->
     <section class="py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="home-sheen rounded-[36px] border border-slate-200 bg-white p-10 shadow-xl sm:p-14">
+        <div class="home-sheen rounded-[36px] border border-gray-200 bg-white p-10 shadow-xl sm:p-14">
           <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+              <p class="text-xs uppercase tracking-[0.3em] text-gray-400">
                 Passez à l'action
               </p>
-              <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+              <h2 class="home-display mt-4 text-3xl text-gray-900 sm:text-4xl">
                 Besoin de conseils pour choisir votre literie ?
               </h2>
-              <p class="mt-4 max-w-xl text-sm text-slate-600">
+              <p class="mt-4 max-w-xl text-sm text-gray-700">
                 Nos experts vous accueillent en magasin pour vous guider vers le
                 meilleur choix.
               </p>
@@ -289,13 +289,13 @@ const storesJsonLd = stores.map((store) => ({
             <div class="flex flex-wrap gap-4">
               <a
                 href="/contact"
-                class="rounded-full bg-[#0f2747] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition hover:bg-[#16335c]"
+                class="rounded-full bg-marine px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition hover:bg-royal"
               >
                 Prendre rendez-vous
               </a>
               <a
                 href="/produits"
-                class="rounded-full border border-slate-300 px-7 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                class="rounded-full border border-gray-200 px-7 py-3 text-sm font-semibold text-gray-700 transition hover:border-gray-400 hover:bg-gray-100"
               >
                 Voir nos produits
               </a>

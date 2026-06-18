@@ -125,7 +125,7 @@ export default function QuoteRequestForm({
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">
                   Demande envoyée
                 </h3>
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-2 text-sm text-gray-700">
                   Merci ! Notre équipe vous recontactera rapidement avec un devis
                   pour <strong>{productTitle}</strong>.
                 </p>
@@ -139,7 +139,7 @@ export default function QuoteRequestForm({
               </div>
             ) : (
               <form onSubmit={onSubmit} className="space-y-4 px-6 py-6">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-700">
                   Produit : <strong>{productTitle}</strong>
                 </p>
                 <input

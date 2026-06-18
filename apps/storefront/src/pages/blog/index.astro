@@ -32,7 +32,7 @@ function formatDate(dateString: string) {
 
 <Layout title="Blog" description="Conseils et astuces pour améliorer votre sommeil. Découvrez nos guides sur la literie et le bien-être.">
   <!-- Header -->
-  <section class="bg-gradient-to-r from-blue-900 to-blue-700 py-16 text-white">
+  <section class="bg-gradient-to-r from-blue-900 to-royal py-16 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
         Notre Blog
@@ -44,7 +44,7 @@ function formatDate(dateString: string) {
   </section>
 
   <!-- Categories Filter -->
-  <section class="bg-gray-50 py-6">
+  <section class="bg-page py-6">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex flex-wrap gap-3">
         <button class="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white">
@@ -92,13 +92,13 @@ function formatDate(dateString: string) {
                   {post.title}
                 </h2>
 
-                <p class="mb-4 text-gray-600 line-clamp-3">
+                <p class="mb-4 text-gray-700 line-clamp-3">
                   {post.excerpt}
                 </p>
 
                 <div class="flex items-center justify-between">
                   <span class="text-sm text-gray-500">{post.author}</span>
-                  <span class="inline-flex items-center text-sm font-medium text-blue-600 group-hover:text-blue-700">
+                  <span class="inline-flex items-center text-sm font-medium text-blue-600 group-hover:text-marine">
                     Lire la suite
                     <svg class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -114,19 +114,19 @@ function formatDate(dateString: string) {
       <!-- Pagination placeholder -->
       <div class="mt-12 flex justify-center">
         <nav class="inline-flex rounded-md shadow-sm">
-          <button class="rounded-l-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <button class="rounded-l-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
             Précédent
           </button>
-          <button class="border-t border-b border-gray-300 bg-blue-600 px-4 py-2 text-sm font-medium text-white">
+          <button class="border-t border-b border-gray-200 bg-blue-600 px-4 py-2 text-sm font-medium text-white">
             1
           </button>
-          <button class="border-t border-b border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <button class="border-t border-b border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
             2
           </button>
-          <button class="border-t border-b border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <button class="border-t border-b border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
             3
           </button>
-          <button class="rounded-r-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          <button class="rounded-r-md border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100">
             Suivant
           </button>
         </nav>
@@ -152,7 +152,7 @@ function formatDate(dateString: string) {
           />
           <button
             type="submit"
-            class="rounded-md bg-white px-8 py-3 font-semibold text-blue-900 hover:bg-blue-50 transition-colors"
+            class="rounded-md bg-white px-8 py-3 font-semibold text-blue-900 hover:bg-blue-100 transition-colors"
           >
             S'inscrire
           </button>

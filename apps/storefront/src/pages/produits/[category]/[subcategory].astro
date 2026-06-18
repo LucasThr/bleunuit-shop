@@ -54,7 +54,7 @@ const breadcrumbJsonLd = {
 
 <Layout title={`${currentSubcategory.name} - ${currentCategory.name}`} description={currentSubcategory.description}>
   <!-- Header -->
-  <section class="bg-gradient-to-r from-blue-900 to-blue-700 py-16 text-white">
+  <section class="bg-gradient-to-r from-blue-900 to-royal py-16 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <nav class="mb-4 text-sm text-blue-100">
         <a href="/" class="hover:text-white">Accueil</a>
@@ -82,18 +82,18 @@ const breadcrumbJsonLd = {
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <!-- Filter Bar -->
       <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-gray-600">
+        <p class="text-gray-700">
           <span class="font-semibold text-gray-900">{products.length}</span> produit{products.length > 1 ? 's' : ''} trouvé{products.length > 1 ? 's' : ''}
         </p>
         {brands.length > 0 && (
           <div class="flex gap-4">
-            <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <select class="rounded-md border-gray-200 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
               <option>Toutes les marques</option>
               {brands.map((brand) => (
                 <option>{brand}</option>
               ))}
             </select>
-            <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <select class="rounded-md border-gray-200 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
               <option>Trier par</option>
               <option>Prix croissant</option>
               <option>Prix décroissant</option>
@@ -113,10 +113,10 @@ const breadcrumbJsonLd = {
         </div>
       ) : (
         <div class="text-center py-12">
-          <p class="text-gray-600 text-lg">Aucun produit disponible dans cette sous-catégorie pour le moment.</p>
+          <p class="text-gray-700 text-lg">Aucun produit disponible dans cette sous-catégorie pour le moment.</p>
           <a
             href={`/produits/${category}`}
-            class="mt-4 inline-block text-blue-600 hover:text-blue-700 font-medium"
+            class="mt-4 inline-block text-blue-600 hover:text-marine font-medium"
           >
             Voir tous les produits de la catégorie {currentCategory.name}
           </a>
@@ -126,25 +126,25 @@ const breadcrumbJsonLd = {
   </section>
 
   <!-- Advice Section -->
-  <section class="bg-blue-50 py-12">
+  <section class="bg-blue-100 py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="rounded-lg bg-white p-8 shadow-md">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">
           Besoin de conseils ?
         </h2>
-        <p class="text-gray-600 mb-6">
+        <p class="text-gray-700 mb-6">
           Nos experts sont à votre disposition dans nos magasins pour vous aider à choisir la literie idéale selon vos besoins et votre morphologie.
         </p>
         <div class="flex flex-col gap-4 sm:flex-row">
           <a
             href="/magasins"
-            class="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white hover:bg-blue-700 transition-colors"
+            class="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white hover:bg-marine transition-colors"
           >
             Trouver un magasin
           </a>
           <a
             href="/contact"
-            class="inline-flex items-center justify-center rounded-md border-2 border-blue-600 px-6 py-3 text-base font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+            class="inline-flex items-center justify-center rounded-md border-2 border-blue-600 px-6 py-3 text-base font-semibold text-blue-600 hover:bg-blue-100 transition-colors"
           >
             Nous contacter
           </a>

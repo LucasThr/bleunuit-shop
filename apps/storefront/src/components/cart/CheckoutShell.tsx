@@ -54,7 +54,7 @@ export default function CheckoutShell({
             : " Un email de confirmation vous a été envoyé."}
         </p>
         <a
-          href="/boutique-poc"
+          href="/produits"
           className="btn-primary mt-6 inline-flex rounded-full px-6 py-3 text-sm font-semibold"
         >
           Retour à la boutique
@@ -67,7 +67,7 @@ export default function CheckoutShell({
     return (
       <div className="mx-auto max-w-lg rounded-3xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500 shadow-lg">
         Votre panier est vide.{" "}
-        <a href="/boutique-poc" className="font-medium text-marine underline">
+        <a href="/produits" className="font-medium text-marine underline">
           Voir la boutique
         </a>
       </div>

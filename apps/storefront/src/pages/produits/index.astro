@@ -22,27 +22,27 @@ const categoriesToShow = categories.map((category) => ({
   href: `/produits/${slugFor(category)}`,
 }));
 
-// Same warm accent themes as the homepage category cards.
+// Brand accent themes shared with the homepage category cards.
 const categoryThemes = [
   {
-    accent: 'from-[#f6b88f] to-[#fbd6c0]',
-    iconBg: 'bg-[#f6b88f]/20',
-    badge: 'bg-[#f6b88f]/15 text-[#8b4b2a]',
+    accent: 'from-gold to-gold/40',
+    iconBg: 'bg-gold/20',
+    badge: 'text-marine',
   },
   {
-    accent: 'from-[#93b7d8] to-[#c5d9ef]',
-    iconBg: 'bg-[#93b7d8]/20',
-    badge: 'bg-[#93b7d8]/20 text-[#2f5678]',
+    accent: 'from-blue-400 to-blue-200',
+    iconBg: 'bg-blue-100',
+    badge: 'text-marine',
   },
   {
-    accent: 'from-[#c7b592] to-[#e3d8c4]',
-    iconBg: 'bg-[#c7b592]/25',
-    badge: 'bg-[#c7b592]/25 text-[#6a5738]',
+    accent: 'from-blue-600 to-blue-400',
+    iconBg: 'bg-blue-100',
+    badge: 'text-marine',
   },
   {
-    accent: 'from-[#9bc7b5] to-[#cde5db]',
-    iconBg: 'bg-[#9bc7b5]/25',
-    badge: 'bg-[#9bc7b5]/25 text-[#2c5b4c]',
+    accent: 'from-marine to-blue-600',
+    iconBg: 'bg-blue-100',
+    badge: 'text-marine',
   },
 ];
 ---
@@ -50,14 +50,14 @@ const categoryThemes = [
 <Layout title="Nos Produits" description="Découvrez notre large gamme de matelas, sommiers, têtes de lit et accessoires de literie">
   <div class="home-sans">
     <!-- Header -->
-    <section class="relative isolate overflow-hidden bg-[#0f2747] py-20 text-white sm:py-24">
+    <section class="relative isolate overflow-hidden bg-marine py-20 text-white sm:py-24">
       <div
-        class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#f6b88f]/20 blur-3xl"
+        class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gold/20 blur-3xl"
         aria-hidden="true"
       >
       </div>
       <div
-        class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-[#93b7d8]/10 blur-3xl"
+        class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl"
         aria-hidden="true"
       >
       </div>
@@ -66,7 +66,7 @@ const categoryThemes = [
           class="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/70"
         >
           <svg
-            class="h-3.5 w-3.5 text-[#f6b88f]"
+            class="h-3.5 w-3.5 text-gold"
             viewBox="0 0 24 24"
             fill="currentColor"
             aria-hidden="true"
@@ -93,14 +93,14 @@ const categoryThemes = [
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-400">
               Univers literie
             </p>
-            <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+            <h2 class="home-display mt-4 text-3xl text-gray-900 sm:text-4xl">
               Explorez nos catégories.
             </h2>
           </div>
-          <a href="/magasins" class="text-sm font-semibold text-[#0f2747]">
+          <a href="/magasins" class="text-sm font-semibold text-marine">
             Voir nos magasins
           </a>
         </div>
@@ -111,24 +111,24 @@ const categoryThemes = [
             return (
               <a
                 href={category.href}
-                class={`group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-lg transition hover:-translate-y-1 ${theme.badge}`}
+                class={`group relative overflow-hidden rounded-3xl border border-gray-200 bg-white p-6 shadow-lg transition hover:-translate-y-1 ${theme.badge}`}
               >
                 <div
                   class={`absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${theme.accent}`}
                 />
                 <div
-                  class={`flex h-12 w-12 items-center justify-center rounded-2xl ${theme.iconBg} text-sm font-semibold text-slate-800`}
+                  class={`flex h-12 w-12 items-center justify-center rounded-2xl ${theme.iconBg} text-sm font-semibold text-gray-700`}
                 >
                   {category.name?.slice(0, 2).toUpperCase()}
                 </div>
-                <h3 class="home-display mt-6 text-xl text-slate-900">
+                <h3 class="home-display mt-6 text-xl text-gray-900">
                   {category.name}
                 </h3>
-                <p class="mt-3 text-sm text-slate-600">
+                <p class="mt-3 text-sm text-gray-700">
                   {category.description ||
                     'Sélection adaptée à votre confort et votre style.'}
                 </p>
-                <span class="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700">
+                <span class="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gray-700">
                   Explorer
                   <svg
                     class="h-4 w-4"
@@ -149,20 +149,20 @@ const categoryThemes = [
     </section>
 
     <!-- All Products -->
-    <section class="bg-slate-50 py-20">
+    <section class="bg-page py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+            <p class="text-xs uppercase tracking-[0.3em] text-gray-400">
               Notre sélection
             </p>
-            <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+            <h2 class="home-display mt-4 text-3xl text-gray-900 sm:text-4xl">
               Tous nos produits.
             </h2>
           </div>
           {allProducts.length > 0 && (
-            <p class="text-sm text-slate-500">
-              <span class="font-semibold text-slate-900">{allProducts.length}</span>
+            <p class="text-sm text-gray-500">
+              <span class="font-semibold text-gray-900">{allProducts.length}</span>
               {allProducts.length > 1 ? ' produits' : ' produit'}
             </p>
           )}
@@ -172,11 +172,11 @@ const categoryThemes = [
           {allProducts.length > 0 ? (
             allProducts.map((product) => <ProductCard {...product} />)
           ) : (
-            <div class="col-span-full rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
-              <p class="text-base font-semibold text-slate-700">
+            <div class="col-span-full rounded-3xl border border-dashed border-gray-200 bg-white p-10 text-center">
+              <p class="text-base font-semibold text-gray-700">
                 Aucun produit disponible pour le moment.
               </p>
-              <p class="mt-2 text-sm text-slate-500">
+              <p class="mt-2 text-sm text-gray-500">
                 Revenez bientôt pour découvrir notre sélection.
               </p>
             </div>
@@ -186,15 +186,15 @@ const categoryThemes = [
     </section>
 
     <!-- Brands -->
-    <section class="bg-[#f7f2ea] py-20">
+    <section class="bg-page py-20">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+        <p class="text-xs uppercase tracking-[0.3em] text-gray-400">
           Marques partenaires
         </p>
-        <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+        <h2 class="home-display mt-4 text-3xl text-gray-900 sm:text-4xl">
           Les signatures que nous aimons.
         </h2>
-        <p class="mx-auto mt-4 max-w-2xl text-sm text-slate-600">
+        <p class="mx-auto mt-4 max-w-2xl text-sm text-gray-700">
           Des marques sélectionnées pour leur fiabilité, leur confort et leur
           qualité de fabrication.
         </p>
@@ -202,7 +202,7 @@ const categoryThemes = [
         <div class="mx-auto mt-10 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3">
           {brands.length > 0 ? (
             brands.map((brand) => (
-              <div class="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-5 text-sm font-semibold text-slate-700">
+              <div class="flex items-center justify-center rounded-2xl border border-gray-200 bg-white px-4 py-5 text-sm font-semibold text-gray-700">
                 {brand.logo ? (
                   <img
                     src={brand.logo}
@@ -216,7 +216,7 @@ const categoryThemes = [
               </div>
             ))
           ) : (
-            <p class="col-span-full text-sm text-slate-500">
+            <p class="col-span-full text-sm text-gray-500">
               Aucune marque disponible pour le moment.
             </p>
           )}
