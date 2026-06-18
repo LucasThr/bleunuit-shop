@@ -366,7 +366,7 @@ const HomepageContentPage = () => {
 }
 
 export const config = defineRouteConfig({
-  label: "Contenu",
+  label: "Page d'accueil",
 })
 
 export default HomepageContentPage
