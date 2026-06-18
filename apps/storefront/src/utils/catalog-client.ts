@@ -28,6 +28,9 @@ export type Subcategory = {
 
 export type ProductCategoryRef = { id: string; name: string; slug: string };
 
+// A product is sold online (cart + Stripe), in-store only (devis), or both.
+export type SaleChannel = "online" | "in_store" | "both";
+
 export type Product = {
   id: string;
   name: string;
@@ -42,10 +45,10 @@ export type Product = {
   description: string;
   featured: boolean;
   in_stock: boolean;
-  // True when the product is sold online (cart + Stripe checkout). False/unset
-  // means in-store only: the storefront offers a "devis" instead of a cart.
-  purchasable: boolean;
-  // First variant id, needed to add the product to the cart when purchasable.
+  // Which channel(s) sell this product. The storefront derives cart vs. devis
+  // CTAs from this via saleMode() (src/utils/sale-mode.ts).
+  sale_channel: SaleChannel;
+  // First variant id, needed to add the product to the cart for online sale.
   variantId: string | null;
 };
 
@@ -83,7 +86,7 @@ type MedusaProduct = {
     featured?: boolean;
     in_stock?: boolean;
     featured_image?: string | null;
-    purchasable?: boolean;
+    sale_channel?: SaleChannel;
   } | null;
   categories?: MedusaCategory[];
   variants?: { id: string; calculated_price?: { calculated_amount?: number } }[];
@@ -146,7 +149,7 @@ function toProduct(p: MedusaProduct): Product {
     description: p.description ?? "",
     featured: p.metadata?.featured === true,
     in_stock: p.metadata?.in_stock !== false,
-    purchasable: p.metadata?.purchasable === true,
+    sale_channel: p.metadata?.sale_channel ?? "in_store",
     variantId: p.variants?.[0]?.id ?? null,
   };
 }

@@ -3,6 +3,7 @@ import Layout from '../../../../layouts/Layout.astro';
 import ProductCard from '../../../../components/ProductCard.astro';
 import JsonLd from '../../../../components/JsonLd.astro';
 import { getProductBySlug, getProductsByCategory } from '../../../../utils/catalog-client';
+import { saleMode } from '../../../../utils/sale-mode';
 import { mapProductToCard, productImageUrl as buildImageUrl } from '../../../../utils/product-card';
 import { slugFor } from '../../../../utils/slugs';
 import AddToCartButton from '../../../../components/cart/AddToCartButton.tsx';
@@ -33,9 +34,9 @@ const productPromoPrice = product.promo_price ? parseFloat(product.promo_price) 
 const hasPromo = productPromoPrice && productPromoPrice < productPrice && productPrice > 0;
 const discount = hasPromo ? Math.round(((productPrice - productPromoPrice!) / productPrice) * 100) : 0;
 
-// Online sale is possible only for products flagged purchasable, with a
-// variant to add to the cart, and in stock. Otherwise we offer a devis.
-const canBuyOnline = product.purchasable && !!product.variantId && product.in_stock;
+// The single owner of the cart-vs-devis decision: sale channel, stock, and
+// variant all fold into this verdict.
+const sale = saleMode(product);
 
 // Construct product image URL
 const productImageUrl = buildImageUrl(product.featured_image, 1200, 900, 85);
@@ -203,19 +204,32 @@ const breadcrumbJsonLd = {
             )}
           </div>
 
-          {/* CTA Buttons — online sale vs. in-store-only (devis) */}
+          {/* CTA Buttons — cart (online + in stock), a disabled state when an
+              online product is out of stock, and a devis (in-store). A product
+              sold both ways shows the cart with the devis as a secondary link. */}
           <div class="mb-8 space-y-3">
-            {canBuyOnline ? (
+            {sale.canCheckout && (
               <AddToCartButton
                 client:visible
                 variantId={product.variantId!}
                 className="w-full rounded-md! py-4! bg-blue-600! hover:bg-blue-700!"
               />
-            ) : (
+            )}
+            {sale.online && !sale.canCheckout && !product.in_stock && (
+              <button
+                type="button"
+                disabled
+                class="block w-full cursor-not-allowed rounded-md bg-gray-300 px-8 py-4 text-center text-base font-semibold text-gray-600"
+              >
+                Rupture de stock
+              </button>
+            )}
+            {sale.inStore && (
               <QuoteRequestForm
                 client:visible
                 productId={product.id}
                 productTitle={product.name}
+                variant={sale.canCheckout ? "secondary" : "primary"}
               />
             )}
             <a

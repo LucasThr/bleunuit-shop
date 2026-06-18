@@ -4,6 +4,9 @@ import { sdk } from "../utils/medusa";
 type Props = {
   productId?: string;
   productTitle: string;
+  // "primary" = the main CTA (in-store-only products). "secondary" = a subdued
+  // link shown under the cart for products sold both online and in-store.
+  variant?: "primary" | "secondary";
 };
 
 const field =
@@ -14,7 +17,11 @@ const field =
  * short form and posts it to the Medusa store API (POST /store/quotes), where
  * it is stored as a lead the team manages from the admin "Devis" page.
  */
-export default function QuoteRequestForm({ productId, productTitle }: Props) {
+export default function QuoteRequestForm({
+  productId,
+  productTitle,
+  variant = "primary",
+}: Props) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -54,14 +61,23 @@ export default function QuoteRequestForm({ productId, productTitle }: Props) {
     }
   }
 
+  const trigger =
+    variant === "secondary"
+      ? {
+          className:
+            "block w-full text-center text-sm font-medium text-blue-600 underline underline-offset-4 hover:text-blue-700",
+          label: "Ou demander un devis",
+        }
+      : {
+          className:
+            "block w-full rounded-md bg-blue-600 px-8 py-4 text-center text-base font-semibold text-white hover:bg-blue-700 transition-colors",
+          label: "Demander un devis",
+        };
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="block w-full rounded-md bg-blue-600 px-8 py-4 text-center text-base font-semibold text-white hover:bg-blue-700 transition-colors"
-      >
-        Demander un devis
+      <button type="button" onClick={() => setOpen(true)} className={trigger.className}>
+        {trigger.label}
       </button>
 
       {open && (
