@@ -12,98 +12,216 @@ const [categories, allProductsData, brandsData] = await Promise.all([
 ]);
 
 const allProducts = allProductsData.map(mapProductToCard);
-const brands = brandsData.map(brand => brand.name);
+
+const brands = (brandsData ?? [])
+  .filter((brand) => brand.name)
+  .map((brand) => ({ name: brand.name, logo: brand.logo || null }));
+
+const categoriesToShow = categories.map((category) => ({
+  ...category,
+  href: `/produits/${slugFor(category)}`,
+}));
+
+// Same warm accent themes as the homepage category cards.
+const categoryThemes = [
+  {
+    accent: 'from-[#f6b88f] to-[#fbd6c0]',
+    iconBg: 'bg-[#f6b88f]/20',
+    badge: 'bg-[#f6b88f]/15 text-[#8b4b2a]',
+  },
+  {
+    accent: 'from-[#93b7d8] to-[#c5d9ef]',
+    iconBg: 'bg-[#93b7d8]/20',
+    badge: 'bg-[#93b7d8]/20 text-[#2f5678]',
+  },
+  {
+    accent: 'from-[#c7b592] to-[#e3d8c4]',
+    iconBg: 'bg-[#c7b592]/25',
+    badge: 'bg-[#c7b592]/25 text-[#6a5738]',
+  },
+  {
+    accent: 'from-[#9bc7b5] to-[#cde5db]',
+    iconBg: 'bg-[#9bc7b5]/25',
+    badge: 'bg-[#9bc7b5]/25 text-[#2c5b4c]',
+  },
+];
 ---
 
 <Layout title="Nos Produits" description="Découvrez notre large gamme de matelas, sommiers, têtes de lit et accessoires de literie">
-  <!-- Header -->
-  <section class="bg-gradient-to-r from-blue-900 to-blue-700 py-16 text-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
-        Nos Produits
-      </h1>
-      <p class="mt-4 text-xl text-blue-100">
-        Des produits de qualité pour un sommeil réparateur
-      </p>
-    </div>
-  </section>
-
-  <!-- Categories -->
-  <section class="py-12 bg-gray-50">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-8">Catégories</h2>
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {categories.map((category) => (
-          <a
-            href={`/produits/${slugFor(category)}`}
-            class="group relative overflow-hidden rounded-lg border-2 border-gray-200 bg-white p-6 transition-all hover:border-blue-600 hover:shadow-lg"
-          >
-            {category.icon && <div class="text-4xl mb-3">{category.icon}</div>}
-            <h3 class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-              {category.name}
-            </h3>
-            {category.description && <p class="mt-2 text-gray-600">{category.description}</p>}
-            <div class="mt-4 inline-flex items-center text-sm font-medium text-blue-600">
-              Découvrir
-              <svg class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </div>
-          </a>
-        ))}
+  <div class="home-sans">
+    <!-- Header -->
+    <section class="relative isolate overflow-hidden bg-[#0f2747] py-20 text-white sm:py-24">
+      <div
+        class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#f6b88f]/20 blur-3xl"
+        aria-hidden="true"
+      >
       </div>
-    </div>
-  </section>
+      <div
+        class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-[#93b7d8]/10 blur-3xl"
+        aria-hidden="true"
+      >
+      </div>
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <p
+          class="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/70"
+        >
+          <svg
+            class="h-3.5 w-3.5 text-[#f6b88f]"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+          Univers literie
+        </p>
+        <h1
+          class="home-display mt-6 text-balance text-4xl font-semibold leading-[1.05] sm:text-5xl lg:text-6xl"
+        >
+          Nos produits.
+        </h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
+          Matelas, sommiers, têtes de lit et accessoires sélectionnés pour leur
+          confort et leur durabilité — à essayer en conditions réelles dans nos
+          magasins.
+        </p>
+      </div>
+    </section>
 
-  <!-- Featured Products -->
-  <section class="py-16">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold text-gray-900">Produits en vedette</h2>
-        <div class="flex gap-4">
-          <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option>Tous les produits</option>
-            <option>Matelas</option>
-            <option>Sommiers</option>
-            <option>Accessoires</option>
-          </select>
-          <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-            <option>Trier par</option>
-            <option>Prix croissant</option>
-            <option>Prix décroissant</option>
-            <option>Nouveautés</option>
-          </select>
+    <!-- Categories -->
+    <section class="py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+              Univers literie
+            </p>
+            <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+              Explorez nos catégories.
+            </h2>
+          </div>
+          <a href="/magasins" class="text-sm font-semibold text-[#0f2747]">
+            Voir nos magasins
+          </a>
+        </div>
+
+        <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {categoriesToShow.map((category, index) => {
+            const theme = categoryThemes[index % categoryThemes.length];
+            return (
+              <a
+                href={category.href}
+                class={`group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-lg transition hover:-translate-y-1 ${theme.badge}`}
+              >
+                <div
+                  class={`absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${theme.accent}`}
+                />
+                <div
+                  class={`flex h-12 w-12 items-center justify-center rounded-2xl ${theme.iconBg} text-sm font-semibold text-slate-800`}
+                >
+                  {category.name?.slice(0, 2).toUpperCase()}
+                </div>
+                <h3 class="home-display mt-6 text-xl text-slate-900">
+                  {category.name}
+                </h3>
+                <p class="mt-3 text-sm text-slate-600">
+                  {category.description ||
+                    'Sélection adaptée à votre confort et votre style.'}
+                </p>
+                <span class="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700">
+                  Explorer
+                  <svg
+                    class="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h10v10" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7" />
+                  </svg>
+                </span>
+              </a>
+            );
+          })}
         </div>
       </div>
+    </section>
 
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {allProducts.length > 0 ? (
-          allProducts.map((product) => (
-            <ProductCard {...product} />
-          ))
-        ) : (
-          <div class="col-span-full text-center py-12">
-            <p class="text-gray-500 text-lg">Aucun produit disponible pour le moment.</p>
-            <p class="text-sm text-gray-400 mt-2">Ajoutez des produits via votre CMS Directus</p>
+    <!-- All Products -->
+    <section class="bg-slate-50 py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap items-end justify-between gap-6">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+              Notre sélection
+            </p>
+            <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+              Tous nos produits.
+            </h2>
           </div>
-        )}
-      </div>
-    </div>
-  </section>
+          {allProducts.length > 0 && (
+            <p class="text-sm text-slate-500">
+              <span class="font-semibold text-slate-900">{allProducts.length}</span>
+              {allProducts.length > 1 ? ' produits' : ' produit'}
+            </p>
+          )}
+        </div>
 
-  <!-- Brands Section -->
-  <section class="bg-gray-50 py-12">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Nos marques partenaires</h2>
-      <div class="flex flex-wrap items-center justify-center gap-8">
-        {brands.length > 0 ? (
-          brands.map((brand) => (
-            <div class="text-gray-600 font-semibold text-lg">{brand}</div>
-          ))
-        ) : (
-          <p class="text-gray-500">Aucune marque disponible</p>
-        )}
+        <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {allProducts.length > 0 ? (
+            allProducts.map((product) => <ProductCard {...product} />)
+          ) : (
+            <div class="col-span-full rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
+              <p class="text-base font-semibold text-slate-700">
+                Aucun produit disponible pour le moment.
+              </p>
+              <p class="mt-2 text-sm text-slate-500">
+                Revenez bientôt pour découvrir notre sélection.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- Brands -->
+    <section class="bg-[#f7f2ea] py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+        <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+          Marques partenaires
+        </p>
+        <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+          Les signatures que nous aimons.
+        </h2>
+        <p class="mx-auto mt-4 max-w-2xl text-sm text-slate-600">
+          Des marques sélectionnées pour leur fiabilité, leur confort et leur
+          qualité de fabrication.
+        </p>
+
+        <div class="mx-auto mt-10 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-3">
+          {brands.length > 0 ? (
+            brands.map((brand) => (
+              <div class="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-5 text-sm font-semibold text-slate-700">
+                {brand.logo ? (
+                  <img
+                    src={brand.logo}
+                    alt={brand.name}
+                    class="h-10 w-full object-contain"
+                    loading="lazy"
+                  />
+                ) : (
+                  brand.name
+                )}
+              </div>
+            ))
+          ) : (
+            <p class="col-span-full text-sm text-slate-500">
+              Aucune marque disponible pour le moment.
+            </p>
+          )}
+        </div>
+      </div>
+    </section>
+  </div>
 </Layout>

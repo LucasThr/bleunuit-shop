@@ -67,161 +67,207 @@ const storesJsonLd = stores.map((store) => ({
 
 <Layout title="Notre Magasin" description="Visitez notre magasin de literie à Bruay-la-Buissière. Conseils personnalisés et large choix de matelas, sommiers et accessoires.">
   {storesJsonLd.map((data) => <JsonLd data={data} />)}
-  <!-- Header -->
-  <section class="bg-gradient-to-r from-blue-900 to-blue-700 py-16 text-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
-        Notre Magasin
-      </h1>
-      <p class="mt-4 text-xl text-blue-100 max-w-3xl">
-        Visitez notre showroom à Bruay-la-Buissière pour découvrir notre gamme complète de literie et bénéficier des conseils de nos experts.
-      </p>
-    </div>
-  </section>
+  <div class="home-sans">
+    <!-- Header -->
+    <section class="relative isolate overflow-hidden bg-[#0f2747] py-20 text-white sm:py-24">
+      <div
+        class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#f6b88f]/20 blur-3xl"
+        aria-hidden="true"
+      >
+      </div>
+      <div
+        class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-[#93b7d8]/10 blur-3xl"
+        aria-hidden="true"
+      >
+      </div>
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <p
+          class="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/70"
+        >
+          <svg
+            class="h-3.5 w-3.5 text-[#f6b88f]"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+          </svg>
+          Nos magasins
+        </p>
+        <h1
+          class="home-display mt-6 text-balance text-4xl font-semibold leading-[1.05] sm:text-5xl lg:text-6xl"
+        >
+          Venez tester le confort.
+        </h1>
+        <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
+          Visitez notre showroom à Bruay-la-Buissière pour découvrir notre gamme
+          complète de literie et bénéficier des conseils de nos experts.
+        </p>
+      </div>
+    </section>
 
-  <!-- Stores Grid -->
-  <section class="py-16">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 gap-12 max-w-2xl mx-auto">
-        {stores.map((store) => {
-          const storeSlug = store.slug.toLowerCase().replace(/\s+/g, '-');
-          const storeImage = store.image || storeImages[storeSlug] || '/images/placeholder-store.jpg';
+    <!-- Stores Grid -->
+    <section class="py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto grid max-w-2xl grid-cols-1 gap-12">
+          {stores.map((store) => {
+            const storeSlug = store.slug.toLowerCase().replace(/\s+/g, '-');
+            const storeImage = store.image || storeImages[storeSlug] || '/images/placeholder-store.jpg';
 
-          return (
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-              <!-- Store Image -->
-              <div class="aspect-[16/9] overflow-hidden bg-gray-100">
-                <img
-                  src={storeImage}
-                  alt={`Magasin ${store.name}`}
-                  class="w-full h-full object-cover"
-                />
-              </div>
+            return (
+              <div class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg">
+                <!-- Store Image -->
+                <div class="aspect-[16/9] overflow-hidden bg-slate-100">
+                  <img
+                    src={storeImage}
+                    alt={`Magasin ${store.name}`}
+                    class="h-full w-full object-cover"
+                  />
+                </div>
 
-              <!-- Store Info -->
-              <div class="p-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">
-                  {store.name}
-                </h2>
+                <!-- Store Info -->
+                <div class="p-8">
+                  <h2 class="home-display text-2xl text-slate-900">
+                    {store.name}
+                  </h2>
 
-                <div class="space-y-3 text-gray-600">
-                  <!-- Address -->
-                  <div class="flex items-start gap-3">
-                    <svg class="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <div>
-                      <p>{store.address}</p>
-                      <p>{store.postalCode} {store.city}</p>
+                  <div class="mt-6 space-y-4 text-sm text-slate-600">
+                    <!-- Address -->
+                    <div class="flex items-start gap-3">
+                      <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-[#0f2747]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <div>
+                        <p>{store.address}</p>
+                        <p>{store.postalCode} {store.city}</p>
+                      </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="flex items-center gap-3">
+                      <svg class="h-5 w-5 flex-shrink-0 text-[#0f2747]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      <a href={`tel:${store.phone}`} class="transition-colors hover:text-[#0f2747]">
+                        {store.phone}
+                      </a>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="flex items-center gap-3">
+                      <svg class="h-5 w-5 flex-shrink-0 text-[#0f2747]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <a href={`mailto:${store.email}`} class="transition-colors hover:text-[#0f2747]">
+                        {store.email}
+                      </a>
                     </div>
                   </div>
 
-                  <!-- Phone -->
-                  <div class="flex items-center gap-3">
-                    <svg class="h-6 w-6 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    <a href={`tel:${store.phone}`} class="hover:text-blue-600 transition-colors">
-                      {store.phone}
+                  <!-- Buttons -->
+                  <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <a
+                      href={store.mapUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center justify-center gap-2 rounded-full bg-[#0f2747] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition hover:bg-[#16335c]"
+                    >
+                      <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                      </svg>
+                      Itinéraire
+                    </a>
+                    <a
+                      href="/contact"
+                      class="inline-flex items-center justify-center rounded-full border border-slate-300 px-7 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                    >
+                      Nous contacter
                     </a>
                   </div>
-
-                  <!-- Email -->
-                  <div class="flex items-center gap-3">
-                    <svg class="h-6 w-6 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                    <a href={`mailto:${store.email}`} class="hover:text-blue-600 transition-colors">
-                      {store.email}
-                    </a>
-                  </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="mt-6 flex flex-col sm:flex-row gap-3">
-                  <a
-                    href={store.mapUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white hover:bg-blue-700 transition-colors"
-                  >
-                    <svg class="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                    </svg>
-                    Itinéraire
-                  </a>
-                  <a
-                    href="/contact"
-                    class="inline-flex items-center justify-center rounded-md border-2 border-blue-600 px-6 py-3 text-base font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
-                  >
-                    Nous contacter
-                  </a>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-
-  <!-- Opening Hours Section -->
-  <section class="bg-gray-50 py-16">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          Horaires d'ouverture
-        </h2>
-        <p class="mt-4 text-lg text-gray-600">
-          Nos équipes vous accueillent du lundi au samedi
-        </p>
-      </div>
-
-      <div class="mx-auto max-w-2xl bg-white rounded-lg shadow-md p-8">
-        <div class="space-y-3">
-          <div class="flex justify-between items-center py-2 border-b">
-            <span class="font-medium text-gray-900">Lundi - Samedi</span>
-            <span class="text-gray-600">9h30 - 12h00 / 14h00 - 18h30</span>
-          </div>
-          <div class="flex justify-between items-center py-2">
-            <span class="font-medium text-gray-900">Dimanche</span>
-            <span class="text-red-600 font-medium">Fermé</span>
-          </div>
+            );
+          })}
         </div>
+      </div>
+    </section>
 
-        <div class="mt-6 p-4 bg-blue-50 rounded-md">
-          <p class="text-sm text-blue-800">
-            💡 <strong>Conseil :</strong> Nous vous recommandons de prendre rendez-vous pour bénéficier d'un conseil personnalisé.
+    <!-- Opening Hours Section -->
+    <section class="bg-[#f7f2ea] py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-12 text-center">
+          <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+            Horaires
+          </p>
+          <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+            Quand nous rendre visite.
+          </h2>
+          <p class="mt-4 text-sm text-slate-600">
+            Nos équipes vous accueillent du lundi au samedi.
           </p>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- CTA Section -->
-  <section class="bg-blue-900 text-white py-12">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-2xl font-bold mb-4">
-        Besoin de conseils pour choisir votre literie ?
-      </h2>
-      <p class="text-lg text-blue-100 mb-6">
-        Nos experts sont là pour vous guider vers le meilleur choix
-      </p>
-      <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
-        <a
-          href="/contact"
-          class="inline-flex items-center justify-center rounded-md bg-white px-8 py-3 text-base font-semibold text-blue-900 hover:bg-blue-50 transition-colors"
-        >
-          Prendre rendez-vous
-        </a>
-        <a
-          href="/produits"
-          class="inline-flex items-center justify-center rounded-md border-2 border-white px-8 py-3 text-base font-semibold text-white hover:bg-blue-800 transition-colors"
-        >
-          Voir nos produits
-        </a>
+        <div class="mx-auto max-w-2xl rounded-3xl border border-slate-200 bg-white p-8 shadow-md sm:p-10">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 py-3">
+              <span class="font-semibold text-slate-900">Lundi - Samedi</span>
+              <span class="text-slate-600">9h30 - 12h00 / 14h00 - 18h30</span>
+            </div>
+            <div class="flex items-center justify-between py-3">
+              <span class="font-semibold text-slate-900">Dimanche</span>
+              <span class="font-medium text-[#8b4b2a]">Fermé</span>
+            </div>
+          </div>
+
+          <div class="mt-6 flex items-start gap-3 rounded-2xl bg-[#f6b88f]/15 p-4">
+            <svg class="mt-0.5 h-5 w-5 flex-shrink-0 text-[#8b4b2a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-sm text-[#6a4124]">
+              <strong class="font-semibold">Conseil :</strong> nous vous
+              recommandons de prendre rendez-vous pour bénéficier d'un
+              accompagnement personnalisé.
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="home-sheen rounded-[36px] border border-slate-200 bg-white p-10 shadow-xl sm:p-14">
+          <div class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+                Passez à l'action
+              </p>
+              <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+                Besoin de conseils pour choisir votre literie ?
+              </h2>
+              <p class="mt-4 max-w-xl text-sm text-slate-600">
+                Nos experts vous accueillent en magasin pour vous guider vers le
+                meilleur choix.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-4">
+              <a
+                href="/contact"
+                class="rounded-full bg-[#0f2747] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition hover:bg-[#16335c]"
+              >
+                Prendre rendez-vous
+              </a>
+              <a
+                href="/produits"
+                class="rounded-full border border-slate-300 px-7 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+              >
+                Voir nos produits
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 </Layout>

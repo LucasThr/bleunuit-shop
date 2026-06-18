@@ -6,3 +6,26 @@ body {
   width: 100%;
   max-width: 100%;
 }
+
+/* Brand design system, shared across pages (the homepage seeds the same tokens). */
+:root {
+  --font-display: "Sora", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Manrope", "Helvetica Neue", Arial, sans-serif;
+}
+
+.home-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.home-sans {
+  font-family: var(--font-sans);
+}
+
+.home-sheen {
+  background-image: linear-gradient(
+    135deg,
+    rgba(246, 184, 143, 0.15),
+    rgba(147, 183, 216, 0.1)
+  );
+}
