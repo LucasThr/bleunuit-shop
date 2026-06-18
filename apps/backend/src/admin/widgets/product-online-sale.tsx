@@ -54,7 +54,7 @@ const ProductOnlineSaleWidget = ({
       </div>
       <div className="flex items-center justify-between px-6 py-4">
         <Label size="small" weight="plus">
-          {purchasable ? "Vendu en ligne" : "En magasin uniquement"}
+          Vendu en ligne
         </Label>
         <Switch
           checked={purchasable}
