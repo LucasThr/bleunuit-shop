@@ -67,7 +67,9 @@ const productJsonLd = {
   ...(productImageUrl && { image: [productImageUrl] }),
   ...(plainDescription && { description: plainDescription }),
   ...(brandName && { brand: { '@type': 'Brand', name: brandName } }),
-  ...(productPrice > 0 && {
+  // Only online/both products advertise a purchasable Offer; an in-store-only
+  // product isn't buyable online, so it gets no Offer.
+  ...(sale.online && productPrice > 0 && {
     offers: {
       '@type': 'Offer',
       url: canonicalUrl,
