@@ -10,7 +10,7 @@ type Props = {
 };
 
 const field =
-  "w-full rounded-md border border-gray-300 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
+  "w-full rounded-md border border-gray-300 px-4 py-3 text-sm focus:border-[#0f2747] focus:outline-none focus:ring-1 focus:ring-[#0f2747]";
 
 /**
  * "Demander un devis" CTA for in-store-only products. Opens a modal with a
@@ -61,24 +61,33 @@ export default function QuoteRequestForm({
     }
   }
 
-  const trigger =
-    variant === "secondary"
-      ? {
-          className:
-            "block w-full text-center text-sm font-medium text-blue-600 underline underline-offset-4 hover:text-blue-700",
-          label: "Ou demander un devis",
-        }
-      : {
-          className:
-            "block w-full rounded-md bg-blue-600 px-8 py-4 text-center text-base font-semibold text-white hover:bg-blue-700 transition-colors",
-          label: "Demander un devis",
-        };
+  const isPrimary = variant !== "secondary";
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={trigger.className}>
-        {trigger.label}
-      </button>
+      {isPrimary ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="btn-primary flex w-full items-center justify-center gap-2 rounded-xl px-8 py-4 text-base font-semibold"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 4h6l4 4v12H8V4Z M14 4v4h4 M10.5 13h5 M10.5 16h3.5" />
+          </svg>
+          Demander un devis
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex w-full items-center justify-center gap-1.5 py-3 text-sm font-medium text-[#0f2747]/80 underline-offset-4 transition hover:text-[#0f2747] hover:underline"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 4h6l4 4v12H8V4Z M14 4v4h4" />
+          </svg>
+          Ou demander un devis
+        </button>
+      )}
 
       {open && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -123,7 +132,7 @@ export default function QuoteRequestForm({
                 <button
                   type="button"
                   onClick={close}
-                  className="mt-6 inline-flex rounded-md bg-blue-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-700"
+                  className="btn-primary mt-6 inline-flex rounded-xl px-6 py-3 text-sm font-semibold"
                 >
                   Fermer
                 </button>
@@ -172,7 +181,7 @@ export default function QuoteRequestForm({
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full rounded-md bg-blue-600 px-8 py-3 text-base font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="btn-primary flex w-full items-center justify-center rounded-xl px-8 py-3 text-base font-semibold"
                 >
                   {submitting ? "Envoi…" : "Envoyer la demande"}
                 </button>
