@@ -1,0 +1,16 @@
+# Build context is the monorepo root (see apps/storefront/Dockerfile).
+# Keep it small and never ship secrets or local build artifacts.
+**/node_modules
+**/dist
+**/.medusa
+**/.astro
+**/.turbo
+**/.git
+**/.vscode
+**/.DS_Store
+**/*.log
+
+# Secrets: PUBLIC_* values are passed as build args, never via .env files.
+**/.env
+**/.env.*
+!**/.env.example
