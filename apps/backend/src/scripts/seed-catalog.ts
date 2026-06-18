@@ -149,6 +149,7 @@ export default async function seedCatalog({
               promo_price: p.promo_price,
               featured: p.featured,
               in_stock: p.in_stock,
+              purchasable: p.purchasable === true,
               category_handle: p.category_handle,
               subcategory_handle: p.subcategory_handle,
             },

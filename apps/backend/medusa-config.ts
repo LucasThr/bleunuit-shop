@@ -39,5 +39,8 @@ module.exports = defineConfig({
     {
       resolve: './src/modules/cms',
     },
+    {
+      resolve: './src/modules/quotes',
+    },
   ],
 })

@@ -114,6 +114,9 @@ export type CatalogProduct = {
   promo_price: number | null
   featured: boolean
   in_stock: boolean
+  // When true the product is sold online (cart + Stripe checkout). When unset
+  // it is in-store only and the storefront offers a "devis" instead.
+  purchasable?: boolean
   category_handle: string
   subcategory_handle: string | null
   brand: string | null
@@ -128,6 +131,7 @@ export const products: CatalogProduct[] = [
     promo_price: null,
     featured: false,
     in_stock: true,
+    purchasable: true,
     category_handle: "tetes-de-lit",
     subcategory_handle: null,
     brand: null,
@@ -279,6 +283,7 @@ export const products: CatalogProduct[] = [
     promo_price: null,
     featured: false,
     in_stock: true,
+    purchasable: true,
     category_handle: "oreillers-couettes",
     subcategory_handle: null,
     brand: "Epéda",

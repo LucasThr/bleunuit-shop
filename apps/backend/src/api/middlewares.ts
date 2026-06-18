@@ -19,6 +19,8 @@ import {
   CreateBrandSchema,
   UpdateBrandSchema,
 } from "./admin/cms/brands/validators"
+import { CreateQuoteSchema } from "./store/quotes/validators"
+import { UpdateQuoteSchema } from "./admin/quotes/validators"
 
 export default defineMiddlewares({
   routes: [
@@ -70,6 +72,17 @@ export default defineMiddlewares({
       matcher: "/admin/cms/brands/:id",
       method: "POST",
       middlewares: [validateAndTransformBody(UpdateBrandSchema)],
+    },
+    // Quote requests (devis)
+    {
+      matcher: "/store/quotes",
+      method: "POST",
+      middlewares: [validateAndTransformBody(CreateQuoteSchema)],
+    },
+    {
+      matcher: "/admin/quotes/:id",
+      method: "POST",
+      middlewares: [validateAndTransformBody(UpdateQuoteSchema)],
     },
   ],
 })

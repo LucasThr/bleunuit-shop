@@ -42,6 +42,11 @@ export type Product = {
   description: string;
   featured: boolean;
   in_stock: boolean;
+  // True when the product is sold online (cart + Stripe checkout). False/unset
+  // means in-store only: the storefront offers a "devis" instead of a cart.
+  purchasable: boolean;
+  // First variant id, needed to add the product to the cart when purchasable.
+  variantId: string | null;
 };
 
 export type Brand = {
@@ -78,15 +83,16 @@ type MedusaProduct = {
     featured?: boolean;
     in_stock?: boolean;
     featured_image?: string | null;
+    purchasable?: boolean;
   } | null;
   categories?: MedusaCategory[];
-  variants?: { calculated_price?: { calculated_amount?: number } }[];
+  variants?: { id: string; calculated_price?: { calculated_amount?: number } }[];
 };
 
 const PRODUCT_FIELDS =
   "id,title,handle,description,thumbnail,metadata," +
   "categories.id,categories.name,categories.handle,categories.parent_category_id," +
-  "*variants.calculated_price";
+  "variants.id,*variants.calculated_price";
 
 const CATEGORY_FIELDS =
   "id,name,handle,description,rank,parent_category_id,metadata";
@@ -140,6 +146,8 @@ function toProduct(p: MedusaProduct): Product {
     description: p.description ?? "",
     featured: p.metadata?.featured === true,
     in_stock: p.metadata?.in_stock !== false,
+    purchasable: p.metadata?.purchasable === true,
+    variantId: p.variants?.[0]?.id ?? null,
   };
 }
 

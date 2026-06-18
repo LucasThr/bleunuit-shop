@@ -31,5 +31,6 @@ export function mapProductToCard(product: Product) {
     slug: product.slug || '',
     categorySlug: category ? slugFor(category) : String(product.category ?? ''),
     categoryName: category ? category.name : String(product.category ?? ''),
+    purchasable: product.purchasable,
   };
 }

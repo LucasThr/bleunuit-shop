@@ -5,6 +5,8 @@ import JsonLd from '../../../../components/JsonLd.astro';
 import { getProductBySlug, getProductsByCategory } from '../../../../utils/catalog-client';
 import { mapProductToCard, productImageUrl as buildImageUrl } from '../../../../utils/product-card';
 import { slugFor } from '../../../../utils/slugs';
+import AddToCartButton from '../../../../components/cart/AddToCartButton.tsx';
+import QuoteRequestForm from '../../../../components/QuoteRequestForm.tsx';
 
 const { category, slug } = Astro.params;
 
@@ -30,6 +32,10 @@ const productPrice = parseFloat(product.price) || 0;
 const productPromoPrice = product.promo_price ? parseFloat(product.promo_price) : null;
 const hasPromo = productPromoPrice && productPromoPrice < productPrice && productPrice > 0;
 const discount = hasPromo ? Math.round(((productPrice - productPromoPrice!) / productPrice) * 100) : 0;
+
+// Online sale is possible only for products flagged purchasable, with a
+// variant to add to the cart, and in stock. Otherwise we offer a devis.
+const canBuyOnline = product.purchasable && !!product.variantId && product.in_stock;
 
 // Construct product image URL
 const productImageUrl = buildImageUrl(product.featured_image, 1200, 900, 85);
@@ -197,14 +203,21 @@ const breadcrumbJsonLd = {
             )}
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons — online sale vs. in-store-only (devis) */}
           <div class="mb-8 space-y-3">
-            <a
-              href="/contact"
-              class="block w-full rounded-md bg-blue-600 px-8 py-4 text-center text-base font-semibold text-white hover:bg-blue-700 transition-colors"
-            >
-              Demander un devis
-            </a>
+            {canBuyOnline ? (
+              <AddToCartButton
+                client:visible
+                variantId={product.variantId!}
+                className="w-full rounded-md! py-4! bg-blue-600! hover:bg-blue-700!"
+              />
+            ) : (
+              <QuoteRequestForm
+                client:visible
+                productId={product.id}
+                productTitle={product.name}
+              />
+            )}
             <a
               href="/magasins"
               class="block w-full rounded-md border-2 border-blue-600 px-8 py-4 text-center text-base font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
