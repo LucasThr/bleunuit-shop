@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils"
 
 // A physical store. Fields mirror what the storefront renders in
-// directus/src/pages/magasins.astro and the homepage stores section,
+// apps/storefront/src/pages/magasins.astro and the homepage stores section,
 // replacing the old Directus `stores` collection.
 // Entity name is `cms_store` (not `store`) to avoid colliding with Medusa's
 // core Store module alias in the query joiner.

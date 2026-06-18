@@ -1,0 +1,1001 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProductCard from "../components/ProductCard.astro";
+import {
+  getAllBrands,
+  getAllCategories,
+  getFeaturedProducts,
+} from "../utils/catalog-client";
+import { getHomepage, getAllStores, getTestimonials } from "../utils/cms-client";
+import { mapProductToCard } from "../utils/product-card";
+import { slugFor } from "../utils/slugs";
+
+// Every call degrades independently: if a collection is missing (migration
+// not run yet) or Directus is down, the hardcoded fallbacks below render.
+const logFail = (section: string) => (error: unknown) => {
+  console.error(`Homepage: failed to load ${section} from Directus`, error);
+  return null;
+};
+const [products, categories, brandsData, homepage, testimonialsData, storesData] =
+  await Promise.all([
+    getFeaturedProducts(4).catch(logFail("products")),
+    getAllCategories().catch(logFail("categories")),
+    getAllBrands().catch(logFail("brands")),
+    getHomepage().catch(logFail("homepage")),
+    getTestimonials().catch(logFail("testimonials")),
+    getAllStores().catch(logFail("stores")),
+  ]);
+
+const featuredProducts = (products ?? []).map(mapProductToCard);
+
+const hero = {
+  badge: homepage?.hero_badge || "Depuis 1994",
+  location: homepage?.hero_location || "Bruay-la-Buissière",
+  title: homepage?.hero_title || "Votre plus belle nuit commence en magasin.",
+  subtitle:
+    homepage?.hero_subtitle ||
+    "Matelas, sommiers et accessoires à essayer en conditions réelles. Nos conseillers vous guident vers la literie adaptée à votre posture, vos habitudes et votre budget.",
+  image:
+    homepage?.hero_image || "/images/stores/bruay-la-buissiere.png",
+  highlights: homepage?.hero_highlights?.length
+    ? homepage.hero_highlights
+    : [
+        { title: "Conseils personnalisés", description: "Analyse de vos habitudes de sommeil." },
+        { title: "Essais confort guidés", description: "Testez plusieurs technologies en magasin." },
+        { title: "Livraison & reprise", description: "Une solution complète selon vos besoins." },
+      ],
+};
+
+// Promo voucher: reads Directus fields when present, with evergreen
+// fallbacks so the hero never ships an expired offer.
+const promo = {
+  eyebrow: homepage?.hero_promo_eyebrow || "Offre exclusive",
+  value: homepage?.hero_promo_value || "-40%",
+  label:
+    homepage?.hero_promo_label || "sur une sélection de matelas, sommiers et oreillers",
+  note:
+    homepage?.hero_promo_note ||
+    "En ce moment dans notre magasin de Bruay-la-Buissière. Conditions en magasin.",
+};
+
+// The first sleep-related word of the title gets a warm accent.
+const heroAccentSplit = /\b(nuits?|sommeil|confort)\b/i;
+const heroAccentExact = /^(nuits?|sommeil|confort)$/i;
+const heroTitleParts = hero.title.split(heroAccentSplit);
+
+// Inline icon markup for the highlight row, cycled by index.
+const highlightIcons = [
+  '<path stroke-linecap="round" stroke-linejoin="round" d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5 8.38 8.38 0 0 1 8.5 8.5z"/>',
+  '<path stroke-linecap="round" stroke-linejoin="round" d="M3 19v-6.5A2.5 2.5 0 0 1 5.5 10h13a2.5 2.5 0 0 1 2.5 2.5V19M3 19h18M3 19v1.5M21 19v1.5M6 10V6.5A1.5 1.5 0 0 1 7.5 5h9A1.5 1.5 0 0 1 18 6.5V10"/>',
+  '<path stroke-linecap="round" stroke-linejoin="round" d="M1 4h14v12H1z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 9h4l3 3v4h-7z"/><circle cx="5.5" cy="18.5" r="2"/><circle cx="18.5" cy="18.5" r="2"/>',
+];
+
+// Hand-placed night-sky stars (x, y, radius) for the hero scene.
+const heroStars = [
+  [60, 46, 1.3],
+  [148, 96, 1],
+  [228, 28, 1.6],
+  [330, 122, 1.1],
+  [414, 62, 1.4],
+  [520, 26, 1],
+  [598, 98, 1.3],
+  [702, 52, 1.1],
+  [798, 132, 1.5],
+  [882, 36, 1],
+  [958, 88, 1.4],
+  [1042, 152, 1.1],
+  [1112, 56, 1.6],
+  [1172, 112, 1],
+  [82, 182, 1.1],
+  [262, 204, 1],
+  [482, 172, 0.9],
+  [678, 192, 1.2],
+  [988, 232, 1],
+  [1148, 212, 1.2],
+];
+
+const valueProps = homepage?.value_props?.length
+  ? homepage.value_props
+  : [
+      {
+        eyebrow: "Savoir-faire",
+        title: "30 ans d'expertise locale.",
+        description:
+          "Nos conseillers accompagnent chaque profil de dormeur pour un choix durable et adapté à vos habitudes.",
+      },
+      {
+        eyebrow: "Sélection rigoureuse",
+        title: "Des marques reconnues.",
+        description:
+          "Technologies hybrides, ressorts ensachés, mousses haute résilience: nous filtrons le meilleur.",
+      },
+      {
+        eyebrow: "Expérience magasin",
+        title: "Essayez avant de choisir.",
+        description:
+          "Des espaces dédiés au confort pour ressentir la différence et comparer avec l'aide de nos experts.",
+      },
+    ];
+const valuePropAccents = ["text-[#8b4b2a]", "text-[#2f5678]", "text-[#2c5b4c]"];
+
+const method = {
+  title: homepage?.method_title || "Un parcours simple, guidé par l'humain.",
+  intro:
+    homepage?.method_intro ||
+    "Un achat literie, ça se vit. Nous vous guidons et simplifions chaque étape, de l'essai au suivi.",
+  steps: homepage?.method_steps?.length
+    ? homepage.method_steps
+    : [
+        {
+          title: "Écoute et diagnostic",
+          description:
+            "Nous analysons votre position de sommeil, vos douleurs et vos préférences de fermeté.",
+        },
+        {
+          title: "Sélection accompagnée",
+          description:
+            "Essayez plusieurs conforts et comparez les technologies en conditions réelles.",
+        },
+        {
+          title: "Livraison et suivi",
+          description:
+            "Nous organisons la livraison, la reprise et restons disponibles après installation.",
+        },
+      ],
+};
+
+const cta = {
+  title: homepage?.cta_title || "Besoin de conseils personnalisés ?",
+  text:
+    homepage?.cta_text ||
+    "Notre équipe vous accueille en magasin pour choisir la literie qui soutient vraiment votre sommeil.",
+};
+
+const testimonials = testimonialsData?.length
+  ? testimonialsData.map((t) => ({ quote: t.quote, name: t.name, city: t.city }))
+  : [
+      {
+        quote:
+          "Un accompagnement précis et bienveillant. Nous avons trouvé un matelas parfaitement adapté.",
+        name: "Camille et Hugo",
+        city: "Bruay-la-Buissière",
+      },
+    ];
+
+const staticStoreImages: Record<string, string> = {
+  "bruay-la-buissiere": "/images/stores/bruay-la-buissiere.png",
+};
+const storeCards = storesData?.length
+  ? storesData.map((store) => ({
+      name: store.city || store.name,
+      description:
+        store.description ||
+        "Un espace dédié au confort pour découvrir notre gamme avec nos conseillers.",
+      image:
+        store.image ||
+        staticStoreImages[store.slug] ||
+        "/images/stores/bruay-la-buissiere.png",
+    }))
+  : [
+      {
+        name: "Bruay-la-Buissière",
+        description:
+          "Un espace chaleureux avec un large choix de literies pour comparer sereinement.",
+        image: staticStoreImages["bruay-la-buissiere"],
+      },
+    ];
+
+const featuredCategories = (categories ?? []).slice(0, 4);
+const fallbackCategories = [
+  {
+    name: "Matelas",
+    description:
+      "Soutien précis, confort durable et technologie adaptée à votre sommeil.",
+    href: "/produits",
+  },
+  {
+    name: "Sommiers",
+    description: "Des bases stables pour prolonger la vie de votre literie.",
+    href: "/produits",
+  },
+  {
+    name: "Têtes de lit",
+    description: "Un style chaleureux pour finaliser votre chambre.",
+    href: "/produits",
+  },
+  {
+    name: "Accessoires",
+    description: "Oreillers, protections et linge pour un confort complet.",
+    href: "/produits",
+  },
+];
+
+const categoriesToShow = featuredCategories.length
+  ? featuredCategories.map((category) => ({
+      ...category,
+      href: `/produits/${slugFor(category)}`,
+    }))
+  : fallbackCategories;
+
+const categoryThemes = [
+  {
+    accent: "from-[#f6b88f] to-[#fbd6c0]",
+    iconBg: "bg-[#f6b88f]/20",
+    badge: "bg-[#f6b88f]/15 text-[#8b4b2a]",
+  },
+  {
+    accent: "from-[#93b7d8] to-[#c5d9ef]",
+    iconBg: "bg-[#93b7d8]/20",
+    badge: "bg-[#93b7d8]/20 text-[#2f5678]",
+  },
+  {
+    accent: "from-[#c7b592] to-[#e3d8c4]",
+    iconBg: "bg-[#c7b592]/25",
+    badge: "bg-[#c7b592]/25 text-[#6a5738]",
+  },
+  {
+    accent: "from-[#9bc7b5] to-[#cde5db]",
+    iconBg: "bg-[#9bc7b5]/25",
+    badge: "bg-[#9bc7b5]/25 text-[#2c5b4c]",
+  },
+];
+
+const featuredBrands = (brandsData ?? [])
+  .filter((brand) => brand.name)
+  .slice(0, 6)
+  .map((brand) => ({
+    name: brand.name,
+    logo: brand.logo || null,
+  }));
+---
+
+<Layout
+  title="Accueil"
+  description="Literie Bleunuit - Spécialiste literie depuis 1994. Découvrez nos matelas, sommiers et accessoires pour un sommeil de qualité à Bruay-la-Buissière."
+>
+  <!-- Hero -->
+  <section class="hero-night relative isolate overflow-hidden text-white">
+    <!-- Night sky: stars + crescent moon, echoing the Bleunuit logo -->
+    <div class="absolute inset-0" aria-hidden="true">
+      <svg
+        class="absolute inset-x-0 top-0 h-3/5 w-full"
+        viewBox="0 0 1200 420"
+        preserveAspectRatio="xMidYMin slice"
+      >
+        {
+          heroStars.map(([x, y, r], index) => (
+            <circle
+              cx={x}
+              cy={y}
+              r={r}
+              fill="#d9e6f8"
+              opacity={0.4 + r * 0.3}
+              class={index % 3 === 0 ? "hero-star-tw" : undefined}
+              style={
+                index % 3 === 0
+                  ? `animation-delay: ${(index * 0.55) % 4}s`
+                  : undefined
+              }
+            />
+          ))
+        }
+      </svg>
+      <svg
+        class="absolute right-8 top-10 hidden h-16 w-16 overflow-visible sm:block lg:left-[48%] lg:right-auto lg:top-14"
+        viewBox="0 0 72 72"
+      >
+        <defs>
+          <mask id="bn-moon-mask">
+            <rect width="72" height="72" fill="white"></rect>
+            <circle cx="47" cy="26" r="23" fill="black"></circle>
+          </mask>
+          <filter id="bn-moon-glow">
+            <feGaussianBlur stdDeviation="7"></feGaussianBlur>
+          </filter>
+        </defs>
+        <circle
+          cx="33"
+          cy="37"
+          r="27"
+          fill="#f2dcc0"
+          opacity="0.25"
+          filter="url(#bn-moon-glow)"></circle>
+        <circle
+          cx="33"
+          cy="37"
+          r="24"
+          fill="#f2dcc0"
+          opacity="0.9"
+          mask="url(#bn-moon-mask)"></circle>
+      </svg>
+    </div>
+
+    <div
+      class="relative mx-auto max-w-7xl px-4 pb-20 pt-14 sm:px-6 sm:pt-20 lg:px-8 lg:pb-24"
+    >
+      <div
+        class="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-20"
+      >
+        <div class="home-sans">
+          <div class="hero-rise flex flex-wrap items-center gap-x-5 gap-y-3">
+            <span
+              class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.28em]"
+            >
+              <svg
+                class="h-3.5 w-3.5 text-[#f6b88f]"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+              </svg>
+              {hero.badge}
+            </span>
+            <span
+              class="inline-flex items-center gap-1.5 text-sm font-medium text-white/70"
+            >
+              <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 21s-7-5.1-7-11a7 7 0 0 1 14 0c0 5.9-7 11-7 11z"
+                ></path>
+                <circle cx="12" cy="10" r="2.6"></circle>
+              </svg>
+              {hero.location}
+            </span>
+          </div>
+
+          <h1
+            class="home-display hero-rise mt-7 text-balance text-[2.6rem] font-semibold leading-[1.05] sm:text-6xl lg:text-[4.1rem]"
+            style="animation-delay: 90ms"
+          >
+            {
+              heroTitleParts.map((part) =>
+                heroAccentExact.test(part) ? (
+                  <span class="hero-accent">{part}</span>
+                ) : (
+                  part
+                )
+              )
+            }
+          </h1>
+
+          <p
+            class="hero-rise mt-6 max-w-xl text-lg leading-relaxed text-white/75"
+            style="animation-delay: 170ms"
+          >
+            {hero.subtitle}
+          </p>
+
+          <div
+            class="hero-rise mt-9 flex flex-wrap items-center gap-4"
+            style="animation-delay: 250ms"
+          >
+            <a
+              href="/contact"
+              class="inline-flex items-center gap-2.5 rounded-full bg-[#f6b88f] px-7 py-3.5 text-sm font-bold text-[#10243f] shadow-[0_14px_36px_rgba(246,184,143,0.28)] transition hover:bg-[#fbc8a4]"
+            >
+              Prendre rendez-vous
+              <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M5 12h14M13 5l7 7-7 7"></path>
+              </svg>
+            </a>
+            <a
+              href="/produits"
+              class="inline-flex items-center rounded-full border border-white/25 px-7 py-3.5 text-sm font-semibold text-white transition hover:border-white/50 hover:bg-white/5"
+            >
+              Découvrir nos matelas
+            </a>
+          </div>
+
+          <ul
+            class="hero-rise mt-12 grid gap-6 border-t border-white/10 pt-8 sm:grid-cols-3"
+            style="animation-delay: 330ms"
+          >
+            {
+              hero.highlights.map((highlight, index) => (
+                <li class="flex items-start gap-3">
+                  <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-[#f6b88f]">
+                    <svg
+                      class="h-[18px] w-[18px]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.7"
+                      aria-hidden="true"
+                      set:html={highlightIcons[index % highlightIcons.length]}
+                    />
+                  </span>
+                  <div>
+                    <p class="text-sm font-semibold">{highlight.title}</p>
+                    <p class="mt-1 text-xs leading-relaxed text-white/65">
+                      {highlight.description}
+                    </p>
+                  </div>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div
+          class="home-sans hero-rise relative pb-20 lg:pb-24"
+          style="animation-delay: 150ms"
+        >
+          <div class="relative">
+            <div
+              class="hero-arch absolute -inset-2.5 border border-white/10"
+              aria-hidden="true"
+            >
+            </div>
+            <div class="hero-arch relative overflow-hidden">
+              <img
+                src={hero.image}
+                alt="Le magasin Literie Bleunuit, votre spécialiste du sommeil depuis 1994"
+                class="h-[380px] w-full object-cover sm:h-[440px] lg:h-[500px]"
+                fetchpriority="high"
+                decoding="async"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-[#081427]/50 via-transparent to-transparent"
+              >
+              </div>
+              <div
+                class="hero-arch absolute inset-0 ring-1 ring-inset ring-white/15"
+              >
+              </div>
+            </div>
+          </div>
+
+          <aside
+            class="hero-voucher hero-rise absolute inset-x-0 bottom-0 mx-auto w-[min(100%,330px)] -rotate-2 lg:left-2 lg:right-auto lg:mx-0"
+            style="animation-delay: 420ms"
+            aria-label="Offre promotionnelle en cours"
+          >
+            <div class="hero-voucher-inner relative">
+              <svg
+                class="absolute -top-[11px] right-7 h-[22px] w-[22px] rotate-90 bg-[#fdf8f0] p-[3px] text-[#0f2747]/45"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <circle cx="6" cy="6" r="3"></circle>
+                <circle cx="6" cy="18" r="3"></circle>
+                <path
+                  stroke-linecap="round"
+                  d="M20 4 8.12 15.88M14.47 14.48 20 20M8.12 8.12 12 12"></path>
+              </svg>
+              <p
+                class="text-[11px] font-bold uppercase tracking-[0.18em] text-[#c2403a]"
+              >
+                {promo.eyebrow}
+              </p>
+              <p class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span
+                  class="home-display text-5xl font-semibold tracking-tight text-[#0b2340]"
+                >
+                  {promo.value}
+                </span>
+                <span
+                  class="max-w-[150px] text-sm font-semibold leading-snug text-[#33415c]"
+                >
+                  {promo.label}
+                </span>
+              </p>
+              <p
+                class="mt-4 border-t border-dashed border-[#0f2747]/25 pt-3 text-xs leading-relaxed text-[#5a6a85]"
+              >
+                {promo.note}
+              </p>
+              <a
+                href="/magasins"
+                class="mt-3 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[#0f2747]"
+              >
+                Trouver mon magasin
+                <svg
+                  class="h-3.5 w-3.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5 12h14M13 5l7 7-7 7"></path>
+                </svg>
+              </a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Value Props -->
+  <section class="bg-[#f7f2ea] py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-6 lg:grid-cols-3">
+        {
+          valueProps.map((prop, index) => (
+            <div class="home-card">
+              <p
+                class={`text-xs uppercase tracking-[0.2em] ${valuePropAccents[index % valuePropAccents.length]}`}
+              >
+                {prop.eyebrow}
+              </p>
+              <h2 class="home-display mt-4 text-2xl text-slate-900">
+                {prop.title}
+              </h2>
+              <p class="mt-4 text-sm text-slate-600">{prop.description}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+            Univers literie
+          </p>
+          <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+            Composez votre confort.
+          </h2>
+        </div>
+        <a href="/produits" class="text-sm font-semibold text-[#0f2747]"
+          >Voir toutes les collections</a
+        >
+      </div>
+      <div class="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {
+          categoriesToShow.map((category, index) => {
+            const theme = categoryThemes[index % categoryThemes.length];
+            return (
+              <a
+                href={category.href || "/produits"}
+                class={`group relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 shadow-lg transition hover:-translate-y-1 ${theme.badge}`}
+              >
+                <div
+                  class={`absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${theme.accent}`}
+                />
+                <div
+                  class={`flex h-12 w-12 items-center justify-center rounded-2xl ${theme.iconBg} text-sm font-semibold text-slate-800`}
+                >
+                  {category.name?.slice(0, 2).toUpperCase()}
+                </div>
+                <h3 class="home-display mt-6 text-xl text-slate-900">
+                  {category.name}
+                </h3>
+                <p class="mt-3 text-sm text-slate-600">
+                  {category.description ||
+                    "Sélection adaptée à votre confort et votre style."}
+                </p>
+                <span class="mt-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-700">
+                  Explorer
+                  <svg
+                    class="h-4 w-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7 7h10v10"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M7 17L17 7"
+                    />
+                  </svg>
+                </span>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-between gap-6">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+            Sélection maison
+          </p>
+          <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+            Produits en vedette.
+          </h2>
+          <p class="mt-4 max-w-2xl text-sm text-slate-600">
+            Une sélection courte et efficace pour découvrir nos meilleures
+            sensations, testées en magasin.
+          </p>
+        </div>
+        <a href="/produits" class="text-sm font-semibold text-[#0f2747]"
+          >Voir tous les produits</a
+        >
+      </div>
+
+      <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          featuredProducts.length > 0 ? (
+            featuredProducts.map((product) => <ProductCard {...product} />)
+          ) : (
+            <div class="col-span-full rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
+              <p class="text-base font-semibold text-slate-700">
+                Aucun produit en vedette pour le moment.
+              </p>
+              <p class="mt-2 text-sm text-slate-500">
+                Ajoutez des produits via Directus pour enrichir la vitrine.
+              </p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Method -->
+  <section class="py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+            Notre méthode
+          </p>
+          <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+            {method.title}
+          </h2>
+          <p class="mt-4 text-sm text-slate-600">
+            {method.intro}
+          </p>
+          <a
+            href="/magasins"
+            class="mt-8 inline-flex items-center gap-3 rounded-full bg-[#0f2747] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20"
+          >
+            Visiter nos magasins
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+        <div class="space-y-6">
+          {
+            method.steps.map((step, index) => (
+              <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-md">
+                <div class="flex items-center gap-4">
+                  <div class="home-display flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-lg text-white">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+                  <div>
+                    <h3 class="home-display text-xl text-slate-900">
+                      {step.title}
+                    </h3>
+                    <p class="mt-2 text-sm text-slate-600">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stores -->
+  <section class="bg-[#0f2747] py-20 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-between gap-6">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-white/60">
+            Nos magasins
+          </p>
+          <h2 class="home-display mt-4 text-3xl sm:text-4xl">
+            Venez tester le confort en magasin.
+          </h2>
+        </div>
+        <a href="/magasins" class="text-sm font-semibold text-white"
+          >Voir les horaires</a
+        >
+      </div>
+      <div class="mt-12 grid gap-6 max-w-2xl mx-auto">
+        {
+          storeCards.map((store) => (
+            <div class="overflow-hidden rounded-3xl bg-white/10">
+              <img
+                src={store.image}
+                alt={`Magasin de ${store.name}`}
+                class="h-64 w-full object-cover"
+                loading="lazy"
+              />
+              <div class="p-6">
+                <h3 class="home-display text-2xl">{store.name}</h3>
+                <p class="mt-3 text-sm text-white/80">{store.description}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials + Brands -->
+  <section class="bg-slate-50 py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+            Avis clients
+          </p>
+          <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+            Ils parlent de leur sommeil.
+          </h2>
+          <div class="mt-8 grid gap-6">
+            {
+              testimonials.map((testimonial) => (
+                <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                  <p class="text-sm text-slate-700">"{testimonial.quote}"</p>
+                  <p class="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                    {testimonial.name}
+                    {testimonial.city && ` · ${testimonial.city}`}
+                  </p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+            Marques partenaires
+          </p>
+          <h2 class="home-display mt-4 text-2xl text-slate-900">
+            Les signatures que nous aimons.
+          </h2>
+          <p class="mt-4 text-sm text-slate-600">
+            Des marques sélectionnées pour leur fiabilité, leur confort et leur
+            qualité de fabrication.
+          </p>
+          <div class="mt-8 grid grid-cols-2 gap-4">
+            {
+              featuredBrands.length > 0 ? (
+                featuredBrands.map((brand) => (
+                  <div class="flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700">
+                    {brand.logo ? (
+                      <img
+                        src={brand.logo}
+                        alt={brand.name}
+                        class="h-10 w-full object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      brand.name
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div class="col-span-2 rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-8 text-center text-sm text-slate-500">
+                  Ajoutez vos marques dans Directus pour les mettre en avant.
+                </div>
+              )
+            }
+          </div>
+          <a
+            href="/produits"
+            class="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-[#0f2747]"
+          >
+            Découvrir les produits
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M13 5l7 7-7 7"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="py-20">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div
+        class="home-sheen rounded-[36px] border border-slate-200 bg-white p-10 shadow-xl sm:p-14"
+      >
+        <div
+          class="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between"
+        >
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-slate-400">
+              Passez à l'action
+            </p>
+            <h2 class="home-display mt-4 text-3xl text-slate-900 sm:text-4xl">
+              {cta.title}
+            </h2>
+            <p class="mt-4 max-w-xl text-sm text-slate-600">
+              {cta.text}
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-4">
+            <a
+              href="/magasins"
+              class="rounded-full bg-[#0f2747] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20"
+            >
+              Trouver un magasin
+            </a>
+            <a
+              href="/contact"
+              class="rounded-full border border-slate-300 px-7 py-3 text-sm font-semibold text-slate-700"
+            >
+              Nous écrire
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  :global(:root) {
+    --font-display: "Sora", "Helvetica Neue", Arial, sans-serif;
+    --font-sans: "Manrope", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  .home-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  .home-sans {
+    font-family: var(--font-sans);
+  }
+
+  .hero-night {
+    background:
+      radial-gradient(
+        ellipse 90% 70% at 75% -20%,
+        rgba(63, 114, 178, 0.4),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 70% 55% at 8% 112%,
+        rgba(241, 154, 91, 0.16),
+        transparent 65%
+      ),
+      linear-gradient(180deg, #050d1d 0%, #0a2040 58%, #11305c 100%);
+  }
+
+  .hero-arch {
+    border-radius: 999px 999px 28px 28px;
+  }
+
+  .hero-accent {
+    color: #f7c29b;
+    padding-bottom: 0.14em;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 12' preserveAspectRatio='none'><path d='M4 9C32 3.5 88 3 116 6.5' fill='none' stroke='%23f6b88f' stroke-opacity='0.5' stroke-width='4' stroke-linecap='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: 100% 0.14em;
+  }
+
+  .hero-voucher {
+    background: #fdf8f0;
+    border-radius: 18px;
+    box-shadow: 0 24px 50px rgba(3, 10, 25, 0.45);
+  }
+
+  .hero-voucher-inner {
+    margin: 7px;
+    border: 1.5px dashed rgba(15, 39, 71, 0.3);
+    border-radius: 12px;
+    padding: 18px 20px 20px;
+  }
+
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      translate: 0 20px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  .hero-rise {
+    animation: hero-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @keyframes hero-twinkle {
+    0%,
+    100% {
+      opacity: 0.9;
+    }
+    50% {
+      opacity: 0.15;
+    }
+  }
+
+  .hero-star-tw {
+    animation: hero-twinkle 4.5s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-rise,
+    .hero-star-tw {
+      animation: none;
+    }
+  }
+
+  .home-card {
+    border-radius: 24px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.9),
+      rgba(245, 242, 234, 0.8)
+    );
+    padding: 28px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  }
+
+  .home-sheen {
+    background-image: linear-gradient(
+      135deg,
+      rgba(246, 184, 143, 0.15),
+      rgba(147, 183, 216, 0.1)
+    );
+  }
+</style>

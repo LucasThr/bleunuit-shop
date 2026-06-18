@@ -1,0 +1,155 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ProductCard from '../../../components/ProductCard.astro';
+import JsonLd from '../../../components/JsonLd.astro';
+import { getCategoryBySlug, getSubcategoryBySlug, getProductsBySubcategory } from '../../../utils/catalog-client';
+import { mapProductToCard } from '../../../utils/product-card';
+import { slugFor } from '../../../utils/slugs';
+
+const { category, subcategory } = Astro.params;
+
+// Get the current category and subcategory from Directus
+const currentCategory = await getCategoryBySlug(category!);
+const currentSubcategory = await getSubcategoryBySlug(subcategory!);
+
+if (!currentCategory || !currentSubcategory) {
+  return Astro.rewrite('/404');
+}
+
+// Verify subcategory belongs to category
+const subcatCategoryId = typeof currentSubcategory.category === 'object'
+  ? currentSubcategory.category.id
+  : currentSubcategory.category;
+
+if (subcatCategoryId !== currentCategory.id) {
+  return Astro.rewrite('/404');
+}
+
+// Legacy name-based URLs permanently redirect to the canonical slug URL.
+const categorySlug = slugFor(currentCategory);
+const subcategorySlug = slugFor(currentSubcategory);
+if (category !== categorySlug || subcategory !== subcategorySlug) {
+  return Astro.redirect(`/produits/${categorySlug}/${subcategorySlug}`, 301);
+}
+
+// Get products filtered by subcategory
+const allProducts = await getProductsBySubcategory(currentSubcategory.id);
+const products = allProducts.map(mapProductToCard);
+
+// Get unique brands from filtered products
+const brandsSet = new Set(products.map(p => p.brand).filter(Boolean));
+const brands = Array.from(brandsSet);
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: 'Produits', item: new URL('/produits', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: currentCategory.name, item: new URL(`/produits/${categorySlug}`, Astro.site).href },
+    { '@type': 'ListItem', position: 4, name: currentSubcategory.name },
+  ],
+};
+---
+
+<Layout title={`${currentSubcategory.name} - ${currentCategory.name}`} description={currentSubcategory.description}>
+  <!-- Header -->
+  <section class="bg-gradient-to-r from-blue-900 to-blue-700 py-16 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <nav class="mb-4 text-sm text-blue-100">
+        <a href="/" class="hover:text-white">Accueil</a>
+        <span class="mx-2">/</span>
+        <a href="/produits" class="hover:text-white">Produits</a>
+        <span class="mx-2">/</span>
+        <a href={`/produits/${category}`} class="hover:text-white">{currentCategory.name}</a>
+        <span class="mx-2">/</span>
+        <span class="text-white">{currentSubcategory.name}</span>
+      </nav>
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl flex items-center gap-3">
+        {currentCategory.icon && <span class="text-5xl">{currentCategory.icon}</span>}
+        {currentSubcategory.name}
+      </h1>
+      {currentSubcategory.description && (
+        <p class="mt-4 text-xl text-blue-100 max-w-3xl">
+          {currentSubcategory.description}
+        </p>
+      )}
+    </div>
+  </section>
+
+  <!-- Filters and Products -->
+  <section class="py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <!-- Filter Bar -->
+      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-gray-600">
+          <span class="font-semibold text-gray-900">{products.length}</span> produit{products.length > 1 ? 's' : ''} trouvé{products.length > 1 ? 's' : ''}
+        </p>
+        {brands.length > 0 && (
+          <div class="flex gap-4">
+            <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option>Toutes les marques</option>
+              {brands.map((brand) => (
+                <option>{brand}</option>
+              ))}
+            </select>
+            <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option>Trier par</option>
+              <option>Prix croissant</option>
+              <option>Prix décroissant</option>
+              <option>Nouveautés</option>
+              <option>Popularité</option>
+            </select>
+          </div>
+        )}
+      </div>
+
+      <!-- Products Grid -->
+      {products.length > 0 ? (
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => (
+            <ProductCard {...product} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-gray-600 text-lg">Aucun produit disponible dans cette sous-catégorie pour le moment.</p>
+          <a
+            href={`/produits/${category}`}
+            class="mt-4 inline-block text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Voir tous les produits de la catégorie {currentCategory.name}
+          </a>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Advice Section -->
+  <section class="bg-blue-50 py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-lg bg-white p-8 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+          Besoin de conseils ?
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Nos experts sont à votre disposition dans nos magasins pour vous aider à choisir la literie idéale selon vos besoins et votre morphologie.
+        </p>
+        <div class="flex flex-col gap-4 sm:flex-row">
+          <a
+            href="/magasins"
+            class="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white hover:bg-blue-700 transition-colors"
+          >
+            Trouver un magasin
+          </a>
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center rounded-md border-2 border-blue-600 px-6 py-3 text-base font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+          >
+            Nous contacter
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

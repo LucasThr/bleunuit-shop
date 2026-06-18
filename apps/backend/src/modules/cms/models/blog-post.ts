@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils"
 
 // A blog article. Fields mirror what the storefront blog pages render
-// (directus/src/pages/blog/index.astro + [slug].astro), replacing the old
+// (apps/storefront/src/pages/blog/index.astro + [slug].astro), replacing the old
 // Directus `blog_posts` collection.
 const BlogPost = model.define("blog_post", {
   id: model.id().primaryKey(),

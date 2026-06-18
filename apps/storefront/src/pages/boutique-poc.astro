@@ -1,0 +1,89 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getProducts, euro, type MedusaProduct } from "../utils/medusa";
+import AddToCartButton from "../components/cart/AddToCartButton.tsx";
+
+export const prerender = false;
+
+// SSR: read the catalog straight from the Medusa Store API. The rest of the
+// site keeps using Directus — this page proves the storefront can talk to a
+// real commerce backend without changing its look.
+let products: MedusaProduct[] = [];
+let error: string | null = null;
+try {
+  products = await getProducts();
+} catch (e: any) {
+  error = e.message;
+}
+
+const classLabel: Record<string, string> = {
+  parcel: "Livraison Chronopost",
+  bulky: "Volumineux · livraison sur devis",
+  pickup_only: "Retrait en magasin",
+};
+const classColor: Record<string, string> = {
+  parcel: "bg-[#9bc7b5]/25 text-[#2c5b4c]",
+  bulky: "bg-[#f6b88f]/20 text-[#8b4b2a]",
+  pickup_only: "bg-[#93b7d8]/20 text-[#2f5678]",
+};
+---
+
+<Layout
+  title="Boutique (POC)"
+  description="Démonstration e-commerce Medusa branchée sur le storefront Astro."
+  noindex={true}
+>
+  <section class="bg-[#0f2747] py-14 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <p class="text-xs uppercase tracking-[0.3em] text-[#f6b88f]">
+        Démonstration e-commerce
+      </p>
+      <h1 class="home-display mt-3 text-3xl sm:text-4xl">
+        Boutique en ligne — preuve de concept
+      </h1>
+      <p class="mt-4 max-w-2xl text-sm text-white/75">
+        Catalogue et prix lus en direct depuis <strong>Medusa</strong>. Ajoutez
+        des articles au panier puis passez commande : le parcours panier →
+        livraison → paiement → commande s'exécute contre le backend Medusa.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      {error && (
+        <div class="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+          Medusa injoignable : {error}
+        </div>
+      )}
+
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {products.map((p) => {
+          const v = p.variants?.[0];
+          const price = v?.calculated_price?.calculated_amount ?? 0;
+          const sclass = p.metadata?.shipping_class ?? "parcel";
+          return (
+            <article class="flex flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-lg">
+              <span
+                class={`inline-flex w-fit items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] ${classColor[sclass]}`}
+              >
+                {classLabel[sclass]}
+              </span>
+              <h2 class="home-display mt-4 text-xl text-slate-900">{p.title}</h2>
+              <p class="mt-2 flex-1 text-sm text-slate-600">{p.description}</p>
+              <p class="home-display mt-4 text-2xl text-[#0f2747]">{euro(price)}</p>
+              <AddToCartButton client:visible variantId={v?.id} className="mt-5" />
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <style>
+    :global(:root) {
+      --font-display: "Sora", "Helvetica Neue", Arial, sans-serif;
+    }
+    .home-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+  </style>
+</Layout>

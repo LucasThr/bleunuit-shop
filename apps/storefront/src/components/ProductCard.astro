@@ -1,0 +1,75 @@
+---
+interface Props {
+  title: string;
+  brand: string;
+  price: number;
+  promoPrice?: number;
+  image: string;
+  slug: string;
+  categorySlug: string;
+  categoryName?: string;
+}
+
+const { title, brand, price, promoPrice, image, slug, categorySlug } = Astro.props;
+const hasPromo = promoPrice && promoPrice < price;
+const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0;
+---
+
+<article class="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg">
+  <a href={`/produits/${categorySlug}/p/${slug}`} class="block">
+    <!-- Image container -->
+    <div class="aspect-[4/3] overflow-hidden bg-gray-100">
+      <img
+        src={image}
+        alt={title}
+        class="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+        loading="lazy"
+      />
+    </div>
+
+    <!-- Promo badge -->
+    {hasPromo && (
+      <div class="absolute top-3 right-3 rounded-full bg-red-600 px-3 py-1 text-sm font-bold text-white shadow-lg">
+        -{discount}%
+      </div>
+    )}
+
+    <!-- Content -->
+    <div class="p-4">
+      <p class="text-sm text-gray-500 mb-1">{brand}</p>
+      <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+        {title}
+      </h3>
+
+      <!-- Price -->
+      {price > 0 && (
+        <div class="flex items-baseline gap-2">
+          {hasPromo ? (
+            <>
+              <span class="text-2xl font-bold text-red-600">
+                {promoPrice.toLocaleString('fr-FR')}€
+              </span>
+              <span class="text-sm text-gray-500 line-through">
+                {price.toLocaleString('fr-FR')}€
+              </span>
+            </>
+          ) : (
+            <span class="text-2xl font-bold text-gray-900">
+              {price.toLocaleString('fr-FR')}€
+            </span>
+          )}
+        </div>
+      )}
+
+      <!-- CTA -->
+      <div class="mt-4">
+        <span class="inline-flex items-center text-sm font-medium text-blue-600 group-hover:text-blue-700">
+          Voir les détails
+          <svg class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </span>
+      </div>
+    </div>
+  </a>
+</article>

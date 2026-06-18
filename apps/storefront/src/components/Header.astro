@@ -1,0 +1,222 @@
+---
+import {
+  getAllCategories,
+  getAllSubcategories,
+} from "../utils/catalog-client";
+import { slugFor } from "../utils/slugs";
+import type { Category, Subcategory } from "../utils/catalog-client";
+import CartButton from "./cart/CartButton.tsx";
+
+// Fetch categories and subcategories from Directus; if the CMS is
+// unreachable the nav falls back to its static links instead of erroring.
+let allCategories: Category[] = [];
+let allSubcategories: Subcategory[] = [];
+try {
+  [allCategories, allSubcategories] = await Promise.all([
+    getAllCategories(),
+    getAllSubcategories(),
+  ]);
+} catch (error) {
+  console.error("Header: failed to load navigation from Directus", error);
+}
+// Group subcategories by category
+const subcategoriesByCategory: Record<string, Subcategory[]> = {};
+for (const sub of allSubcategories) {
+  const categoryId =
+    typeof sub.category === "object" ? sub.category.id : sub.category;
+  (subcategoriesByCategory[categoryId] ??= []).push(sub);
+}
+
+// Build navigation with categories and subcategories
+const productChildren = allCategories.map((cat) => {
+  const catSubcategories = subcategoriesByCategory[cat.id] || [];
+  const catSlug = slugFor(cat);
+
+  return {
+    name: cat.name,
+    href: `/produits/${catSlug}`,
+    icon: cat.icon,
+    children:
+      catSubcategories.length > 0
+        ? catSubcategories.map((sub) => ({
+            name: sub.name,
+            href: `/produits/${catSlug}/${slugFor(sub)}`,
+          }))
+        : undefined,
+  };
+});
+
+const navigation = [
+  { name: "Accueil", href: "/" },
+  {
+    name: "Produits",
+    href: "/produits",
+    children: productChildren,
+  },
+  { name: "Nos magasins", href: "/magasins" },
+  { name: "Blog", href: "/blog" },
+  { name: "Contact", href: "/contact" },
+];
+---
+
+<header class="sticky top-0 z-50 border-b bg-white shadow-sm">
+  <nav class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="flex h-20 items-center justify-between">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a href="/" class="flex items-center">
+          <img
+            src="/images/bleunuit-logo.png"
+            alt="Literie Bleunuit"
+            class="h-16 w-auto"
+          />
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex md:space-x-8">
+        {
+          navigation.map((item) => (
+            <div class="group relative">
+              <a
+                href={item.href}
+                class="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
+              >
+                {item.name}
+                {item.children && (
+                  <svg
+                    class="ml-1 h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                )}
+              </a>
+
+              {item.children && (
+                <div class="absolute left-0 mt-2 w-auto min-w-[600px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 bg-white shadow-lg rounded-md p-4 z-10">
+                  <div class="grid grid-cols-2 gap-4">
+                    {item.children.map((child) => (
+                      <div class="space-y-1">
+                        <a
+                          href={child.href}
+                          class="flex items-center gap-2 font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors px-2 py-1 rounded"
+                        >
+                          {child.icon && (
+                            <span class="text-lg">{child.icon}</span>
+                          )}
+                          {child.name}
+                        </a>
+                        {child.children && child.children.length > 0 && (
+                          <div class="ml-6 space-y-1">
+                            {child.children.map((subchild) => (
+                              <a
+                                href={subchild.href}
+                                class="block text-xs text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors px-2 py-1 rounded"
+                              >
+                                {subchild.name}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))
+        }
+      </div>
+
+      <!-- Right: cart + mobile menu -->
+      <div class="flex items-center gap-1">
+        <CartButton client:only="react" />
+        <div class="md:hidden">
+        <button
+          type="button"
+          class="inline-flex items-center justify-center rounded-md p-2 text-gray-900 hover:bg-gray-100 hover:text-blue-600"
+          aria-expanded="false"
+          id="mobile-menu-button"
+        >
+          <span class="sr-only">Open menu</span>
+          <svg
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="hidden md:hidden" id="mobile-menu">
+    <div class="space-y-1 px-4 pb-3 pt-2">
+      {
+        navigation.map((item) => (
+          <>
+            <a
+              href={item.href}
+              class="block rounded-md px-3 py-2 text-base font-medium text-gray-900 hover:bg-blue-50 hover:text-blue-600"
+            >
+              {item.name}
+            </a>
+            {item.children &&
+              item.children.map((child) => (
+                <>
+                  <a
+                    href={child.href}
+                    class="flex items-center gap-2 rounded-md px-6 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+                  >
+                    {child.icon && <span>{child.icon}</span>}
+                    {child.name}
+                  </a>
+                  {child.children &&
+                    child.children.map((subchild) => (
+                      <a
+                        href={subchild.href}
+                        class="block rounded-md px-10 py-1.5 text-xs text-gray-600 hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        {subchild.name}
+                      </a>
+                    ))}
+                </>
+              ))}
+          </>
+        ))
+      }
+    </div>
+  </div>
+</header>
+
+<script>
+  const button = document.getElementById("mobile-menu-button");
+  const menu = document.getElementById("mobile-menu");
+
+  button?.addEventListener("click", () => {
+    const isHidden = menu?.classList.contains("hidden");
+    if (isHidden) {
+      menu?.classList.remove("hidden");
+      button.setAttribute("aria-expanded", "true");
+    } else {
+      menu?.classList.add("hidden");
+      button.setAttribute("aria-expanded", "false");
+    }
+  });
+</script>

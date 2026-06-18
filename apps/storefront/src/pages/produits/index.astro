@@ -1,0 +1,109 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getAllProducts, getAllBrands, getAllCategories } from '../../utils/catalog-client';
+import { mapProductToCard } from '../../utils/product-card';
+import { slugFor } from '../../utils/slugs';
+
+const [categories, allProductsData, brandsData] = await Promise.all([
+  getAllCategories(),
+  getAllProducts(),
+  getAllBrands(),
+]);
+
+const allProducts = allProductsData.map(mapProductToCard);
+const brands = brandsData.map(brand => brand.name);
+---
+
+<Layout title="Nos Produits" description="Découvrez notre large gamme de matelas, sommiers, têtes de lit et accessoires de literie">
+  <!-- Header -->
+  <section class="bg-gradient-to-r from-blue-900 to-blue-700 py-16 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
+        Nos Produits
+      </h1>
+      <p class="mt-4 text-xl text-blue-100">
+        Des produits de qualité pour un sommeil réparateur
+      </p>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="py-12 bg-gray-50">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8">Catégories</h2>
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {categories.map((category) => (
+          <a
+            href={`/produits/${slugFor(category)}`}
+            class="group relative overflow-hidden rounded-lg border-2 border-gray-200 bg-white p-6 transition-all hover:border-blue-600 hover:shadow-lg"
+          >
+            {category.icon && <div class="text-4xl mb-3">{category.icon}</div>}
+            <h3 class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+              {category.name}
+            </h3>
+            {category.description && <p class="mt-2 text-gray-600">{category.description}</p>}
+            <div class="mt-4 inline-flex items-center text-sm font-medium text-blue-600">
+              Découvrir
+              <svg class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="py-16">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-gray-900">Produits en vedette</h2>
+        <div class="flex gap-4">
+          <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option>Tous les produits</option>
+            <option>Matelas</option>
+            <option>Sommiers</option>
+            <option>Accessoires</option>
+          </select>
+          <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option>Trier par</option>
+            <option>Prix croissant</option>
+            <option>Prix décroissant</option>
+            <option>Nouveautés</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {allProducts.length > 0 ? (
+          allProducts.map((product) => (
+            <ProductCard {...product} />
+          ))
+        ) : (
+          <div class="col-span-full text-center py-12">
+            <p class="text-gray-500 text-lg">Aucun produit disponible pour le moment.</p>
+            <p class="text-sm text-gray-400 mt-2">Ajoutez des produits via votre CMS Directus</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Brands Section -->
+  <section class="bg-gray-50 py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">Nos marques partenaires</h2>
+      <div class="flex flex-wrap items-center justify-center gap-8">
+        {brands.length > 0 ? (
+          brands.map((brand) => (
+            <div class="text-gray-600 font-semibold text-lg">{brand}</div>
+          ))
+        ) : (
+          <p class="text-gray-500">Aucune marque disponible</p>
+        )}
+      </div>
+    </div>
+  </section>
+</Layout>

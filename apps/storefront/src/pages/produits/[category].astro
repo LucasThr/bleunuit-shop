@@ -1,0 +1,149 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { getCategoryBySlug, getSubcategoriesByCategory, getProductsByCategory } from '../../utils/catalog-client';
+import { mapProductToCard } from '../../utils/product-card';
+import { slugFor } from '../../utils/slugs';
+
+const { category } = Astro.params;
+
+// Get the current category from Directus
+const currentCategory = await getCategoryBySlug(category!);
+
+if (!currentCategory) {
+  return Astro.rewrite('/404');
+}
+
+// Legacy name-based URLs (e.g. /produits/Têtes de lit) permanently
+// redirect to the canonical slug URL.
+const categorySlug = slugFor(currentCategory);
+if (category !== categorySlug) {
+  return Astro.redirect(`/produits/${categorySlug}`, 301);
+}
+
+// Get subcategories and products for this category
+const [categorySubcategories, allProducts] = await Promise.all([
+  getSubcategoriesByCategory(currentCategory.id),
+  getProductsByCategory(currentCategory.id),
+]);
+
+const products = allProducts.map(mapProductToCard);
+
+// Get unique brands from filtered products
+const brandsSet = new Set(products.map(p => p.brand).filter(Boolean));
+const brands = Array.from(brandsSet);
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: 'Produits', item: new URL('/produits', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: currentCategory.name },
+  ],
+};
+---
+
+<Layout title={currentCategory.name} description={currentCategory.description}>
+  <JsonLd data={breadcrumbJsonLd} />
+  <!-- Header -->
+  <section class="bg-gradient-to-r from-blue-900 to-blue-700 py-16 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <nav class="mb-4 text-sm text-blue-100">
+        <a href="/" class="hover:text-white">Accueil</a>
+        <span class="mx-2">/</span>
+        <a href="/produits" class="hover:text-white">Produits</a>
+        <span class="mx-2">/</span>
+        <span class="text-white">{currentCategory.name}</span>
+      </nav>
+      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl flex items-center gap-3">
+        {currentCategory.icon && <span class="text-5xl">{currentCategory.icon}</span>}
+        {currentCategory.name}
+      </h1>
+      {currentCategory.description && (
+        <p class="mt-4 text-xl text-blue-100 max-w-3xl">
+          {currentCategory.description}
+        </p>
+      )}
+
+      <!-- Subcategories -->
+      {categorySubcategories.length > 0 && (
+        <div class="mt-8 flex flex-wrap gap-2">
+          {categorySubcategories.map((sub) => (
+            <a
+              href={`/produits/${categorySlug}/${slugFor(sub)}`}
+              class="inline-flex items-center rounded-full bg-blue-800 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600 transition-colors"
+            >
+              {sub.name}
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Filters and Products -->
+  <section class="py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <!-- Filter Bar -->
+      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-gray-600">
+          <span class="font-semibold text-gray-900">{products.length}</span> produits trouvés
+        </p>
+        <div class="flex gap-4">
+          <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option>Toutes les marques</option>
+            <option>Dunlopillo</option>
+            <option>Duvivier</option>
+            <option>André Renault</option>
+            <option>Simmons</option>
+            <option>Technilat</option>
+          </select>
+          <select class="rounded-md border-gray-300 py-2 pl-3 pr-10 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option>Trier par</option>
+            <option>Prix croissant</option>
+            <option>Prix décroissant</option>
+            <option>Nouveautés</option>
+            <option>Popularité</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((product) => (
+          <ProductCard {...product} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Advice Section -->
+  <section class="bg-blue-50 py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="rounded-lg bg-white p-8 shadow-md">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+          Besoin de conseils ?
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Nos experts sont à votre disposition dans nos magasins pour vous aider à choisir la literie idéale selon vos besoins et votre morphologie.
+        </p>
+        <div class="flex flex-col gap-4 sm:flex-row">
+          <a
+            href="/magasins"
+            class="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white hover:bg-blue-700 transition-colors"
+          >
+            Trouver un magasin
+          </a>
+          <a
+            href="/contact"
+            class="inline-flex items-center justify-center rounded-md border-2 border-blue-600 px-6 py-3 text-base font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+          >
+            Nous contacter
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

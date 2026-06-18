@@ -1,7 +1,7 @@
 import { model } from "@medusajs/framework/utils"
 
 // Single-row marketing content for the storefront homepage.
-// Fields mirror exactly what `directus/src/pages/index.astro` renders, so the
+// Fields mirror exactly what `apps/storefront/src/pages/index.astro` renders, so the
 // storefront can read this in place of the old Directus `homepage` singleton.
 const Homepage = model.define("homepage", {
   id: model.id().primaryKey(),

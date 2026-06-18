@@ -1,0 +1,308 @@
+---
+import Layout from '../../../../layouts/Layout.astro';
+import ProductCard from '../../../../components/ProductCard.astro';
+import JsonLd from '../../../../components/JsonLd.astro';
+import { getProductBySlug, getProductsByCategory } from '../../../../utils/catalog-client';
+import { mapProductToCard, productImageUrl as buildImageUrl } from '../../../../utils/product-card';
+import { slugFor } from '../../../../utils/slugs';
+
+const { category, slug } = Astro.params;
+
+// Get the product from Directus
+const product = await getProductBySlug(slug!);
+
+if (!product) {
+  return Astro.rewrite('/404');
+}
+
+// The query fetches category.* so this is always the full object
+const productCategory = typeof product.category === 'object' ? product.category : null;
+const categoryName = productCategory?.name || 'Produits';
+const categorySlug = productCategory ? slugFor(productCategory) : 'produits';
+
+// Wrong or legacy (name-based) category segment: 301 to the canonical URL
+if (category !== categorySlug) {
+  return Astro.redirect(`/produits/${categorySlug}/p/${slug}`, 301);
+}
+
+// Parse product prices
+const productPrice = parseFloat(product.price) || 0;
+const productPromoPrice = product.promo_price ? parseFloat(product.promo_price) : null;
+const hasPromo = productPromoPrice && productPromoPrice < productPrice && productPrice > 0;
+const discount = hasPromo ? Math.round(((productPrice - productPromoPrice!) / productPrice) * 100) : 0;
+
+// Construct product image URL
+const productImageUrl = buildImageUrl(product.featured_image, 1200, 900, 85);
+
+// Gallery entries are full image URLs.
+const galleryUrls = product.gallery ?? [];
+
+// Get related products from same category
+const categoryId = productCategory?.id ?? String(product.category);
+const allProducts = await getProductsByCategory(categoryId);
+const relatedProducts = allProducts
+  .filter(p => p.slug !== slug)
+  .slice(0, 3)
+  .map(mapProductToCard);
+
+const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+const metaDescription = `${product.name}${brandName ? ` - ${brandName}` : ''}${productPrice > 0 ? ` - À partir de ${productPrice.toLocaleString('fr-FR')}€` : ''}`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
+const plainDescription = (product.description || '')
+  .replace(/<[^>]*>/g, ' ')
+  .replace(/\s+/g, ' ')
+  .trim();
+
+const productJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.name,
+  ...(productImageUrl && { image: [productImageUrl] }),
+  ...(plainDescription && { description: plainDescription }),
+  ...(brandName && { brand: { '@type': 'Brand', name: brandName } }),
+  ...(productPrice > 0 && {
+    offers: {
+      '@type': 'Offer',
+      url: canonicalUrl,
+      priceCurrency: 'EUR',
+      price: (hasPromo ? productPromoPrice! : productPrice).toFixed(2),
+      availability: product.in_stock
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock',
+    },
+  }),
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: 'Produits', item: new URL('/produits', Astro.site).href },
+    { '@type': 'ListItem', position: 3, name: categoryName, item: new URL(`/produits/${categorySlug}`, Astro.site).href },
+    { '@type': 'ListItem', position: 4, name: product.name },
+  ],
+};
+---
+
+<Layout
+  title={product.name}
+  description={metaDescription}
+  type="product"
+  image={productImageUrl || undefined}
+>
+  <JsonLd data={productJsonLd} />
+  <JsonLd data={breadcrumbJsonLd} />
+  <!-- Breadcrumb -->
+  <section class="bg-gray-50 py-4">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <nav class="text-sm text-gray-600">
+        <a href="/" class="hover:text-blue-600">Accueil</a>
+        <span class="mx-2">/</span>
+        <a href="/produits" class="hover:text-blue-600">Produits</a>
+        <span class="mx-2">/</span>
+        <a href={`/produits/${categorySlug}`} class="hover:text-blue-600">{categoryName}</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-900">{product.name}</span>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Product Detail -->
+  <section class="py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
+        <!-- Image Gallery -->
+        <div>
+          <div class="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100 mb-4">
+            <img
+              src={productImageUrl || `https://placehold.co/1200x900/e5e7eb/6b7280?text=${encodeURIComponent(product.name || 'Product')}`}
+              alt={product.name}
+              class="h-full w-full object-cover object-center"
+            />
+          </div>
+
+          {galleryUrls.length > 0 && (
+            <div class="grid grid-cols-4 gap-4">
+              {galleryUrls.map((imageUrl) => (
+                <div class="aspect-square overflow-hidden rounded-lg bg-gray-100 cursor-pointer hover:opacity-75 transition">
+                  <img
+                    src={imageUrl}
+                    alt={product.name}
+                    class="h-full w-full object-cover object-center"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <!-- Product Info -->
+        <div>
+          {(typeof product.brand === 'object' ? product.brand?.name : product.brand) && (
+            <p class="text-sm text-gray-500 mb-2">{typeof product.brand === 'object' ? product.brand?.name : product.brand}</p>
+          )}
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">
+            {product.name}
+          </h1>
+
+          {/* Promo badge */}
+          {hasPromo && (
+            <div class="inline-block rounded-full bg-red-600 px-4 py-1 text-sm font-bold text-white mb-4">
+              -{discount}% de réduction
+            </div>
+          )}
+
+          {/* Price */}
+          {productPrice > 0 && (
+            <div class="mb-8">
+              {hasPromo ? (
+                <div>
+                  <div class="flex items-baseline gap-3">
+                    <span class="text-4xl font-bold text-red-600">
+                      {productPromoPrice?.toLocaleString('fr-FR')}€
+                    </span>
+                    <span class="text-xl text-gray-500 line-through">
+                      {productPrice.toLocaleString('fr-FR')}€
+                    </span>
+                  </div>
+                  <p class="mt-2 text-sm text-red-600 font-medium">
+                    Économisez {(productPrice - productPromoPrice!).toLocaleString('fr-FR')}€
+                  </p>
+                </div>
+              ) : (
+                <span class="text-4xl font-bold text-gray-900">
+                  {productPrice.toLocaleString('fr-FR')}€
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Stock status */}
+          <div class="mb-6">
+            {product.in_stock ? (
+              <div class="flex items-center text-green-600">
+                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium">En stock</span>
+              </div>
+            ) : (
+              <div class="flex items-center text-red-600">
+                <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+                <span class="font-medium">Actuellement indisponible</span>
+              </div>
+            )}
+          </div>
+
+          {/* CTA Buttons */}
+          <div class="mb-8 space-y-3">
+            <a
+              href="/contact"
+              class="block w-full rounded-md bg-blue-600 px-8 py-4 text-center text-base font-semibold text-white hover:bg-blue-700 transition-colors"
+            >
+              Demander un devis
+            </a>
+            <a
+              href="/magasins"
+              class="block w-full rounded-md border-2 border-blue-600 px-8 py-4 text-center text-base font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+            >
+              Essayer en magasin
+            </a>
+          </div>
+
+          {/* Features */}
+          <div class="border-t border-gray-200 pt-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Services inclus</h3>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gray-700">Livraison et installation à domicile</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gray-700">Reprise de votre ancienne literie</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gray-700">Conseils personnalisés par nos experts</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="h-6 w-6 text-green-500 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-gray-700">Financement possible en 4, 6 ou 10 fois</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Product Description */}
+      <div class="mt-16 border-t border-gray-200 pt-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Description du produit</h2>
+        <div class="prose prose-lg prose-blue max-w-none" set:html={product.description || ''} />
+        <div class="mt-8 p-6 bg-blue-50 rounded-lg">
+          <h3 class="text-lg font-semibold text-blue-900 mb-2">Besoin de plus d'informations ?</h3>
+          <p class="text-blue-700 mb-4">
+            Nos experts sont à votre disposition pour vous conseiller et vous aider à faire le meilleur choix.
+          </p>
+          <a href="/magasins" class="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+            Trouver un magasin
+            <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* Related Products */}
+  {relatedProducts.length > 0 && (
+    <section class="bg-gray-50 py-16">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Produits similaires</h2>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {relatedProducts.map((relatedProduct) => (
+            <ProductCard {...relatedProduct} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {/* CTA Section */}
+  <section class="bg-blue-900 text-white py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold mb-4">
+        Besoin de conseils ?
+      </h2>
+      <p class="text-lg text-blue-100 mb-6">
+        Nos experts sont à votre disposition pour vous aider à faire le bon choix
+      </p>
+      <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
+        <a
+          href="/magasins"
+          class="inline-flex items-center justify-center rounded-md bg-white px-8 py-3 text-base font-semibold text-blue-900 hover:bg-blue-50 transition-colors"
+        >
+          Visiter nos magasins
+        </a>
+        <a
+          href="/contact"
+          class="inline-flex items-center justify-center rounded-md border-2 border-white px-8 py-3 text-base font-semibold text-white hover:bg-blue-800 transition-colors"
+        >
+          Nous contacter
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

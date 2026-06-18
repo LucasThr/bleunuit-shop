@@ -1,0 +1,208 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import JsonLd from '../../components/JsonLd.astro';
+import { getBlogPostBySlug, getBlogPostsByCategory } from '../../utils/cms-client';
+
+const { slug } = Astro.params;
+
+// Get the full blog post
+const postEntry = await getBlogPostBySlug(slug!);
+if (!postEntry) {
+  return Astro.rewrite('/404');
+}
+
+const categoryNames: Record<string, string> = {
+  'sleep-tips': 'Conseils sommeil',
+  'product-guides': 'Guides produits',
+  'company-news': 'Actualités'
+};
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+
+// Get related posts from same category
+const allRelatedPosts = await getBlogPostsByCategory(postEntry.category);
+const relatedPosts = allRelatedPosts
+  .filter(p => p.slug !== slug)
+  .slice(0, 3)
+  .map(p => ({
+    title: p.title,
+    slug: p.slug,
+    excerpt: p.excerpt,
+    publishDate: p.publish_date,
+    category: p.category,
+    image: p.featured_image || '/images/blog/placeholder.jpg',
+    author: p.author
+  }));
+
+const blogPostJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: postEntry.title,
+  ...(postEntry.excerpt && { description: postEntry.excerpt }),
+  ...(postEntry.featured_image && {
+    image: new URL(postEntry.featured_image, Astro.site).href,
+  }),
+  datePublished: postEntry.publish_date,
+  author: { '@type': 'Person', name: postEntry.author },
+  mainEntityOfPage: new URL(Astro.url.pathname, Astro.site).href,
+};
+---
+
+<Layout
+  title={postEntry.title}
+  description={postEntry.excerpt}
+  type="article"
+  image={postEntry.featured_image || undefined}
+>
+  <JsonLd data={blogPostJsonLd} />
+  <!-- Hero Section -->
+  <article>
+    <header class="relative bg-gradient-to-r from-blue-900 to-blue-700 py-16 text-white">
+      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <nav class="mb-6 text-sm text-blue-100">
+          <a href="/" class="hover:text-white">Accueil</a>
+          <span class="mx-2">/</span>
+          <a href="/blog" class="hover:text-white">Blog</a>
+          <span class="mx-2">/</span>
+          <span class="text-white">{postEntry.title}</span>
+        </nav>
+
+        <!-- Category -->
+        <div class="mb-4">
+          <span class="inline-flex items-center rounded-full bg-blue-800 px-4 py-1 text-sm font-medium text-white">
+            {categoryNames[postEntry.category]}
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl mb-6">
+          {postEntry.title}
+        </h1>
+
+        <!-- Meta -->
+        <div class="flex items-center gap-6 text-blue-100">
+          <div class="flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>{postEntry.author}</span>
+          </div>
+          <div class="flex items-center">
+            <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <time datetime={postEntry.publish_date}>
+              {formatDate(postEntry.publish_date)}
+            </time>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Featured Image -->
+    {postEntry.featured_image && (
+      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 -mt-8 mb-12">
+        <div class="aspect-[16/9] overflow-hidden rounded-lg shadow-2xl">
+          <img
+            src={postEntry.featured_image}
+            alt={postEntry.title}
+            class="h-full w-full object-cover object-center"
+          />
+        </div>
+      </div>
+    )}
+
+    <!-- Content -->
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
+      <div class="prose prose-lg prose-blue max-w-none">
+        <p class="text-xl text-gray-700 leading-relaxed mb-8">
+          {postEntry.excerpt}
+        </p>
+        <div set:html={postEntry.content || ''} />
+      </div>
+    </div>
+
+    <!-- Share Section -->
+    <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200">
+      <div class="flex items-center justify-between">
+        <p class="text-gray-600 font-medium">Partager cet article :</p>
+        <div class="flex gap-3">
+          <button class="rounded-full bg-blue-600 p-2 text-white hover:bg-blue-700 transition-colors">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+          </button>
+          <button class="rounded-full bg-sky-500 p-2 text-white hover:bg-sky-600 transition-colors">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- Related Posts -->
+  {relatedPosts.length > 0 && (
+    <section class="bg-gray-50 py-16">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-8">Articles similaires</h2>
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+          {relatedPosts.map((relatedPost) => (
+            <article class="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg">
+              <a href={`/blog/${relatedPost.slug}`} class="block">
+                <div class="aspect-[16/9] overflow-hidden bg-gray-200">
+                  <div class="flex h-full w-full items-center justify-center text-gray-400">
+                    <svg class="h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <div class="mb-2 flex items-center gap-3 text-sm text-gray-500">
+                    <span class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-800">
+                      {categoryNames[relatedPost.category]}
+                    </span>
+                    <time datetime={relatedPost.publishDate}>{formatDate(relatedPost.publishDate)}</time>
+                  </div>
+                  <h3 class="mb-2 text-lg font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    {relatedPost.title}
+                  </h3>
+                  <p class="text-gray-600 line-clamp-2 text-sm">
+                    {relatedPost.excerpt}
+                  </p>
+                </div>
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- CTA Section -->
+  <section class="bg-blue-900 text-white py-12">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl font-bold mb-4">
+        Besoin de conseils personnalisés ?
+      </h2>
+      <p class="text-lg text-blue-100 mb-6">
+        Visitez l'un de nos magasins pour bénéficier de l'expertise de nos conseillers
+      </p>
+      <a
+        href="/magasins"
+        class="inline-flex items-center rounded-md bg-white px-8 py-3 text-base font-semibold text-blue-900 hover:bg-blue-50 transition-colors"
+      >
+        Trouver un magasin
+      </a>
+    </div>
+  </section>
+</Layout>
