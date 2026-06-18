@@ -34,7 +34,7 @@ export default function CartButton() {
         />
       </svg>
       {count > 0 && (
-        <span className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-[#f6b88f] px-1 text-[11px] font-bold text-[#0f2747]">
+        <span className="absolute -right-0.5 -top-0.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-gold px-1 text-[11px] font-bold text-marine">
           {count}
         </span>
       )}

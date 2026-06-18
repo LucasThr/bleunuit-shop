@@ -29,7 +29,7 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
 
     <!-- Promo badge -->
     {hasPromo && (
-      <div class="absolute top-3 right-3 rounded-full bg-red-600 px-3 py-1 text-sm font-bold text-white shadow-lg">
+      <div class="absolute top-3 right-3 rounded-full bg-promo px-3 py-1 text-sm font-bold text-white shadow-lg">
         -{discount}%
       </div>
     )}
@@ -46,7 +46,7 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
         <div class="flex items-baseline gap-2">
           {hasPromo ? (
             <>
-              <span class="text-2xl font-bold text-red-600">
+              <span class="text-2xl font-bold text-promo">
                 {promoPrice.toLocaleString('fr-FR')}€
               </span>
               <span class="text-sm text-gray-500 line-through">
@@ -63,7 +63,7 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
 
       <!-- CTA -->
       <div class="mt-4">
-        <span class="inline-flex items-center text-sm font-medium text-blue-600 group-hover:text-blue-700">
+        <span class="inline-flex items-center text-sm font-medium text-blue-600 group-hover:text-marine">
           Voir les détails
           <svg class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

@@ -49,7 +49,7 @@ export default function CheckoutForm() {
 
   if (mode === "loading") {
     return (
-      <p className="text-center text-sm text-slate-400">Chargement du paiement…</p>
+      <p className="text-center text-sm text-gray-400">Chargement du paiement…</p>
     );
   }
 
@@ -92,7 +92,7 @@ function ManualCheckout() {
       state={state}
       onSubmit={onSubmit}
       paymentSection={
-        <p className="rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        <p className="rounded-xl bg-gray-100 px-4 py-3 text-sm text-gray-700">
           Paiement à la commande (validation manuelle). Le paiement par carte
           sera disponible une fois Stripe activé.
         </p>
@@ -107,8 +107,8 @@ const CARD_OPTIONS = {
   style: {
     base: {
       fontSize: "15px",
-      color: "#0f2747",
-      "::placeholder": { color: "#94a3b8" },
+      color: "var(--color-marine)",
+      "::placeholder": { color: "var(--color-gray-400)" },
     },
   },
 };
@@ -162,7 +162,7 @@ function StripeCheckout() {
       onSubmit={onSubmit}
       submitLabel="Payer et commander"
       paymentSection={
-        <div className="rounded-xl border border-slate-300 px-4 py-3">
+        <div className="rounded-xl border border-gray-200 px-4 py-3">
           <CardElement options={CARD_OPTIONS} />
         </div>
       }

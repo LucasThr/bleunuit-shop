@@ -3,7 +3,7 @@ import { euro } from "../../utils/medusa";
 import type { CheckoutState } from "./useCheckout";
 
 const field =
-  "w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:border-[#0f2747] focus:outline-none focus:ring-1 focus:ring-[#0f2747]";
+  "w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:border-marine focus:outline-none focus:ring-1 focus:ring-marine";
 
 /**
  * Presentational checkout layout shared by the manual and Stripe paths. The
@@ -39,14 +39,14 @@ export default function CheckoutShell({
 
   if (done) {
     return (
-      <div className="mx-auto max-w-lg rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-lg">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#9bc7b5]/30 text-2xl">
+      <div className="mx-auto max-w-lg rounded-3xl border border-gray-200 bg-white p-8 text-center shadow-lg">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success-bg text-2xl">
           ✅
         </div>
-        <h2 className="mt-4 text-2xl text-[#0f2747]" style={{ fontFamily: '"Sora", sans-serif' }}>
+        <h2 className="mt-4 text-2xl text-marine">
           {done.quote ? "Demande enregistrée" : "Commande confirmée"}
         </h2>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-gray-700">
           Commande <strong>#{done.display_id}</strong> — total{" "}
           <strong>{euro(done.total)}</strong>.
           {done.quote
@@ -55,7 +55,7 @@ export default function CheckoutShell({
         </p>
         <a
           href="/boutique-poc"
-          className="mt-6 inline-flex rounded-full bg-[#0f2747] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#16386a]"
+          className="btn-primary mt-6 inline-flex rounded-full px-6 py-3 text-sm font-semibold"
         >
           Retour à la boutique
         </a>
@@ -65,9 +65,9 @@ export default function CheckoutShell({
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="mx-auto max-w-lg rounded-3xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 shadow-lg">
+      <div className="mx-auto max-w-lg rounded-3xl border border-gray-200 bg-white p-8 text-center text-sm text-gray-500 shadow-lg">
         Votre panier est vide.{" "}
-        <a href="/boutique-poc" className="font-medium text-[#0f2747] underline">
+        <a href="/boutique-poc" className="font-medium text-marine underline">
           Voir la boutique
         </a>
       </div>
@@ -78,7 +78,7 @@ export default function CheckoutShell({
     <form onSubmit={onSubmit} className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
       <div className="space-y-8">
         <fieldset className="space-y-4">
-          <legend className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <legend className="text-sm font-semibold uppercase tracking-wide text-gray-500">
             Coordonnées
           </legend>
           <input
@@ -92,7 +92,7 @@ export default function CheckoutShell({
         </fieldset>
 
         <fieldset className="space-y-4">
-          <legend className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <legend className="text-sm font-semibold uppercase tracking-wide text-gray-500">
             Adresse de livraison
           </legend>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -120,19 +120,19 @@ export default function CheckoutShell({
         </fieldset>
 
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <legend className="text-sm font-semibold uppercase tracking-wide text-gray-500">
             Livraison
           </legend>
           {options.length === 0 && (
-            <p className="text-sm text-slate-400">Chargement des options…</p>
+            <p className="text-sm text-gray-400">Chargement des options…</p>
           )}
           {options.map((o) => (
             <label
               key={o.id}
               className={`flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 text-sm transition ${
                 optionId === o.id
-                  ? "border-[#0f2747] bg-[#0f2747]/5"
-                  : "border-slate-200 hover:border-slate-300"
+                  ? "border-marine bg-marine/5"
+                  : "border-gray-200 hover:border-gray-400"
               }`}
             >
               <span className="flex items-center gap-3">
@@ -144,7 +144,7 @@ export default function CheckoutShell({
                 />
                 {o.name}
               </span>
-              <span className="font-medium text-[#0f2747]">
+              <span className="font-medium text-marine">
                 {o.data?.quote_on_request ? "Sur devis" : euro(o.amount ?? 0)}
               </span>
             </label>
@@ -152,39 +152,39 @@ export default function CheckoutShell({
         </fieldset>
 
         <fieldset className="space-y-3">
-          <legend className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <legend className="text-sm font-semibold uppercase tracking-wide text-gray-500">
             Paiement
           </legend>
           {paymentSection}
         </fieldset>
       </div>
 
-      <aside className="h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-lg">
-        <h2 className="text-lg text-[#0f2747]" style={{ fontFamily: '"Sora", sans-serif' }}>
+      <aside className="h-fit rounded-3xl border border-gray-200 bg-white p-6 shadow-lg">
+        <h2 className="text-lg text-marine">
           Récapitulatif
         </h2>
         <ul className="mt-4 space-y-3">
           {cart.items.map((item) => (
             <li key={item.id} className="flex justify-between gap-3 text-sm">
-              <span className="text-slate-600">
+              <span className="text-gray-700">
                 {item.quantity} × {item.product_title ?? item.title}
               </span>
-              <span className="font-medium text-slate-900">{euro(item.total)}</span>
+              <span className="font-medium text-gray-900">{euro(item.total)}</span>
             </li>
           ))}
         </ul>
-        <div className="mt-4 space-y-1 border-t border-slate-200 pt-4 text-sm">
-          <div className="flex justify-between text-slate-600">
+        <div className="mt-4 space-y-1 border-t border-gray-200 pt-4 text-sm">
+          <div className="flex justify-between text-gray-700">
             <span>Sous-total</span>
             <span>{euro(cart.item_total)}</span>
           </div>
           {selected && !selected.data?.quote_on_request && (
-            <div className="flex justify-between text-slate-600">
+            <div className="flex justify-between text-gray-700">
               <span>Livraison</span>
               <span>{euro(selected.amount ?? 0)}</span>
             </div>
           )}
-          <div className="flex justify-between pt-2 text-base font-semibold text-[#0f2747]">
+          <div className="flex justify-between pt-2 text-base font-semibold text-marine">
             <span>Total</span>
             <span>
               {euro(
@@ -196,7 +196,7 @@ export default function CheckoutShell({
         </div>
 
         {error && (
-          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          <p className="mt-4 rounded-lg bg-danger-bg px-3 py-2 text-sm text-danger">
             {error}
           </p>
         )}
@@ -204,7 +204,7 @@ export default function CheckoutShell({
         <button
           type="submit"
           disabled={submitting || !optionId}
-          className="mt-6 flex w-full items-center justify-center rounded-full bg-[#0f2747] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#16386a] disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn-primary mt-6 flex w-full items-center justify-center rounded-full px-6 py-3 text-sm font-semibold"
         >
           {submitting ? "Traitement…" : submitLabel}
         </button>

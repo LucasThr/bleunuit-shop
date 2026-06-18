@@ -10,7 +10,7 @@ type Props = {
 };
 
 const field =
-  "w-full rounded-md border border-gray-300 px-4 py-3 text-sm focus:border-[#0f2747] focus:outline-none focus:ring-1 focus:ring-[#0f2747]";
+  "w-full rounded-md border border-gray-200 px-4 py-3 text-sm focus:border-marine focus:outline-none focus:ring-1 focus:ring-marine";
 
 /**
  * "Demander un devis" CTA for in-store-only products. Opens a modal with a
@@ -80,7 +80,7 @@ export default function QuoteRequestForm({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex w-full items-center justify-center gap-1.5 py-3 text-sm font-medium text-[#0f2747]/80 underline-offset-4 transition hover:text-[#0f2747] hover:underline"
+          className="flex w-full items-center justify-center gap-1.5 py-3 text-sm font-medium text-marine/80 underline-offset-4 transition hover:text-marine hover:underline"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 4h6l4 4v12H8V4Z M14 4v4h4" />
@@ -119,7 +119,7 @@ export default function QuoteRequestForm({
 
             {done ? (
               <div className="px-6 py-10 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-2xl">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-success-bg text-2xl">
                   ✅
                 </div>
                 <h3 className="mt-4 text-xl font-semibold text-gray-900">
@@ -173,7 +173,7 @@ export default function QuoteRequestForm({
                 />
 
                 {error && (
-                  <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+                  <p className="rounded-md bg-danger-bg px-3 py-2 text-sm text-danger">
                     {error}
                   </p>
                 )}
