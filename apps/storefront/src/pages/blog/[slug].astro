@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import { getBlogPostBySlug, getBlogPostsByCategory } from '../../utils/cms-client';
+import { sanitizeHtml } from '../../utils/sanitize';
 
 const { slug } = Astro.params;
 
@@ -126,7 +127,7 @@ const blogPostJsonLd = {
         <p class="text-xl text-gray-700 leading-relaxed mb-8">
           {postEntry.excerpt}
         </p>
-        <div set:html={postEntry.content || ''} />
+        <div set:html={sanitizeHtml(postEntry.content || '')} />
       </div>
     </div>
 

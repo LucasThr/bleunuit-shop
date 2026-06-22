@@ -6,6 +6,7 @@ import { getProductBySlug, getProductsByCategory } from '../../../../utils/catal
 import { saleMode } from '../../../../utils/sale-mode';
 import { mapProductToCard, productImageUrl as buildImageUrl } from '../../../../utils/product-card';
 import { slugFor } from '../../../../utils/slugs';
+import { sanitizeHtml } from '../../../../utils/sanitize';
 import AddToCartButton from '../../../../components/cart/AddToCartButton.tsx';
 import QuoteRequestForm from '../../../../components/QuoteRequestForm.tsx';
 
@@ -297,7 +298,7 @@ const breadcrumbJsonLd = {
       {/* Product Description */}
       <div class="mt-16 border-t border-gray-200 pt-12">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Description du produit</h2>
-        <div class="prose prose-lg prose-blue max-w-none" set:html={product.description || ''} />
+        <div class="prose prose-lg prose-blue max-w-none" set:html={sanitizeHtml(product.description || '')} />
         <div class="mt-8 p-6 bg-blue-100 rounded-lg">
           <h3 class="text-lg font-semibold text-blue-900 mb-2">Besoin de plus d'informations ?</h3>
           <p class="text-marine mb-4">
