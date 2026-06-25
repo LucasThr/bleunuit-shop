@@ -112,7 +112,7 @@ const testimonials = testimonialsData?.length
     ];
 
 const staticStoreImages: Record<string, string> = {
-  "bruay-la-buissiere": "/images/stores/bruay-la-buissiere.png",
+  "bruay-la-buissiere": "/images/stores/bruay-la-buissiere.jpg",
 };
 const storeCards = storesData?.length
   ? storesData.map((store) => ({
@@ -123,7 +123,7 @@ const storeCards = storesData?.length
       image:
         store.image ||
         staticStoreImages[store.slug] ||
-        "/images/stores/bruay-la-buissiere.png",
+        "/images/stores/bruay-la-buissiere.jpg",
     }))
   : [
       {
@@ -211,6 +211,8 @@ const featuredBrands = (brandsData ?? [])
       src={hero.image}
       alt="Chambre apaisante équipée d'une literie Bleunuit"
       class="absolute inset-0 -z-10 h-full w-full object-cover"
+      width="1920"
+      height="1280"
       fetchpriority="high"
       decoding="async"
     />
@@ -513,7 +515,10 @@ const featuredBrands = (brandsData ?? [])
                 src={store.image}
                 alt={`Magasin de ${store.name}`}
                 class="h-64 w-full object-cover"
+                width="1600"
+                height="1066"
                 loading="lazy"
+                decoding="async"
               />
               <div class="p-6">
                 <h3 class="home-display text-2xl">{store.name}</h3>
@@ -573,6 +578,7 @@ const featuredBrands = (brandsData ?? [])
                         alt={brand.name}
                         class="h-10 w-full object-contain"
                         loading="lazy"
+                        decoding="async"
                       />
                     ) : (
                       brand.name

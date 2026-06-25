@@ -1,5 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+// Serve a real 404, even when reached via Astro.rewrite('/404') from a
+// dynamic route (rewrite forces status 200; this overrides it). Without this,
+// invalid product/category/blog URLs return 200 OK — a soft 404 to crawlers.
+Astro.response.status = 404;
 ---
 
 <Layout title="Page introuvable" description="La page que vous recherchez n'existe pas ou a été déplacée." noindex>

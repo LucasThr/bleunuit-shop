@@ -22,7 +22,7 @@ const stores = allStores.map(store => ({
 
 // Map store images
 const storeImages: Record<string, string> = {
-  'bruay-la-buissiere': '/images/stores/bruay-la-buissiere.png',
+  'bruay-la-buissiere': '/images/stores/bruay-la-buissiere.jpg',
 };
 
 // Single store: we only operate one showroom.
@@ -126,6 +126,10 @@ const storesJsonLd = stores.map((store) => ({
                   src={storeImage}
                   alt={`Magasin ${store.name}`}
                   class="h-full w-full object-cover"
+                  width="1600"
+                  height="1066"
+                  fetchpriority="high"
+                  decoding="async"
                 />
               </div>
               <!-- Location chip -->

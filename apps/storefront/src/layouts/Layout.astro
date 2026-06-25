@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import JsonLd from '../components/JsonLd.astro';
 import CartDrawer from '../components/cart/CartDrawer.tsx';
 
 interface Props {
@@ -22,8 +23,37 @@ const {
 
 const siteName = 'Literie Bleunuit';
 const fullTitle = `${title} | ${siteName}`;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const siteOrigin = Astro.site ?? new URL(Astro.url.origin);
+const canonicalURL = new URL(Astro.url.pathname, siteOrigin);
 const imageURL = new URL(image, canonicalURL);
+
+// Site-wide brand entity + website. The per-location FurnitureStore schema
+// lives on /magasins; this is the parent Organization that ties the brand,
+// logo and contact details together for Google's Knowledge Graph.
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: siteName,
+  url: siteOrigin.href,
+  logo: new URL('/images/bleunuit-logo.png', siteOrigin).href,
+  description:
+    'Spécialiste de la literie depuis 1994 à Bruay-la-Buissière : matelas, sommiers et accessoires.',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: '+33321532145',
+    email: 'contact@bleunuit.fr',
+    contactType: 'customer service',
+    areaServed: 'FR',
+    availableLanguage: 'French',
+  },
+};
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: siteName,
+  url: siteOrigin.href,
+  inLanguage: 'fr-FR',
+};
 ---
 
 <!doctype html>
@@ -57,6 +87,8 @@ const imageURL = new URL(image, canonicalURL);
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
     />
+    <JsonLd data={organizationJsonLd} />
+    <JsonLd data={websiteJsonLd} />
     <slot name="head" />
   </head>
   <body class="flex min-h-screen flex-col overflow-x-hidden">

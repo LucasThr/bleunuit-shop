@@ -129,6 +129,10 @@ const breadcrumbJsonLd = {
               src={productImageUrl || `https://placehold.co/1200x900/e5e7eb/6b7280?text=${encodeURIComponent(product.name || 'Product')}`}
               alt={product.name}
               class="h-full w-full object-cover object-center"
+              width="1200"
+              height="900"
+              fetchpriority="high"
+              decoding="async"
             />
           </div>
 
@@ -140,6 +144,10 @@ const breadcrumbJsonLd = {
                     src={imageUrl}
                     alt={product.name}
                     class="h-full w-full object-cover object-center"
+                    width="300"
+                    height="300"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
               ))}

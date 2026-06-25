@@ -23,7 +23,10 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
         src={image}
         alt={title}
         class="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+        width="800"
+        height="600"
         loading="lazy"
+        decoding="async"
       />
     </div>
 
