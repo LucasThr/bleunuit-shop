@@ -14,7 +14,41 @@ The three critical (P0) items in §2 are implemented and build-verified:
 - **2.2 Organization + WebSite schema.** Added site-wide `Organization` (logo + `ContactPoint`) and `WebSite` JSON-LD in `Layout.astro`. Verified present in the rendered `<head>`.
 - **2.3 Image optimization (first pass).** Recompressed the loaded store photo **2.1 MB PNG → 296 KB JPEG (−86%)** and repointed the 3 references; added explicit `width`/`height` + `decoding="async"` to every `<img>`, `fetchpriority="high"` to the LCP images (product + store), and `loading="lazy"` to the product gallery. The hero (380 KB) was left as-is (re-encode saved only ~20 KB). **Still open (deeper follow-up):** responsive `srcset`/WebP delivery via `astro:assets` or an image CDN, and implementing real resizing in `productImageUrl()`.
 
-**Orphaned assets to delete** (left in place — deletion of source images wasn't explicitly authorized): `public/images/stores/bruay-la-buissiere.png` (2.1 MB, now replaced by the `.jpg`) and `public/images/stores/lens.png` (2.4 MB, already unused before this work).
+**Orphaned assets:** removed `public/images/stores/bruay-la-buissiere.png` (2.1 MB, replaced by `.jpg`) and `public/images/stores/lens.png` (2.4 MB, unused).
+
+## Implementation log — Sprint 1 correctness (2026-06-25, done)
+
+- **3.1 Subcategory breadcrumb.** `<JsonLd data={breadcrumbJsonLd} />` now rendered on `produits/[category]/[subcategory].astro`.
+- **3.3 / 3.4 NAP + Lens (per owner).** Confirmed hours = **Lun–Ven 9h30-12h30 / 14h-19h, Sam 9h30-19h, Dim fermé** and **single store (Bruay)**. Aligned the Magasins visible schedule **and** its `openingHoursSpecification` JSON-LD to match Contact; removed the phantom Lens store from the footer and the default site description.
+- **3.6 Blog images.** Blog index and related-posts grids now render `post.featured_image` (with the SVG as a graceful fallback) instead of always showing the placeholder; added dimensions + lazy loading.
+
+Build-verified after each change; NAP now consistent across Contact, Magasins, and structured data.
+
+**Still open in Sprint 1's spirit:** none — remaining work is Sprint 2 (titles, OG image, schema enrichment) and Sprint 3 (responsive/WebP images, self-hosted fonts, a11y).
+
+## Implementation log — Sprint 2 discoverability (2026-06-25, done)
+
+- **Homepage title.** `Accueil` → **`Matelas & sommiers à Bruay-la-Buissière | Literie Bleunuit`** (keyword + locality, ~58 chars).
+- **Meta-description fallbacks.** Category & subcategory pages now fall back to a templated, locality-aware description when the CMS field is empty; the product page now prefers the product's own copy (truncated to ~155 chars) over the old `name – brand – price` line.
+- **Social card.** Added a dedicated **1200×630** `og-default.jpg` (cropped from the bedroom hero) as the default OG/Twitter image, plus `og:image:width/height`, `og:image:alt`, and `twitter:image:alt`. Verified in the rendered `<head>`. (Logo is no longer the default share image.)
+- **Schema enrichment.** Product `Offer` gained `itemCondition` (NewCondition), `priceValidUntil` (end of next year), and `seller`; `BlogPosting` gained `publisher` (Organization + logo `ImageObject`) and `dateModified`.
+
+Build-verified. **Not added** (would need real policy data): `Offer.hasMerchantReturnPolicy` / `shippingDetails` — supply a return window + shipping rates to enable these.
+
+## Implementation log — Sprint 3 perf/a11y, no-decision items (2026-06-25, done)
+
+- **Self-hosted fonts.** Replaced the render-blocking Google Fonts `<link>` with `@fontsource-variable/manrope` (imported in `Layout.astro`, family `"Manrope Variable"` added to the `--font-sans`/`--font-display` tokens). Verified: **0 requests to fonts.googleapis.com/gstatic.com**, 5 Manrope woff2 subsets self-served from `/_astro/`. Removes the render-blocking request *and* the Google-Fonts-CDN GDPR/CNIL exposure.
+- **Keyboard-accessible nav.** Header mega-menu dropdowns now also open on `group-focus-within`, so keyboard (Tab) users can reach the category/subcategory links — previously hover-only.
+- **Branded icons + PWA.** The site favicon was the **default Astro logo**. Replaced with a branded set generated from the logo: `favicon-64.png` (the moon-and-stars mark), `apple-touch-icon.png` (180), `icon-192/512.png`, a `site.webmanifest`, and `<meta name="theme-color" content="#0f2c6e">`. The unbranded `public/favicon.svg` is now unreferenced (safe to delete).
+
+## Implementation log — functional gaps: forms + pagination (2026-06-25, done)
+
+- **Fake blog pagination removed** from `blog/index.astro` (the hardcoded Précédent / 1 / 2 / 3 / Suivant nav that did nothing).
+- **Contact + newsletter forms wired to Resend.** New server API routes `src/pages/api/contact.ts` and `src/pages/api/newsletter.ts` (shared helpers in `src/utils/forms.ts`) send mail via the `resend` SDK; both forms now POST via a small fetch handler with inline success/error states, a honeypot anti-spam field, and server-side validation. Newsletter adds to a Resend Audience when `RESEND_AUDIENCE_ID` is set, otherwise emails the shop. Config via `RESEND_API_KEY` / `CONTACT_TO_EMAIL` / `CONTACT_FROM_EMAIL` / `RESEND_AUDIENCE_ID` (documented in `.env.example`).
+  - **Verified** end-to-end against the built server: 400 on missing/invalid input, 200 on honeypot, 503 when no key is configured, and a clean 502 (no crash) when the Resend SDK runs with a bad key — confirming the SDK bundles and the send path executes. With a real key set in the environment, both forms deliver.
+  - **Action required:** verify the `bleunuit.fr` domain in Resend and set `CONTACT_FROM_EMAIL` to an address on it; put `RESEND_API_KEY` in the deploy environment (it's a runtime secret, read from `process.env`).
+
+**Still open (needs a decision / data):** responsive `srcset`/WebP delivery via `astro:assets` or an image CDN (the main remaining Core-Web-Vitals lever); per-image `alt` differentiation; the decorative brand/sort filters on category pages; and `Offer.hasMerchantReturnPolicy`/`shippingDetails` (needs your return + shipping terms).
 
 ---
 

@@ -54,12 +54,20 @@ const relatedProducts = allProducts
   .map(mapProductToCard);
 
 const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
-const metaDescription = `${product.name}${brandName ? ` - ${brandName}` : ''}${productPrice > 0 ? ` - À partir de ${productPrice.toLocaleString('fr-FR')}€` : ''}`;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const plainDescription = (product.description || '')
   .replace(/<[^>]*>/g, ' ')
   .replace(/\s+/g, ' ')
   .trim();
+// Prefer the product's own copy for the SERP snippet; fall back to a
+// name / brand / price line when the product has no description.
+const metaDescription = plainDescription
+  ? plainDescription.length > 155
+    ? `${plainDescription.slice(0, 152).trimEnd()}…`
+    : plainDescription
+  : `${product.name}${brandName ? ` - ${brandName}` : ''}${productPrice > 0 ? ` - À partir de ${productPrice.toLocaleString('fr-FR')}€` : ''}`;
+// Future validity date keeps the Offer from being flagged as expired.
+const priceValidUntil = `${new Date().getFullYear() + 1}-12-31`;
 
 const productJsonLd = {
   '@context': 'https://schema.org',
@@ -76,9 +84,12 @@ const productJsonLd = {
       url: canonicalUrl,
       priceCurrency: 'EUR',
       price: (hasPromo ? productPromoPrice! : productPrice).toFixed(2),
+      priceValidUntil,
+      itemCondition: 'https://schema.org/NewCondition',
       availability: product.in_stock
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock',
+      seller: { '@type': 'Organization', name: 'Literie Bleunuit' },
     },
   }),
 };

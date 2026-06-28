@@ -34,7 +34,8 @@ const storeImage = store
 
 const pageUrl = new URL('/magasins', Astro.site).href;
 
-// Hours mirror the schedule displayed below (Mon-Sat, closed Sunday)
+// Hours mirror the schedule displayed below (Mon-Fri split, Sat continuous,
+// closed Sunday)
 const storesJsonLd = stores.map((store) => ({
   '@context': 'https://schema.org',
   '@type': 'FurnitureStore',
@@ -59,15 +60,21 @@ const storesJsonLd = stores.map((store) => ({
   openingHoursSpecification: [
     {
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
       opens: '09:30',
-      closes: '12:00',
+      closes: '12:30',
     },
     {
       '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
       opens: '14:00',
-      closes: '18:30',
+      closes: '19:00',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Saturday'],
+      opens: '09:30',
+      closes: '19:00',
     },
   ],
 }));
@@ -250,8 +257,12 @@ const storesJsonLd = stores.map((store) => ({
         <div class="mx-auto max-w-2xl rounded-3xl border border-gray-200 bg-white p-8 shadow-md sm:p-10">
           <div class="space-y-3">
             <div class="flex items-center justify-between border-b border-gray-100 py-3">
-              <span class="font-semibold text-gray-900">Lundi - Samedi</span>
-              <span class="text-gray-700">9h30 - 12h00 / 14h00 - 18h30</span>
+              <span class="font-semibold text-gray-900">Lundi - Vendredi</span>
+              <span class="text-gray-700">9h30 - 12h30 / 14h - 19h</span>
+            </div>
+            <div class="flex items-center justify-between border-b border-gray-100 py-3">
+              <span class="font-semibold text-gray-900">Samedi</span>
+              <span class="text-gray-700">9h30 - 19h</span>
             </div>
             <div class="flex items-center justify-between py-3">
               <span class="font-semibold text-gray-900">Dimanche</span>

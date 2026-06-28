@@ -50,9 +50,14 @@ const breadcrumbJsonLd = {
     { '@type': 'ListItem', position: 4, name: currentSubcategory.name },
   ],
 };
+
+const metaDescription =
+  currentSubcategory.description ||
+  `${currentSubcategory.name} — notre sélection de ${currentCategory.name.toLowerCase()} chez Literie Bleunuit à Bruay-la-Buissière : conseils d'experts et essai en magasin.`;
 ---
 
-<Layout title={`${currentSubcategory.name} - ${currentCategory.name}`} description={currentSubcategory.description}>
+<Layout title={`${currentSubcategory.name} - ${currentCategory.name}`} description={metaDescription}>
+  <JsonLd data={breadcrumbJsonLd} />
   <!-- Header -->
   <section class="bg-gradient-to-r from-blue-900 to-royal py-16 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

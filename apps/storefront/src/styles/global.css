@@ -51,8 +51,8 @@
   --color-danger-bg: #fdecec;
 
   /* ---- Typography ----------------------------------------------------- */
-  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
-  --font-display: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-sans: "Manrope Variable", "Manrope", system-ui, -apple-system, sans-serif;
+  --font-display: "Manrope Variable", "Manrope", system-ui, -apple-system, sans-serif;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
