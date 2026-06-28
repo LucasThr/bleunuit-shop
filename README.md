@@ -1,158 +1,112 @@
-<p align="center">
-  <a href="https://www.medusajs.com">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/59018053/229103275-b5e482bb-4601-46e6-8142-244f531cebdb.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    <img alt="Medusa logo" src="https://user-images.githubusercontent.com/59018053/229103726-e5b529a3-9b3f-4970-8a1f-c6af37f087bf.svg">
-    </picture>
-  </a>
-</p>
-<h1 align="center">
-  Medusa DTC Starter
-</h1>
+# Bleu Nuit
 
-<h4 align="center">
-  <a href="https://docs.medusajs.com">Documentation</a> |
-  <a href="https://www.medusajs.com">Website</a>
-</h4>
+Monorepo for **Literie Bleu Nuit** (literie / matelas) — a Medusa-powered commerce
+backend and an Astro storefront, managed with **pnpm + Turbo**.
 
-<p align="center">
-  Building blocks for digital commerce
-</p>
-<p align="center">
-  <a href="https://github.com/medusajs/medusa/blob/develop/LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="Medusa is released under the MIT license." />
-  </a>
-  <a href="https://circleci.com/gh/medusajs/medusa">
-    <img src="https://circleci.com/gh/medusajs/medusa.svg?style=shield" alt="Current CircleCI build status." />
-  </a>
-  <a href="https://github.com/medusajs/medusa/blob/develop/CONTRIBUTING.md">
-    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat" alt="PRs welcome!" />
-  </a>
-    <a href="https://www.producthunt.com/posts/medusa"><img src="https://img.shields.io/badge/Product%20Hunt-%231%20Product%20of%20the%20Day-%23DA552E" alt="Product Hunt"></a>
-  <a href="https://discord.gg/xpCwq3Kfn8">
-    <img src="https://img.shields.io/badge/chat-on%20discord-7289DA.svg" alt="Discord Chat" />
-  </a>
-  <a href="https://twitter.com/intent/follow?screen_name=medusajs">
-    <img src="https://img.shields.io/twitter/follow/medusajs.svg?label=Follow%20@medusajs" alt="Follow @medusajs" />
-  </a>
-</p>
+| App | Package | Stack | Dev URL |
+|-----|---------|-------|---------|
+| Backend | [`@dtc/backend`](apps/backend) | Medusa 2.x (commerce + custom `cms` & `quotes` modules), PostgreSQL, optional Redis | `http://localhost:9000` (admin at `/app`) |
+| Storefront | [`@dtc/storefront`](apps/storefront) | Astro 5 SSR (Node standalone) · React 19 islands · Tailwind CSS v4 · nanostores · Stripe · Resend | `http://localhost:4321` |
 
-# Medusa DTC Starter
+The storefront reads **all** content and catalog data from Medusa: editorial content
+via the custom `cms` module, products/categories via native Medusa, quotes (devis) via
+the custom `quotes` module.
 
-A production-ready monorepo starter for direct-to-consumer ecommerce stores powered by Medusa and Next.js. Includes a fully featured storefront with product browsing, cart, checkout, customer accounts, and order management.
+## Prerequisites
 
-## Features
+- **Node.js** >= 20
+- **pnpm** — pinned to `9.15.4` via `packageManager`. Easiest install is Corepack
+  (ships with Node): `corepack enable pnpm`
+- **PostgreSQL** — dev DB defaults to `localhost:5432`, database `medusa-backend`
+- **Redis** *(optional in dev)* — Medusa falls back to in-memory implementations if
+  `REDIS_URL` is unset
 
-- All of [Medusa's commerce features](https://docs.medusajs.com/resources/commerce-modules)
-- Multi-region support with automatic country detection
-- Product catalog with variant selection
-- Cart with promotion codes
-- Multi-step checkout with shipping and payment
-- Customer accounts with order history and address management
-- Order transfer between accounts
+## Getting started
 
-## Getting Started
+1. **Install dependencies** (from the repo root):
 
-### Deploy with Medusa Cloud
+   ```bash
+   pnpm install
+   ```
 
-The fastest way to get started is deploying with [Medusa Cloud](https://cloud.medusajs.com):
+2. **Configure the backend** — copy the template and fill in the values:
 
-1. [Create a Medusa Cloud account](https://cloud.medusajs.com)
-2. Deploy this starter directly from your dashboard
+   ```bash
+   cp apps/backend/.env.template apps/backend/.env
+   ```
 
-### Local Installation
+   At minimum set `DATABASE_URL`, and strong `JWT_SECRET` / `COOKIE_SECRET`
+   (`openssl rand -base64 32`).
 
-> **Prerequisites:
->
-> - [Node.js](https://nodejs.org/) v20+
-> - [PostgreSQL](https://www.postgresql.org/) v15+
-> - [pnpm](https://pnpm.io/) v10+
+3. **Run migrations and create an admin user**:
 
-1. Clone the repository and install dependencies:
+   ```bash
+   pnpm --filter @dtc/backend exec medusa db:migrate
+   pnpm --filter @dtc/backend exec medusa user -e admin@bleunuit.fr -p supersecret
+   ```
 
-```bash
-git clone https://github.com/medusajs/dtc-starter.git
-cd dtc-starter
-pnpm install
-```
+4. **Configure the storefront** — copy the example and add your publishable key:
 
-2. Set up environment variables for the backend:
+   ```bash
+   cp apps/storefront/.env.example apps/storefront/.env
+   ```
 
-```bash
-cp apps/backend/.env.template apps/backend/.env
-```
+   Get the publishable key from the admin dashboard (`http://localhost:9000/app` →
+   Settings → Publishable API keys) and set `PUBLIC_MEDUSA_PUBLISHABLE_KEY`.
 
-3. Set the database URL in `apps/backend.env`:
+5. **Start everything** (backend + storefront via Turbo):
 
-```bash
-# Replace with actual database URL, make sure the database exists.
-DATABASE_URL=postgres://postgres:@localhost:5432/medusa-dtc-starter
-```
+   ```bash
+   pnpm dev
+   ```
 
-4. Run migrations:
+   The backend runs on `http://localhost:9000` (admin at `/app`) and the storefront on
+   `http://localhost:4321`.
 
-```bash
-cd apps/backend
-pnpm medusa db:migrate
-```
+## Commands
 
-5. Add admin user:
+Run from the repo root:
 
-```bash
-cd apps/backend
-pnpm medusa user -e admin@test.com -p supersecret
-```
+| Command | Action |
+|---------|--------|
+| `pnpm dev` | Backend + storefront together (Turbo) |
+| `pnpm backend:dev` | Backend only |
+| `pnpm storefront:dev` | Storefront only |
+| `pnpm build` | Production build of all apps |
+| `pnpm lint` | Lint all apps |
+| `pnpm test` | Run all tests |
+| `pnpm backend:seed` | Seed initial backend data |
 
-6. Start Medusa backend:
+## Environment variables
 
-```bash
-cd apps/backend
-pnpm dev
-```
+### Backend — `apps/backend/.env` (see `.env.template`)
 
-7. Open the admin dashboard at `localhost:9000/app` and log in. Retrieve your publishable API key at Settings > Publishable API key.
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `DB_NAME` | Database name (default `medusa-backend`) |
+| `JWT_SECRET` / `COOKIE_SECRET` | Required secrets — generate with `openssl rand -base64 32` |
+| `REDIS_URL` | Redis connection (optional in dev) |
+| `STORE_CORS` / `ADMIN_CORS` / `AUTH_CORS` | Allowed origins |
 
-8. Set up environment variables for the storefront:
+### Storefront — `apps/storefront/.env` (see `.env.example`)
 
-```bash
-cp apps/storefront/.env.template apps/storefront/.env.local
-```
+Astro inlines `PUBLIC_*` variables **at build time**.
 
-9. Update `apps/storefront/.env.local` with your Medusa publishable API key:
+| Variable | Description |
+|----------|-------------|
+| `PUBLIC_MEDUSA_URL` | Medusa backend URL (default `http://localhost:9000`) |
+| `PUBLIC_MEDUSA_PUBLISHABLE_KEY` | Medusa publishable API key |
+| `PUBLIC_MEDUSA_REGION_ID` | Region used for price calculation |
+| `PUBLIC_SITE_URL` | Public domain (canonical URLs, sitemap, robots) |
+| `PUBLIC_STRIPE_PUBLISHABLE_KEY` *(optional)* | Stripe checkout |
+| `RESEND_API_KEY` | Server-side Resend key for contact form + newsletter (never prefix `PUBLIC_`) |
+| `CONTACT_TO_EMAIL` / `CONTACT_FROM_EMAIL` | Contact-form delivery + verified sender |
+| `RESEND_AUDIENCE_ID` *(optional)* | Resend audience for newsletter signups |
 
-```bash
-NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=pk_6c3...
-```
+## Documentation
 
-10.  Start storefront:
-
-```bash
-cd apps/storefront
-pnpm dev
-```
-
-The storefront runs on `http://localhost:8000`.
-
-You can slo run the following command from the root to start both backend and storefront:
-
-```bash
-pnpm dev
-```
-
-## Configuration
-
-The storefront is configured via environment variables in `apps/storefront/.env.local`:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` | Publishable API key from your Medusa backend | — |
-| `NEXT_PUBLIC_MEDUSA_BACKEND_URL` | URL of your Medusa backend | `http://localhost:9000` |
-| `NEXT_PUBLIC_DEFAULT_REGION` | Default region country code | `dk` |
-| `NEXT_PUBLIC_BASE_URL` | Base URL of the storefront | `https://localhost:8000` |
-| `NEXT_PUBLIC_STRIPE_KEY` | Stripe publishable key (optional) | — |
-
-## Resources
-
-- [Medusa Documentation](https://docs.medusajs.com)
-- [Medusa Cloud](https://cloud.medusajs.com)
+- [`apps/backend/README.md`](apps/backend/README.md) — backend setup, modules, migrations
+- [`apps/storefront/README.md`](apps/storefront/README.md) — storefront structure, data flow
+- [Medusa documentation](https://docs.medusajs.com)
+- [Astro documentation](https://astro.build)

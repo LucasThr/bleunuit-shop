@@ -37,7 +37,7 @@ const canonicalURL = new URL(Astro.url.pathname, siteOrigin);
 const imageURL = new URL(image, canonicalURL);
 
 // Site-wide brand entity + website. The per-location FurnitureStore schema
-// lives on /magasins; this is the parent Organization that ties the brand,
+// lives on /contact; this is the parent Organization that ties the brand,
 // logo and contact details together for Google's Knowledge Graph.
 const organizationJsonLd = {
   '@context': 'https://schema.org',

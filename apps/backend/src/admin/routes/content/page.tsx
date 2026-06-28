@@ -29,6 +29,11 @@ const SECTIONS = [
     title: "Marques",
     description: "Marques partenaires affichées sur la page d'accueil et /produits.",
   },
+  {
+    to: "/content/contact",
+    title: "Contact",
+    description: "Coordonnées et horaires affichés sur la page contact.",
+  },
 ]
 
 // Landing page for the "Contenu" sidebar group: links to each editable

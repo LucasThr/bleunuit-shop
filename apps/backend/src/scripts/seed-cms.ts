@@ -3,6 +3,7 @@ import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { CMS_MODULE } from "../modules/cms"
 import CmsModuleService from "../modules/cms/service"
 import updateHomepageWorkflow from "../workflows/update-homepage"
+import updateContactWorkflow from "../workflows/update-contact"
 import { createBlogPostWorkflow } from "../workflows/blog-post"
 import { createStoreWorkflow } from "../workflows/store"
 import { createTestimonialWorkflow } from "../workflows/testimonial"
@@ -105,6 +106,27 @@ export default async function seedCms({
       },
     })
     logger.info("[seed-cms] Homepage content seeded.")
+  }
+
+  // --- Contact (singleton) --------------------------------------------------
+  const [existingContact] = await cms.listContacts({}, { take: 1 })
+  if (existingContact) {
+    logger.info("[seed-cms] Contact already exists — skipping.")
+  } else {
+    await updateContactWorkflow(container).run({
+      input: {
+        store_name: "Bruay-la-Buissière",
+        address: "Centre Commercial Auchan\n62700 Bruay-la-Buissière",
+        phone: "03 21 53 21 45",
+        email: "contact@bleunuit.fr",
+        hours: [
+          { label: "Lundi - Vendredi", value: "9h30 - 12h30 / 14h - 19h" },
+          { label: "Samedi", value: "9h30 - 19h" },
+          { label: "Dimanche", value: "Fermé" },
+        ],
+      },
+    })
+    logger.info("[seed-cms] Contact content seeded.")
   }
 
   // --- Blog posts (collection) ---------------------------------------------

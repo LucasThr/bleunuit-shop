@@ -1,8 +1,86 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import JsonLd from '../components/JsonLd.astro';
+import { getContact, getAllStores } from '../utils/cms-client';
+
+const [contact, stores] = await Promise.all([
+  getContact().catch((err) => {
+    console.error('contact: failed to load contact content', err);
+    return null;
+  }),
+  getAllStores().catch(() => []),
+]);
+
+// Editable contact details, with fallbacks to the previous static values.
+const storeName = contact?.store_name || 'Bruay-la-Buissière';
+const addressLines = (
+  contact?.address || 'Centre Commercial Auchan\n62700 Bruay-la-Buissière'
+)
+  .split('\n')
+  .map((line) => line.trim())
+  .filter(Boolean);
+const phone = contact?.phone || '03 21 53 21 45';
+const phoneHref = phone.replace(/\s+/g, '');
+const email = contact?.email || 'contact@bleunuit.fr';
+const hours = contact?.hours?.length
+  ? contact.hours
+  : [
+      { label: 'Lundi - Vendredi', value: '9h30 - 12h30 / 14h - 19h' },
+      { label: 'Samedi', value: '9h30 - 19h' },
+      { label: 'Dimanche', value: 'Fermé' },
+    ];
+
+// The per-location FurnitureStore schema now lives here (the /magasins page is
+// retired). Sourced from the cms store record for the discrete address/geo
+// fields the schema needs; the openingHoursSpecification mirrors the default
+// schedule shown above.
+const pageUrl = new URL('/contact', Astro.site).href;
+const storeJsonLd = stores.map((store) => ({
+  '@context': 'https://schema.org',
+  '@type': 'FurnitureStore',
+  name: `Literie Bleunuit ${store.city}`,
+  url: pageUrl,
+  telephone: store.phone,
+  email: store.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: store.address,
+    addressLocality: store.city,
+    postalCode: store.postal_code,
+    addressCountry: 'FR',
+  },
+  ...(store.latitude != null && store.longitude != null && {
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: store.latitude,
+      longitude: store.longitude,
+    },
+  }),
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '09:30',
+      closes: '12:30',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '14:00',
+      closes: '19:00',
+    },
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Saturday'],
+      opens: '09:30',
+      closes: '19:00',
+    },
+  ],
+}));
 ---
 
 <Layout title="Contact" description="Contactez Literie Bleunuit pour toutes vos questions sur nos produits et services.">
+  {storeJsonLd.map((data) => <JsonLd data={data} />)}
   <!-- Header -->
   <section class="bg-gradient-to-r from-blue-900 to-royal py-16 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -90,7 +168,7 @@ import Layout from '../layouts/Layout.astro';
                 class="w-full rounded-md border border-gray-200 px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="">Sélectionnez un magasin</option>
-                <option value="bruay">Bruay-la-Buissière</option>
+                <option value="bruay">{storeName}</option>
               </select>
             </div>
 
@@ -147,7 +225,7 @@ import Layout from '../layouts/Layout.astro';
             <!-- Bruay Store -->
             <div class="rounded-lg border border-gray-200 bg-page p-6">
               <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                Bruay-la-Buissière
+                {storeName}
               </h3>
               <div class="space-y-3 text-gray-700">
                 <div class="flex items-start">
@@ -156,16 +234,15 @@ import Layout from '../layouts/Layout.astro';
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                   <div>
-                    <p>Centre Commercial Auchan</p>
-                    <p>62700 Bruay-la-Buissière</p>
+                    {addressLines.map((line) => <p>{line}</p>)}
                   </div>
                 </div>
                 <div class="flex items-center">
                   <svg class="h-5 w-5 mr-3 flex-shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
-                  <a href="tel:0321532145" class="text-blue-600 hover:text-marine">
-                    03 21 53 21 45
+                  <a href={`tel:${phoneHref}`} class="text-blue-600 hover:text-marine">
+                    {phone}
                   </a>
                 </div>
               </div>
@@ -176,8 +253,8 @@ import Layout from '../layouts/Layout.astro';
               <svg class="h-5 w-5 mr-3 flex-shrink-0 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <a href="mailto:contact@bleunuit.fr" class="text-blue-600 hover:text-marine">
-                contact@bleunuit.fr
+              <a href={`mailto:${email}`} class="text-blue-600 hover:text-marine">
+                {email}
               </a>
             </div>
           </div>
@@ -188,18 +265,12 @@ import Layout from '../layouts/Layout.astro';
               Horaires d'ouverture
             </h3>
             <div class="space-y-2 text-sm text-gray-700">
-              <div class="flex justify-between">
-                <span class="font-medium">Lundi - Vendredi</span>
-                <span>9h30 - 12h30 / 14h - 19h</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="font-medium">Samedi</span>
-                <span>9h30 - 19h</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="font-medium">Dimanche</span>
-                <span>Fermé</span>
-              </div>
+              {hours.map((row) => (
+                <div class="flex justify-between">
+                  <span class="font-medium">{row.label}</span>
+                  <span>{row.value}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>

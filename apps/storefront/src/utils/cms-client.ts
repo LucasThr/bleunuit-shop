@@ -64,6 +64,14 @@ export type Testimonial = {
   published: boolean;
 };
 
+export type ContactContent = {
+  store_name?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  hours?: { label: string; value: string }[] | null;
+};
+
 // ---- Homepage (singleton) -------------------------------------------------
 
 export async function getHomepage(): Promise<HomepageContent | null> {
@@ -115,4 +123,13 @@ export async function getTestimonials(): Promise<Testimonial[]> {
     testimonials: Testimonial[];
   }>("/store/cms/testimonials");
   return testimonials ?? [];
+}
+
+// ---- Contact (singleton) --------------------------------------------------
+
+export async function getContact(): Promise<ContactContent | null> {
+  const { contact } = await sdk.client.fetch<{
+    contact: ContactContent | null;
+  }>("/store/cms/contact");
+  return contact;
 }

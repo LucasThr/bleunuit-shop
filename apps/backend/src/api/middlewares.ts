@@ -19,6 +19,7 @@ import {
   CreateBrandSchema,
   UpdateBrandSchema,
 } from "./admin/cms/brands/validators"
+import { UpdateContactSchema } from "./admin/cms/contact/validators"
 import { CreateQuoteSchema } from "./store/quotes/validators"
 import { UpdateQuoteSchema } from "./admin/quotes/validators"
 
@@ -72,6 +73,12 @@ export default defineMiddlewares({
       matcher: "/admin/cms/brands/:id",
       method: "POST",
       middlewares: [validateAndTransformBody(UpdateBrandSchema)],
+    },
+    // Contact (singleton)
+    {
+      matcher: "/admin/cms/contact",
+      method: "POST",
+      middlewares: [validateAndTransformBody(UpdateContactSchema)],
     },
     // Quote requests (devis)
     {

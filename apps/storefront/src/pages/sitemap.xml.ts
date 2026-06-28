@@ -9,7 +9,7 @@ import { slugFor } from '../utils/slugs';
 
 export const GET: APIRoute = async ({ site, url }) => {
   const base = (site ?? new URL(url.origin)).href.replace(/\/$/, '');
-  const paths = ['/', '/produits', '/magasins', '/blog', '/contact'];
+  const paths = ['/', '/produits', '/blog', '/contact'];
 
   try {
     const [categories, subcategories, products, posts] = await Promise.all([
