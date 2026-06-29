@@ -15,7 +15,7 @@ const hasPromo = promoPrice && promoPrice < price;
 const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0;
 ---
 
-<article class="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg">
+<article class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
   <a href={`/produits/${categorySlug}/p/${slug}`} class="block">
     <!-- Image container -->
     <div class="aspect-[4/3] overflow-hidden bg-gray-100">
@@ -40,7 +40,7 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
     <!-- Content -->
     <div class="p-4">
       <p class="text-sm text-gray-500 mb-1">{brand}</p>
-      <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+      <h3 class="text-h3 text-marine mb-2 line-clamp-2 group-hover:text-royal transition-colors">
         {title}
       </h3>
 
@@ -66,7 +66,7 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
 
       <!-- CTA -->
       <div class="mt-4">
-        <span class="inline-flex items-center text-sm font-medium text-blue-600 group-hover:text-marine">
+        <span class="inline-flex items-center text-sm font-medium text-royal group-hover:text-marine">
           Voir les détails
           <svg class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

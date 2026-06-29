@@ -10,8 +10,8 @@ Astro.response.status = 404;
 <Layout title="Page introuvable" description="La page que vous recherchez n'existe pas ou a été déplacée." noindex>
   <section class="flex flex-1 items-center justify-center py-24">
     <div class="mx-auto max-w-xl px-4 text-center">
-      <p class="text-sm font-semibold uppercase tracking-[0.3em] text-blue-600">Erreur 404</p>
-      <h1 class="mt-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+      <p class="text-sm font-semibold uppercase tracking-[0.3em] text-marine">Erreur 404</p>
+      <h1 class="mt-4 text-display text-marine">
         Page introuvable
       </h1>
       <p class="mt-6 text-lg text-gray-700">
@@ -21,13 +21,13 @@ Astro.response.status = 404;
       <div class="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
         <a
           href="/"
-          class="inline-flex items-center justify-center rounded-md bg-blue-600 px-6 py-3 text-base font-semibold text-white hover:bg-marine transition-colors"
+          class="btn-primary inline-flex items-center justify-center rounded-full px-6 py-3 text-base font-semibold"
         >
           Retour à l'accueil
         </a>
         <a
           href="/produits"
-          class="inline-flex items-center justify-center rounded-md border-2 border-blue-600 px-6 py-3 text-base font-semibold text-blue-600 hover:bg-blue-100 transition-colors"
+          class="btn-tonal inline-flex items-center justify-center rounded-full px-6 py-3 text-base font-semibold"
         >
           Voir nos produits
         </a>

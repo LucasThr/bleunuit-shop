@@ -32,12 +32,22 @@ function formatDate(dateString: string) {
 
 <Layout title="Blog" description="Conseils et astuces pour améliorer votre sommeil. Découvrez nos guides sur la literie et le bien-être.">
   <!-- Header -->
-  <section class="bg-gradient-to-r from-blue-900 to-royal py-16 text-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
+  <section class="relative isolate overflow-hidden bg-marine py-16 text-white sm:py-20">
+    <div
+      class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gold/20 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div
+      class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h1 class="text-display">
         Notre Blog
       </h1>
-      <p class="mt-4 text-xl text-blue-100">
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-white/75">
         Conseils et astuces pour un sommeil de qualité
       </p>
     </div>
@@ -47,7 +57,7 @@ function formatDate(dateString: string) {
   <section class="bg-page py-6">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex flex-wrap gap-3">
-        <button class="rounded-full bg-blue-600 px-6 py-2 text-sm font-semibold text-white">
+        <button class="rounded-full bg-marine px-6 py-2 text-sm font-semibold text-white">
           Tous les articles
         </button>
         <button class="rounded-full bg-white px-6 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors">
@@ -68,7 +78,7 @@ function formatDate(dateString: string) {
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
-          <article class="group overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:shadow-lg">
+          <article class="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
             <a href={`/blog/${post.slug}`} class="block">
               <!-- Image -->
               <div class="aspect-[16/9] overflow-hidden bg-gray-200">
@@ -100,7 +110,7 @@ function formatDate(dateString: string) {
                   <time datetime={post.publishDate}>{formatDate(post.publishDate)}</time>
                 </div>
 
-                <h2 class="mb-2 text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <h2 class="mb-2 text-h3 text-marine line-clamp-2 group-hover:text-royal transition-colors">
                   {post.title}
                 </h2>
 
@@ -110,7 +120,7 @@ function formatDate(dateString: string) {
 
                 <div class="flex items-center justify-between">
                   <span class="text-sm text-gray-500">{post.author}</span>
-                  <span class="inline-flex items-center text-sm font-medium text-blue-600 group-hover:text-marine">
+                  <span class="inline-flex items-center text-sm font-medium text-royal group-hover:text-marine">
                     Lire la suite
                     <svg class="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -127,10 +137,10 @@ function formatDate(dateString: string) {
   </section>
 
   <!-- Newsletter CTA -->
-  <section class="bg-blue-900 py-16 text-white">
+  <section class="bg-marine py-16 text-white">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="text-center">
-        <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">
+        <h2 class="text-h1 text-white">
           Restez informé
         </h2>
         <p class="mt-4 text-xl text-blue-100">
@@ -150,11 +160,11 @@ function formatDate(dateString: string) {
             name="email"
             required
             placeholder="Votre adresse email"
-            class="rounded-md px-4 py-3 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
+            class="rounded-xl px-4 py-3 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-white sm:w-96"
           />
           <button
             type="submit"
-            class="rounded-md bg-white px-8 py-3 font-semibold text-blue-900 hover:bg-blue-100 transition-colors"
+            class="rounded-full bg-white px-8 py-3 font-semibold text-marine hover:bg-blue-100 transition-colors"
           >
             S'inscrire
           </button>

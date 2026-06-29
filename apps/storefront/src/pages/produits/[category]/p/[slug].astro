@@ -118,11 +118,11 @@ const breadcrumbJsonLd = {
   <section class="bg-page py-4">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <nav class="text-sm text-gray-700">
-        <a href="/" class="hover:text-blue-600">Accueil</a>
+        <a href="/" class="hover:text-royal">Accueil</a>
         <span class="mx-2">/</span>
-        <a href="/produits" class="hover:text-blue-600">Produits</a>
+        <a href="/produits" class="hover:text-royal">Produits</a>
         <span class="mx-2">/</span>
-        <a href={`/produits/${categorySlug}`} class="hover:text-blue-600">{categoryName}</a>
+        <a href={`/produits/${categorySlug}`} class="hover:text-royal">{categoryName}</a>
         <span class="mx-2">/</span>
         <span class="text-gray-900">{product.name}</span>
       </nav>
@@ -135,7 +135,7 @@ const breadcrumbJsonLd = {
       <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
         <!-- Image Gallery -->
         <div>
-          <div class="aspect-[4/3] overflow-hidden rounded-lg bg-gray-100 mb-4">
+          <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 mb-4">
             <img
               src={productImageUrl || `https://placehold.co/1200x900/e5e7eb/6b7280?text=${encodeURIComponent(product.name || 'Product')}`}
               alt={product.name}
@@ -150,7 +150,7 @@ const breadcrumbJsonLd = {
           {galleryUrls.length > 0 && (
             <div class="grid grid-cols-4 gap-4">
               {galleryUrls.map((imageUrl) => (
-                <div class="aspect-square overflow-hidden rounded-lg bg-gray-100 cursor-pointer hover:opacity-75 transition">
+                <div class="aspect-square overflow-hidden rounded-xl bg-gray-100 cursor-pointer hover:opacity-75 transition">
                   <img
                     src={imageUrl}
                     alt={product.name}
@@ -171,7 +171,7 @@ const breadcrumbJsonLd = {
           {(typeof product.brand === 'object' ? product.brand?.name : product.brand) && (
             <p class="text-sm text-gray-500 mb-2">{typeof product.brand === 'object' ? product.brand?.name : product.brand}</p>
           )}
-          <h1 class="text-3xl font-bold text-gray-900 mb-4">
+          <h1 class="text-h1 text-marine mb-4">
             {product.name}
           </h1>
 
@@ -283,7 +283,7 @@ const breadcrumbJsonLd = {
 
           {/* Features */}
           <div class="border-t border-gray-200 pt-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Services inclus</h3>
+            <h3 class="text-h3 text-marine mb-4">Services inclus</h3>
             <ul class="space-y-3">
               <li class="flex items-start">
                 <svg class="h-6 w-6 text-success mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -316,20 +316,8 @@ const breadcrumbJsonLd = {
 
       {/* Product Description */}
       <div class="mt-16 border-t border-gray-200 pt-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Description du produit</h2>
+        <h2 class="text-h2 text-marine mb-6">Description du produit</h2>
         <div class="prose prose-lg prose-blue max-w-none" set:html={sanitizeHtml(product.description || '')} />
-        <div class="mt-8 p-6 bg-blue-100 rounded-lg">
-          <h3 class="text-lg font-semibold text-blue-900 mb-2">Besoin de plus d'informations ?</h3>
-          <p class="text-marine mb-4">
-            Nos experts sont à votre disposition pour vous conseiller et vous aider à faire le meilleur choix.
-          </p>
-          <a href="/contact" class="inline-flex items-center text-blue-600 hover:text-marine font-medium">
-            Nous contacter
-            <svg class="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-        </div>
       </div>
     </div>
   </section>
@@ -338,7 +326,7 @@ const breadcrumbJsonLd = {
   {relatedProducts.length > 0 && (
     <section class="bg-page py-16">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-8">Produits similaires</h2>
+        <h2 class="text-h2 text-marine mb-8">Produits similaires</h2>
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {relatedProducts.map((relatedProduct) => (
             <ProductCard {...relatedProduct} />
@@ -349,9 +337,9 @@ const breadcrumbJsonLd = {
   )}
 
   {/* CTA Section */}
-  <section class="bg-blue-900 text-white py-12">
+  <section class="bg-marine text-white py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-2xl font-bold mb-4">
+      <h2 class="text-h2 text-white mb-4">
         Besoin de conseils ?
       </h2>
       <p class="text-lg text-blue-100 mb-6">
@@ -360,7 +348,7 @@ const breadcrumbJsonLd = {
       <div class="flex flex-col gap-4 sm:flex-row sm:justify-center">
         <a
           href="/contact"
-          class="inline-flex items-center justify-center rounded-md bg-white px-8 py-3 text-base font-semibold text-blue-900 hover:bg-blue-100 transition-colors"
+          class="inline-flex items-center justify-center rounded-full bg-white px-8 py-3 text-base font-semibold text-marine hover:bg-blue-100 transition-colors"
         >
           Nous contacter
         </a>
