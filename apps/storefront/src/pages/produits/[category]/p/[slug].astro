@@ -12,7 +12,7 @@ import QuoteRequestForm from '../../../../components/QuoteRequestForm.tsx';
 
 const { category, slug } = Astro.params;
 
-// Get the product from Directus
+// Get the product from Medusa
 const product = await getProductBySlug(slug!);
 
 if (!product) {

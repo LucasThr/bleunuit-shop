@@ -1,5 +1,5 @@
 // URL slug helpers. Categories/subcategories may not have a `slug` field
-// populated in Directus yet, so we fall back to a slugified `name`.
+// populated in Medusa yet, so we fall back to a slugified `name`.
 
 export function slugify(value: string): string {
   return value

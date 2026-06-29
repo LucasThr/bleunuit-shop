@@ -11,9 +11,9 @@ import { mapProductToCard } from "../utils/product-card";
 import { slugFor } from "../utils/slugs";
 
 // Every call degrades independently: if a collection is missing (migration
-// not run yet) or Directus is down, the hardcoded fallbacks below render.
+// not run yet) or Medusa is down, the hardcoded fallbacks below render.
 const logFail = (section: string) => (error: unknown) => {
-  console.error(`Homepage: failed to load ${section} from Directus`, error);
+  console.error(`Homepage: failed to load ${section} from Medusa`, error);
   return null;
 };
 const [products, categories, brandsData, homepage, testimonialsData, storesData] =
@@ -422,7 +422,7 @@ const featuredBrands = (brandsData ?? [])
                 Aucun produit en vedette pour le moment.
               </p>
               <p class="mt-2 text-sm text-gray-500">
-                Ajoutez des produits via Directus pour enrichir la vitrine.
+                Ajoutez des produits via Medusa pour enrichir la vitrine.
               </p>
             </div>
           )
@@ -587,7 +587,7 @@ const featuredBrands = (brandsData ?? [])
                 ))
               ) : (
                 <div class="col-span-2 rounded-2xl border border-dashed border-gray-200 bg-white px-6 py-8 text-center text-sm text-gray-500">
-                  Ajoutez vos marques dans Directus pour les mettre en avant.
+                  Ajoutez vos marques dans Medusa pour les mettre en avant.
                 </div>
               )
             }

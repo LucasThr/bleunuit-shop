@@ -42,7 +42,7 @@ export const GET: APIRoute = async ({ site, url }) => {
       if (post.slug) paths.push(`/blog/${post.slug}`);
     }
   } catch {
-    // Directus unreachable: still serve the static routes.
+    // Medusa unreachable: still serve the static routes.
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

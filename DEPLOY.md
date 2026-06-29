@@ -115,7 +115,7 @@ npx medusa user -e contact@bleunuit.fr -p 'a-strong-password'  # admin login for
 Then grab the two values the storefront needs at build time:
 - **Publishable key** — admin (`/app`) → Settings → Publishable API Keys.
 - **Region id** — `curl https://api.bleunuit.fr/store/regions -H "x-publishable-api-key: pk_xxx"`.
-
+- **Region id** — `curl https://backend-production-9ca1.up.railway.app/store/regions -H "x-publishable-api-key: pk_1cdb8db54014cad91a9b14706ac5c3f44659923cbee8bf2e410e00b3651eadc4"`.
 ---
 
 ## 5. Storefront service

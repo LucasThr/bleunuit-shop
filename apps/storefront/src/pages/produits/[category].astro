@@ -8,7 +8,7 @@ import { slugFor } from '../../utils/slugs';
 
 const { category } = Astro.params;
 
-// Get the current category from Directus
+// Get the current category from Medusa
 const currentCategory = await getCategoryBySlug(category!);
 
 if (!currentCategory) {

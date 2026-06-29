@@ -7,7 +7,7 @@ import { slugFor } from "../utils/slugs";
 import type { Category, Subcategory } from "../utils/catalog-client";
 import CartButton from "./cart/CartButton.tsx";
 
-// Fetch categories and subcategories from Directus; if the CMS is
+// Fetch categories and subcategories from Medusa; if the CMS is
 // unreachable the nav falls back to its static links instead of erroring.
 let allCategories: Category[] = [];
 let allSubcategories: Subcategory[] = [];
@@ -17,7 +17,7 @@ try {
     getAllSubcategories(),
   ]);
 } catch (error) {
-  console.error("Header: failed to load navigation from Directus", error);
+  console.error("Header: failed to load navigation from Medusa", error);
 }
 // Group subcategories by category
 const subcategoriesByCategory: Record<string, Subcategory[]> = {};

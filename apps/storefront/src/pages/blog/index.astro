@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { getAllBlogPosts } from '../../utils/cms-client';
 
-// Get blog posts from Directus
+// Get blog posts from Medusa
 const allPosts = await getAllBlogPosts();
 const posts = allPosts.map(post => ({
   title: post.title,
