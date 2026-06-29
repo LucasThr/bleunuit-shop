@@ -14,7 +14,7 @@
 # COPY across stages — unlike pnpm's symlinked store. That directory is what the
 # runtime image actually runs. Run with: docker run -p 9000:9000 bleunuit-backend
 
-FROM node:lts-alpine AS base
+FROM node:lts-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
@@ -40,7 +40,7 @@ RUN pnpm --filter @dtc/backend build
 
 # Install production deps inside the emitted server (npm = flat, copy-safe).
 WORKDIR /repo/apps/backend/.medusa/server
-RUN npm install --omit=dev
+RUN --mount=type=cache,target=/root/.npm npm install --omit=dev
 
 # --- minimal runtime image ---
 FROM base AS runtime
