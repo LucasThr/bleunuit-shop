@@ -40,7 +40,7 @@ RUN pnpm --filter @dtc/backend build
 
 # Install production deps inside the emitted server (npm = flat, copy-safe).
 WORKDIR /repo/apps/backend/.medusa/server
-RUN --mount=type=cache,target=/root/.npm npm install --omit=dev
+RUN npm install --omit=dev
 
 # --- minimal runtime image ---
 FROM base AS runtime
