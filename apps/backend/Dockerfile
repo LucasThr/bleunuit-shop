@@ -30,6 +30,12 @@ COPY apps/storefront/package.json ./apps/storefront/
 RUN pnpm install --frozen-lockfile --filter @dtc/backend...
 
 COPY apps/backend ./apps/backend
+# `medusa build` evaluates medusa-config.ts, which fails closed without these.
+# They're throwaway build-only placeholders — the build never uses real auth
+# secrets, and this stage's ENV does not reach the runtime image (which is a
+# separate `FROM base` stage), so the real secrets injected by the deploy env
+# at runtime are still the only ones the running server ever sees.
+ENV JWT_SECRET=build COOKIE_SECRET=build
 RUN pnpm --filter @dtc/backend build
 
 # Install production deps inside the emitted server (npm = flat, copy-safe).
