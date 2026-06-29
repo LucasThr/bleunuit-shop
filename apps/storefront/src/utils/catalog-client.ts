@@ -13,6 +13,7 @@ export type Category = {
   slug: string;
   description?: string;
   icon?: string;
+  image?: string;
   order?: number;
   show_in_menu: boolean;
 };
@@ -71,7 +72,11 @@ type MedusaCategory = {
   description?: string | null;
   rank?: number | null;
   parent_category_id?: string | null;
-  metadata?: { icon?: string | null; show_in_menu?: boolean } | null;
+  metadata?: {
+    icon?: string | null;
+    image?: string | null;
+    show_in_menu?: boolean;
+  } | null;
 };
 
 type MedusaProduct = {
@@ -109,6 +114,7 @@ function toCategory(c: MedusaCategory): Category {
     slug: c.handle,
     description: c.description ?? "",
     icon: c.metadata?.icon ?? "",
+    image: c.metadata?.image ?? "",
     order: c.rank ?? 0,
     show_in_menu: c.metadata?.show_in_menu === true,
   };
