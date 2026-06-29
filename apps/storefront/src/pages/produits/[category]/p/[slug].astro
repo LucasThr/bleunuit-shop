@@ -2,6 +2,7 @@
 import Layout from '../../../../layouts/Layout.astro';
 import ProductCard from '../../../../components/ProductCard.astro';
 import JsonLd from '../../../../components/JsonLd.astro';
+import Breadcrumb from '../../../../components/Breadcrumb.astro';
 import { getProductBySlug, getProductsByCategory } from '../../../../utils/catalog-client';
 import { saleMode } from '../../../../utils/sale-mode';
 import { mapProductToCard, productImageUrl as buildImageUrl } from '../../../../utils/product-card';
@@ -115,19 +116,18 @@ const breadcrumbJsonLd = {
   <JsonLd data={productJsonLd} />
   <JsonLd data={breadcrumbJsonLd} />
   <!-- Breadcrumb -->
-  <section class="bg-page py-4">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <nav class="text-sm text-gray-700">
-        <a href="/" class="hover:text-royal">Accueil</a>
-        <span class="mx-2">/</span>
-        <a href="/produits" class="hover:text-royal">Produits</a>
-        <span class="mx-2">/</span>
-        <a href={`/produits/${categorySlug}`} class="hover:text-royal">{categoryName}</a>
-        <span class="mx-2">/</span>
-        <span class="text-gray-900">{product.name}</span>
-      </nav>
+  <div class="border-b border-gray-200 bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-3.5 sm:px-6 lg:px-8">
+      <Breadcrumb
+        items={[
+          { name: 'Accueil', href: '/' },
+          { name: 'Produits', href: '/produits' },
+          { name: categoryName, href: `/produits/${categorySlug}` },
+          { name: product.name },
+        ]}
+      />
     </div>
-  </section>
+  </div>
 
   <!-- Product Detail -->
   <section class="py-12">

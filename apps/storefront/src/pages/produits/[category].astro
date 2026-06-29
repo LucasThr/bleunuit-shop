@@ -2,9 +2,12 @@
 import Layout from '../../layouts/Layout.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import JsonLd from '../../components/JsonLd.astro';
+import PageHero from '../../components/PageHero.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getCategoryBySlug, getSubcategoriesByCategory, getProductsByCategory } from '../../utils/catalog-client';
 import { mapProductToCard } from '../../utils/product-card';
 import { slugFor } from '../../utils/slugs';
+import { resolveCategoryImage } from '../../utils/category-image';
 
 const { category } = Astro.params;
 
@@ -47,55 +50,46 @@ const breadcrumbJsonLd = {
 const metaDescription =
   currentCategory.description ||
   `Découvrez notre sélection de ${currentCategory.name.toLowerCase()} chez Literie Bleunuit : marques reconnues, conseils d'experts et essai en magasin à Bruay-la-Buissière.`;
+
+const heroImage = resolveCategoryImage(currentCategory) || '/images/design/hero-bedroom.jpg';
 ---
 
 <Layout title={currentCategory.name} description={metaDescription}>
   <JsonLd data={breadcrumbJsonLd} />
   <!-- Header -->
-  <section class="relative isolate overflow-hidden bg-marine py-16 text-white sm:py-20">
-    <div
-      class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gold/20 blur-3xl"
-      aria-hidden="true"
-    >
-    </div>
-    <div
-      class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <nav class="mb-4 text-sm text-blue-100">
-        <a href="/" class="hover:text-white">Accueil</a>
-        <span class="mx-2">/</span>
-        <a href="/produits" class="hover:text-white">Produits</a>
-        <span class="mx-2">/</span>
-        <span class="text-white">{currentCategory.name}</span>
-      </nav>
-      <h1 class="text-display flex items-center gap-3">
-        {currentCategory.icon && <span class="text-5xl">{currentCategory.icon}</span>}
-        {currentCategory.name}
-      </h1>
-      {currentCategory.description && (
-        <p class="mt-4 max-w-3xl text-lg leading-relaxed text-white/75">
-          {currentCategory.description}
-        </p>
-      )}
+  <PageHero image={heroImage} imageAlt={`Catégorie ${currentCategory.name}`}>
+    <Breadcrumb
+      variant="dark"
+      class="mb-6"
+      items={[
+        { name: 'Accueil', href: '/' },
+        { name: 'Produits', href: '/produits' },
+        { name: currentCategory.name },
+      ]}
+    />
+    <h1 class="home-display text-display text-balance drop-shadow-[0_2px_18px_rgba(4,10,25,0.45)]">
+      {currentCategory.name}
+    </h1>
+    {currentCategory.description && (
+      <p class="mt-4 max-w-3xl text-lg leading-relaxed text-white/85 drop-shadow-[0_1px_10px_rgba(4,10,25,0.4)]">
+        {currentCategory.description}
+      </p>
+    )}
 
-      <!-- Subcategories -->
-      {categorySubcategories.length > 0 && (
-        <div class="mt-8 flex flex-wrap gap-2">
-          {categorySubcategories.map((sub) => (
-            <a
-              href={`/produits/${categorySlug}/${slugFor(sub)}`}
-              class="inline-flex items-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/20"
-            >
-              {sub.name}
-            </a>
-          ))}
-        </div>
-      )}
-    </div>
-  </section>
+    <!-- Subcategories -->
+    {categorySubcategories.length > 0 && (
+      <div class="mt-8 flex flex-wrap gap-2">
+        {categorySubcategories.map((sub) => (
+          <a
+            href={`/produits/${categorySlug}/${slugFor(sub)}`}
+            class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition hover:border-white/40 hover:bg-white/20"
+          >
+            {sub.name}
+          </a>
+        ))}
+      </div>
+    )}
+  </PageHero>
 
   <!-- Filters and Products -->
   <section class="py-12">

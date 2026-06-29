@@ -1,5 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import PageHero from '../../components/PageHero.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getAllBlogPosts } from '../../utils/cms-client';
 
 // Get blog posts from Medusa
@@ -32,26 +34,32 @@ function formatDate(dateString: string) {
 
 <Layout title="Blog" description="Conseils et astuces pour améliorer votre sommeil. Découvrez nos guides sur la literie et le bien-être.">
   <!-- Header -->
-  <section class="relative isolate overflow-hidden bg-marine py-16 text-white sm:py-20">
-    <div
-      class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gold/20 blur-3xl"
-      aria-hidden="true"
+  <PageHero image="/images/design/hero-room.jpg" imageAlt="Chambre apaisante Bleunuit">
+    <Breadcrumb
+      variant="dark"
+      class="mb-6"
+      items={[{ name: 'Accueil', href: '/' }, { name: 'Blog' }]}
+    />
+    <p
+      class="flex items-center gap-2.5 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/80"
     >
-    </div>
-    <div
-      class="pointer-events-none absolute -bottom-32 left-1/4 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl"
-      aria-hidden="true"
-    >
-    </div>
-    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <h1 class="text-display">
-        Notre Blog
-      </h1>
-      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-white/75">
-        Conseils et astuces pour un sommeil de qualité
-      </p>
-    </div>
-  </section>
+      <svg
+        class="h-3.5 w-3.5 text-gold"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+      </svg>
+      Le journal du sommeil
+    </p>
+    <h1 class="home-display mt-5 text-display text-balance drop-shadow-[0_2px_18px_rgba(4,10,25,0.45)]">
+      Notre Blog
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/85 drop-shadow-[0_1px_10px_rgba(4,10,25,0.4)]">
+      Conseils et astuces pour un sommeil de qualité
+    </p>
+  </PageHero>
 
   <!-- Categories Filter -->
   <section class="bg-page py-6">

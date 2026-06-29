@@ -9,6 +9,7 @@ import {
 import { getHomepage, getAllStores, getTestimonials } from "../utils/cms-client";
 import { mapProductToCard } from "../utils/product-card";
 import { slugFor } from "../utils/slugs";
+import { resolveCategoryImage } from "../utils/category-image";
 
 // Every call degrades independently: if a collection is missing (migration
 // not run yet) or Medusa is down, the hardcoded fallbacks below render.
@@ -178,36 +179,9 @@ const categoriesToShow = featuredCategories.length
     }))
   : fallbackCategories;
 
-// Category tiles are photo-first. Priority: a real photo set in Medusa
-// (category.metadata.image) → a curated lifestyle photo matched by slug/name →
-// an intentional branded gradient for anything still unmatched.
-const categoryImageMap: Record<string, string> = {
-  matelas: "/images/categories/matelas.jpg",
-  sommiers: "/images/categories/sommiers.png",
-  sommier: "/images/categories/sommiers.png",
-  "tetes-de-lit": "/images/categories/tetes-de-lit.jpg",
-  "tete-de-lit": "/images/categories/tetes-de-lit.jpg",
-  accessoires: "/images/categories/accessoires.jpg",
-  "oreillers-couettes": "/images/categories/accessoires.jpg",
-  oreillers: "/images/categories/accessoires.jpg",
-  couettes: "/images/categories/accessoires.jpg",
-};
-const normalizeKey = (value: string) =>
-  value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
-const resolveCategoryImage = (category: {
-  image?: string;
-  slug?: string;
-  name?: string;
-}) =>
-  category.image ||
-  (category.slug && categoryImageMap[category.slug]) ||
-  (category.name && categoryImageMap[normalizeKey(category.name)]) ||
-  "";
+// Category tiles are photo-first. The resolver returns a real photo (Medusa
+// metadata or a curated lifestyle shot); anything unmatched falls back to an
+// intentional branded gradient below.
 const categoryTints = [
   "from-marine to-royal",
   "from-royal to-blue-500",

@@ -1,0 +1,65 @@
+---
+// Image-first banner for section/detail pages — the same photo + "bleu nuit"
+// scrim language as the homepage hero, sized down to a banner. Content
+// (breadcrumb, eyebrow, title, description, pills…) is passed via the slot and
+// bottom-anchored over the photo.
+interface Props {
+  image: string;
+  imageAlt?: string;
+  /** Inner container width — matches the page body below the hero. */
+  containerClass?: string;
+  eager?: boolean;
+}
+const {
+  image,
+  imageAlt = '',
+  containerClass = 'max-w-7xl',
+  eager = true,
+} = Astro.props;
+---
+
+<section
+  class="relative isolate flex min-h-[clamp(16rem,34vh,22rem)] items-end overflow-hidden text-white"
+>
+  <img
+    src={image}
+    alt={imageAlt}
+    class="absolute inset-0 -z-10 h-full w-full object-cover object-center"
+    width="1920"
+    height="1080"
+    fetchpriority={eager ? 'high' : undefined}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding="async"
+  />
+  <!-- "Bleu nuit" scrim, darkest at the bottom where the text sits. -->
+  <div
+    class="absolute inset-0 -z-10 bg-gradient-to-t from-blue-900/90 via-blue-900/55 to-blue-900/25"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class={`hero-rise home-sans relative mx-auto w-full px-4 pb-11 pt-16 sm:px-6 sm:pb-14 lg:px-8 ${containerClass}`}>
+    <slot />
+  </div>
+</section>
+
+<style>
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      translate: 0 16px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+  .hero-rise {
+    animation: hero-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-rise {
+      animation: none;
+    }
+  }
+</style>
