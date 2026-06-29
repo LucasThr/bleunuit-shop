@@ -50,9 +50,9 @@ const redisModules = process.env.REDIS_URL
 
 // Uploaded files (product + CMS images) go to S3-compatible object storage in
 // production — the container filesystem is ephemeral and wiped on every deploy.
-// Configured for Fly Tigris (the AWS_* vars are set by `fly storage create`).
+// Works with any S3-compatible store (e.g. Cloudflare R2) via the S3_* vars.
 // With no endpoint set (local dev) Medusa uses its default on-disk provider.
-const fileModule = process.env.AWS_ENDPOINT_URL_S3
+const fileModule = process.env.S3_ENDPOINT
   ? [
       {
         resolve: '@medusajs/medusa/file',
@@ -63,11 +63,11 @@ const fileModule = process.env.AWS_ENDPOINT_URL_S3
               id: 's3',
               options: {
                 file_url: process.env.S3_FILE_URL,
-                access_key_id: process.env.AWS_ACCESS_KEY_ID,
-                secret_access_key: process.env.AWS_SECRET_ACCESS_KEY,
-                region: process.env.AWS_REGION || 'auto',
-                bucket: process.env.BUCKET_NAME,
-                endpoint: process.env.AWS_ENDPOINT_URL_S3,
+                access_key_id: process.env.S3_ACCESS_KEY_ID,
+                secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
+                region: process.env.S3_REGION || 'auto',
+                bucket: process.env.S3_BUCKET,
+                endpoint: process.env.S3_ENDPOINT,
               },
             },
           ],

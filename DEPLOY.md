@@ -77,11 +77,11 @@ Then in the service settings:
   STORE_CORS=https://www.bleunuit.fr
   ADMIN_CORS=https://api.bleunuit.fr
   AUTH_CORS=https://api.bleunuit.fr,https://www.bleunuit.fr
-  AWS_ENDPOINT_URL_S3=https://<accountid>.r2.cloudflarestorage.com
-  AWS_ACCESS_KEY_ID=<r2 key>
-  AWS_SECRET_ACCESS_KEY=<r2 secret>
-  AWS_REGION=auto
-  BUCKET_NAME=bleunuit-uploads
+  S3_ENDPOINT=https://<accountid>.r2.cloudflarestorage.com
+  S3_ACCESS_KEY_ID=<r2 key>
+  S3_SECRET_ACCESS_KEY=<r2 secret>
+  S3_REGION=auto
+  S3_BUCKET=bleunuit-uploads
   S3_FILE_URL=https://pub-xxxx.r2.dev
   ```
 
