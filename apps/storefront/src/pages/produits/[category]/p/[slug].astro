@@ -43,8 +43,12 @@ const sale = saleMode(product);
 // Construct product image URL
 const productImageUrl = buildImageUrl(product.featured_image, 1200, 900, 85);
 
-// Gallery entries are full image URLs.
+// Gallery entries are full image URLs. Featured image first, deduped: the
+// thumbnail strip swaps them into the main frame on click.
 const galleryUrls = product.gallery ?? [];
+const allImages = [
+  ...new Set([productImageUrl, ...galleryUrls].filter(Boolean)),
+] as string[];
 
 // Get related products from same category
 const categoryId = productCategory?.id ?? String(product.category);
@@ -134,10 +138,11 @@ const breadcrumbJsonLd = {
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 gap-12 lg:grid-cols-2">
         <!-- Image Gallery -->
-        <div>
+        <div class="lg:sticky lg:top-24 lg:self-start">
           <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 mb-4">
             <img
-              src={productImageUrl || `https://placehold.co/1200x900/e5e7eb/6b7280?text=${encodeURIComponent(product.name || 'Product')}`}
+              id="product-main-image"
+              src={allImages[0] || `https://placehold.co/1200x900/e5e7eb/6b7280?text=${encodeURIComponent(product.name || 'Product')}`}
               alt={product.name}
               class="h-full w-full object-cover object-center"
               width="1200"
@@ -147,20 +152,27 @@ const breadcrumbJsonLd = {
             />
           </div>
 
-          {galleryUrls.length > 0 && (
+          {allImages.length > 1 && (
             <div class="grid grid-cols-4 gap-4">
-              {galleryUrls.map((imageUrl) => (
-                <div class="aspect-square overflow-hidden rounded-xl bg-gray-100 cursor-pointer hover:opacity-75 transition">
+              {allImages.map((imageUrl, index) => (
+                <button
+                  type="button"
+                  data-gallery-thumb
+                  data-image={imageUrl}
+                  aria-current={index === 0 ? 'true' : 'false'}
+                  aria-label={`Voir la photo ${index + 1} de ${product.name}`}
+                  class="aspect-square cursor-pointer overflow-hidden rounded-xl bg-gray-100 ring-2 ring-transparent ring-offset-2 transition hover:opacity-90 aria-current:ring-marine"
+                >
                   <img
                     src={imageUrl}
-                    alt={product.name}
+                    alt=""
                     class="h-full w-full object-cover object-center"
                     width="300"
                     height="300"
                     loading="lazy"
                     decoding="async"
                   />
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -356,3 +368,21 @@ const breadcrumbJsonLd = {
     </div>
   </section>
 </Layout>
+
+<script>
+  // Gallery: clicking a thumbnail swaps it into the main frame.
+  const mainImage = document.getElementById(
+    'product-main-image'
+  ) as HTMLImageElement | null;
+  const thumbs = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-gallery-thumb]')
+  );
+  thumbs.forEach((thumb) => {
+    thumb.addEventListener('click', () => {
+      const src = thumb.dataset.image;
+      if (!mainImage || !src) return;
+      mainImage.src = src;
+      thumbs.forEach((t) => t.setAttribute('aria-current', String(t === thumb)));
+    });
+  });
+</script>

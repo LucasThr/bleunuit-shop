@@ -1,6 +1,6 @@
 ---
 import Layout from '../../../layouts/Layout.astro';
-import ProductCard from '../../../components/ProductCard.astro';
+import ProductGrid from '../../../components/ProductGrid.astro';
 import JsonLd from '../../../components/JsonLd.astro';
 import PageHero from '../../../components/PageHero.astro';
 import Breadcrumb from '../../../components/Breadcrumb.astro';
@@ -38,10 +38,6 @@ if (category !== categorySlug || subcategory !== subcategorySlug) {
 // Get products filtered by subcategory
 const allProducts = await getProductsBySubcategory(currentSubcategory.id);
 const products = allProducts.map(mapProductToCard);
-
-// Get unique brands from filtered products
-const brandsSet = new Set(products.map(p => p.brand).filter(Boolean));
-const brands = Array.from(brandsSet);
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
@@ -88,39 +84,8 @@ const heroImage = resolveCategoryImage(currentCategory) || '/images/design/hero-
   <!-- Filters and Products -->
   <section class="py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <!-- Filter Bar -->
-      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-gray-700">
-          <span class="font-semibold text-gray-900">{products.length}</span> produit{products.length > 1 ? 's' : ''} trouvé{products.length > 1 ? 's' : ''}
-        </p>
-        {brands.length > 0 && (
-          <div class="flex gap-4">
-            <select class="rounded-xl border-gray-200 py-2 pl-3 pr-10 text-sm focus:border-marine focus:outline-none focus:ring-1 focus:ring-marine">
-              <option>Toutes les marques</option>
-              {brands.map((brand) => (
-                <option>{brand}</option>
-              ))}
-            </select>
-            <select class="rounded-xl border-gray-200 py-2 pl-3 pr-10 text-sm focus:border-marine focus:outline-none focus:ring-1 focus:ring-marine">
-              <option>Trier par</option>
-              <option>Prix croissant</option>
-              <option>Prix décroissant</option>
-              <option>Nouveautés</option>
-              <option>Popularité</option>
-            </select>
-          </div>
-        )}
-      </div>
-
-      <!-- Products Grid -->
-      {products.length > 0 ? (
-        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <ProductCard {...product} />
-          ))}
-        </div>
-      ) : (
-        <div class="rounded-3xl border border-dashed border-gray-200 bg-white p-10 text-center">
+      <ProductGrid products={products}>
+        <Fragment slot="empty">
           <p class="text-base font-semibold text-gray-700">Aucun produit disponible dans cette sous-catégorie pour le moment.</p>
           <a
             href={`/produits/${category}`}
@@ -128,8 +93,8 @@ const heroImage = resolveCategoryImage(currentCategory) || '/images/design/hero-
           >
             Voir tous les produits de la catégorie {currentCategory.name}
           </a>
-        </div>
-      )}
+        </Fragment>
+      </ProductGrid>
     </div>
   </section>
 

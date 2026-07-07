@@ -1,6 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import ProductCard from '../../components/ProductCard.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
 import JsonLd from '../../components/JsonLd.astro';
 import PageHero from '../../components/PageHero.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
@@ -32,10 +32,6 @@ const [categorySubcategories, allProducts] = await Promise.all([
 ]);
 
 const products = allProducts.map(mapProductToCard);
-
-// Get unique brands from filtered products
-const brandsSet = new Set(products.map(p => p.brand).filter(Boolean));
-const brands = Array.from(brandsSet);
 
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
@@ -94,36 +90,19 @@ const heroImage = resolveCategoryImage(currentCategory) || '/images/design/hero-
   <!-- Filters and Products -->
   <section class="py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <!-- Filter Bar -->
-      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p class="text-gray-700">
-          <span class="font-semibold text-gray-900">{products.length}</span> produits trouvés
-        </p>
-        <div class="flex gap-4">
-          <select class="rounded-xl border-gray-200 py-2 pl-3 pr-10 text-sm focus:border-marine focus:outline-none focus:ring-1 focus:ring-marine">
-            <option>Toutes les marques</option>
-            <option>Dunlopillo</option>
-            <option>Duvivier</option>
-            <option>André Renault</option>
-            <option>Simmons</option>
-            <option>Technilat</option>
-          </select>
-          <select class="rounded-xl border-gray-200 py-2 pl-3 pr-10 text-sm focus:border-marine focus:outline-none focus:ring-1 focus:ring-marine">
-            <option>Trier par</option>
-            <option>Prix croissant</option>
-            <option>Prix décroissant</option>
-            <option>Nouveautés</option>
-            <option>Popularité</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Products Grid -->
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <ProductCard {...product} />
-        ))}
-      </div>
+      <ProductGrid products={products}>
+        <Fragment slot="empty">
+          <p class="text-base font-semibold text-gray-700">
+            Aucun produit disponible dans cette catégorie pour le moment.
+          </p>
+          <a
+            href="/produits"
+            class="mt-4 inline-block font-medium text-royal hover:text-marine"
+          >
+            Voir toutes nos catégories
+          </a>
+        </Fragment>
+      </ProductGrid>
     </div>
   </section>
 

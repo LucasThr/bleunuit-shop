@@ -39,7 +39,11 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
 
     <!-- Content -->
     <div class="p-4">
-      <p class="text-sm text-gray-500 mb-1">{brand}</p>
+      {brand && (
+        <p class="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+          {brand}
+        </p>
+      )}
       <h3 class="text-h3 text-marine mb-2 line-clamp-2 group-hover:text-royal transition-colors">
         {title}
       </h3>

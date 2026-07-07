@@ -1,0 +1,119 @@
+---
+// Product listing grid shared by /produits and the category pages: count,
+// brand filter and price sort are wired client-side on the rendered cards
+// (no refetch). The empty state is customisable via the `empty` slot.
+import ProductCard from './ProductCard.astro';
+
+interface CardProduct {
+  title: string;
+  brand: string;
+  price: number;
+  promoPrice?: number;
+  image: string;
+  slug: string;
+  categorySlug: string;
+  categoryName?: string;
+}
+
+interface Props {
+  products: CardProduct[];
+}
+
+const { products } = Astro.props;
+
+const brands = [...new Set(products.map((p) => p.brand).filter(Boolean))].sort(
+  (a, b) => a.localeCompare(b, 'fr')
+);
+const effectivePrice = (p: CardProduct) =>
+  p.promoPrice && p.promoPrice < p.price ? p.promoPrice : p.price;
+
+const selectClass =
+  'rounded-xl border border-gray-200 bg-white py-2 pl-3 pr-8 text-sm text-gray-700 focus:border-marine focus:outline-none focus:ring-1 focus:ring-marine';
+---
+
+{
+  products.length > 0 ? (
+    <div data-product-grid>
+      <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p data-grid-count aria-live="polite" class="text-sm font-medium text-gray-700">
+          {products.length} produit{products.length > 1 ? 's' : ''}
+        </p>
+        {products.length > 1 && (
+          <div class="flex flex-wrap gap-3">
+            {brands.length > 1 && (
+              <select data-grid-brand aria-label="Filtrer par marque" class={selectClass}>
+                <option value="">Toutes les marques</option>
+                {brands.map((brand) => (
+                  <option value={brand}>{brand}</option>
+                ))}
+              </select>
+            )}
+            <select data-grid-sort aria-label="Trier les produits" class={selectClass}>
+              <option value="">Tri par défaut</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+            </select>
+          </div>
+        )}
+      </div>
+
+      <div data-grid class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((product, index) => (
+          <div
+            data-card
+            data-brand={product.brand}
+            data-price={effectivePrice(product)}
+            data-index={index}
+          >
+            <ProductCard {...product} />
+          </div>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <div class="rounded-3xl border border-dashed border-gray-200 bg-white p-10 text-center">
+      <slot name="empty">
+        <p class="text-base font-semibold text-gray-700">
+          Aucun produit disponible pour le moment.
+        </p>
+        <p class="mt-2 text-sm text-gray-500">
+          Revenez bientôt pour découvrir notre sélection.
+        </p>
+      </slot>
+    </div>
+  )
+}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-product-grid]').forEach((root) => {
+    const grid = root.querySelector<HTMLElement>('[data-grid]');
+    const count = root.querySelector<HTMLElement>('[data-grid-count]');
+    const brandSelect = root.querySelector<HTMLSelectElement>('[data-grid-brand]');
+    const sortSelect = root.querySelector<HTMLSelectElement>('[data-grid-sort]');
+    if (!grid) return;
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-card]'));
+
+    const apply = () => {
+      const brand = brandSelect?.value || '';
+      let visible = 0;
+      for (const card of cards) {
+        const show = !brand || card.dataset.brand === brand;
+        card.classList.toggle('hidden', !show);
+        if (show) visible++;
+      }
+      if (count) count.textContent = `${visible} produit${visible > 1 ? 's' : ''}`;
+
+      const sort = sortSelect?.value;
+      const ordered = [...cards].sort((a, b) =>
+        sort === 'price-asc' || sort === 'price-desc'
+          ? (Number(a.dataset.price) - Number(b.dataset.price)) *
+            (sort === 'price-asc' ? 1 : -1)
+          : Number(a.dataset.index) - Number(b.dataset.index)
+      );
+      ordered.forEach((card) => grid.appendChild(card));
+    };
+
+    brandSelect?.addEventListener('change', apply);
+    sortSelect?.addEventListener('change', apply);
+  });
+</script>
