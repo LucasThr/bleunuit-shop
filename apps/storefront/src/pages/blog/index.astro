@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import PageHero from '../../components/PageHero.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getAllBlogPosts } from '../../utils/cms-client';
@@ -33,9 +34,22 @@ function formatDate(dateString: string) {
     day: 'numeric'
   });
 }
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: 'Blog' },
+  ],
+};
+
+// Filter bar is built from the categories actually present in the posts.
+const blogCategories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
 ---
 
 <Layout title="Blog" description="Conseils et astuces pour améliorer votre sommeil. Découvrez nos guides sur la literie et le bien-être.">
+  <JsonLd data={breadcrumbJsonLd} />
   <!-- Header -->
   <PageHero image="/images/design/hero-room.jpg" imageAlt="Chambre apaisante Bleunuit">
     <Breadcrumb
@@ -65,31 +79,39 @@ function formatDate(dateString: string) {
   </PageHero>
 
   <!-- Categories Filter -->
-  <section class="bg-page py-6">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-wrap gap-3">
-        <button class="rounded-full bg-marine px-6 py-2 text-sm font-semibold text-white">
-          Tous les articles
-        </button>
-        <button class="rounded-full bg-white px-6 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors">
-          Conseils sommeil
-        </button>
-        <button class="rounded-full bg-white px-6 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors">
-          Guides produits
-        </button>
-        <button class="rounded-full bg-white px-6 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors">
-          Actualités
-        </button>
+  {blogCategories.length > 0 && (
+    <section class="bg-page py-6">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap gap-3">
+          <button
+            data-blog-filter="all"
+            class="rounded-full bg-marine px-6 py-2 text-sm font-semibold text-white"
+          >
+            Tous les articles
+          </button>
+          {blogCategories.map((category) => (
+            <button
+              data-blog-filter={category}
+              class="rounded-full bg-white px-6 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              {categoryNames[category] || category}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  )}
 
   <!-- Blog Posts -->
   <section class="py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
-          <article class="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
+          <article
+            data-blog-card
+            data-category={post.category}
+            class="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+          >
             <a href={`/blog/${post.slug}`} class="block">
               <!-- Image -->
               <div class="aspect-[16/9] overflow-hidden bg-gray-200">
@@ -218,6 +240,34 @@ function formatDate(dateString: string) {
           button.textContent = label ?? "S'inscrire";
         }
       }
+    });
+  </script>
+
+  <script>
+    // Client-side blog category filter (same pattern as ProductGrid): toggle
+    // card visibility and the active button styling, no navigation.
+    const filterButtons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>('[data-blog-filter]')
+    );
+    const cards = Array.from(
+      document.querySelectorAll<HTMLElement>('[data-blog-card]')
+    );
+    const ACTIVE = ['bg-marine', 'text-white'];
+    const INACTIVE = ['bg-white', 'text-gray-700', 'hover:bg-gray-100', 'transition-colors'];
+
+    filterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const filter = button.dataset.blogFilter;
+        filterButtons.forEach((b) => {
+          const isActive = b === button;
+          ACTIVE.forEach((c) => b.classList.toggle(c, isActive));
+          INACTIVE.forEach((c) => b.classList.toggle(c, !isActive));
+        });
+        cards.forEach((card) => {
+          const show = filter === 'all' || card.dataset.category === filter;
+          card.classList.toggle('hidden', !show);
+        });
+      });
     });
   </script>
 </Layout>

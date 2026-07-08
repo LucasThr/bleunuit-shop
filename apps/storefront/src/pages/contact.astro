@@ -35,9 +35,32 @@ const hours = contact?.hours?.length
 
 // The per-location FurnitureStore schema now lives here (the /magasins page is
 // retired). Sourced from the cms store record for the discrete address/geo
-// fields the schema needs; the openingHoursSpecification mirrors the default
-// schedule shown above.
+// fields the schema needs.
 const pageUrl = new URL('/contact', Astro.site).href;
+
+// The structured schedule matching the static fallback shown above. When the
+// CMS supplies visible hours (free-text French), we omit this from the schema
+// rather than risk contradicting them — an absent schema beats a wrong one.
+const DEFAULT_OPENING_HOURS_SPEC = [
+  {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    opens: '09:30',
+    closes: '12:30',
+  },
+  {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    opens: '14:00',
+    closes: '19:00',
+  },
+  {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Saturday'],
+    opens: '09:30',
+    closes: '19:00',
+  },
+];
 const storeJsonLd = stores.map((store) => ({
   '@context': 'https://schema.org',
   '@type': 'FurnitureStore',
@@ -59,26 +82,11 @@ const storeJsonLd = stores.map((store) => ({
       longitude: store.longitude,
     },
   }),
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '09:30',
-      closes: '12:30',
-    },
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      opens: '14:00',
-      closes: '19:00',
-    },
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Saturday'],
-      opens: '09:30',
-      closes: '19:00',
-    },
-  ],
+  // Only emit hours when the page shows the static fallback; when the CMS
+  // drives the visible hours, omit rather than risk a contradictory schema.
+  ...(!contact?.hours?.length && {
+    openingHoursSpecification: DEFAULT_OPENING_HOURS_SPEC,
+  }),
 }));
 ---
 
