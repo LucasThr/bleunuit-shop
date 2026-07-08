@@ -3,6 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 import PageHero from '../../components/PageHero.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getAllBlogPosts } from '../../utils/cms-client';
+import { setPageCacheHeader } from '../../utils/http-cache';
+
+setPageCacheHeader(Astro.response);
 
 // Get blog posts from Medusa
 const allPosts = await getAllBlogPosts();

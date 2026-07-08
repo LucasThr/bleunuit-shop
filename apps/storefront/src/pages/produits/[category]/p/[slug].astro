@@ -10,6 +10,7 @@ import { slugFor } from '../../../../utils/slugs';
 import { sanitizeHtml } from '../../../../utils/sanitize';
 import AddToCartButton from '../../../../components/cart/AddToCartButton.tsx';
 import QuoteRequestForm from '../../../../components/QuoteRequestForm.tsx';
+import { setPageCacheHeader } from '../../../../utils/http-cache';
 
 const { category, slug } = Astro.params;
 
@@ -29,6 +30,8 @@ const categorySlug = productCategory ? slugFor(productCategory) : 'produits';
 if (category !== categorySlug) {
   return Astro.redirect(`/produits/${categorySlug}/p/${slug}`, 301);
 }
+
+setPageCacheHeader(Astro.response);
 
 // Parse product prices
 const productPrice = parseFloat(product.price) || 0;

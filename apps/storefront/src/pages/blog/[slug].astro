@@ -5,6 +5,7 @@ import PageHero from '../../components/PageHero.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getBlogPostBySlug, getBlogPostsByCategory } from '../../utils/cms-client';
 import { sanitizeHtml } from '../../utils/sanitize';
+import { setPageCacheHeader } from '../../utils/http-cache';
 
 const { slug } = Astro.params;
 
@@ -13,6 +14,8 @@ const postEntry = await getBlogPostBySlug(slug!);
 if (!postEntry) {
   return Astro.rewrite('/404');
 }
+
+setPageCacheHeader(Astro.response);
 
 const categoryNames: Record<string, string> = {
   'sleep-tips': 'Conseils sommeil',

@@ -8,6 +8,7 @@ import { getCategoryBySlug, getSubcategoriesByCategory, getProductsByCategory } 
 import { mapProductToCard } from '../../utils/product-card';
 import { slugFor } from '../../utils/slugs';
 import { resolveCategoryImage } from '../../utils/category-image';
+import { setPageCacheHeader } from '../../utils/http-cache';
 
 const { category } = Astro.params;
 
@@ -24,6 +25,8 @@ const categorySlug = slugFor(currentCategory);
 if (category !== categorySlug) {
   return Astro.redirect(`/produits/${categorySlug}`, 301);
 }
+
+setPageCacheHeader(Astro.response);
 
 // Get subcategories and products for this category
 const [categorySubcategories, allProducts] = await Promise.all([
