@@ -38,7 +38,11 @@ const categoryTints = [
 <Layout title="Nos Produits" description="Découvrez notre large gamme de matelas, sommiers, têtes de lit et accessoires de literie">
   <div class="home-sans">
     <!-- Header -->
-    <PageHero image="/images/design/hero-bedroom.jpg" imageAlt="Showroom literie Bleunuit">
+    <PageHero
+      image="/images/design/hero-bedroom.jpg"
+      srcset="/images/design/hero-bedroom-768.jpg 768w, /images/design/hero-bedroom-1280.jpg 1280w, /images/design/hero-bedroom.jpg 1920w"
+      imageAlt="Showroom literie Bleunuit"
+    >
       <Breadcrumb
         variant="dark"
         class="mb-6"

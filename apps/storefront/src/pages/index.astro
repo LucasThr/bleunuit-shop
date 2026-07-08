@@ -213,6 +213,10 @@ const featuredBrands = (brandsData ?? [])
       class="absolute inset-0 -z-10 h-full w-full object-cover"
       width="1920"
       height="1280"
+      srcset={hero.image === "/images/design/hero-room.jpg"
+        ? "/images/design/hero-room-768.jpg 768w, /images/design/hero-room-1280.jpg 1280w, /images/design/hero-room.jpg 1920w"
+        : undefined}
+      sizes="100vw"
       fetchpriority="high"
       decoding="async"
     />

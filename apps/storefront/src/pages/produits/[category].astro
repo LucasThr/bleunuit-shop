@@ -48,12 +48,17 @@ const metaDescription =
   `Découvrez notre sélection de ${currentCategory.name.toLowerCase()} chez Literie Bleunuit : marques reconnues, conseils d'experts et essai en magasin à Bruay-la-Buissière.`;
 
 const heroImage = resolveCategoryImage(currentCategory) || '/images/design/hero-bedroom.jpg';
+// Responsive candidates only apply to the local fallback; a CMS/category photo
+// is served as-is (no generated variants).
+const heroSrcset = heroImage === '/images/design/hero-bedroom.jpg'
+  ? '/images/design/hero-bedroom-768.jpg 768w, /images/design/hero-bedroom-1280.jpg 1280w, /images/design/hero-bedroom.jpg 1920w'
+  : undefined;
 ---
 
 <Layout title={currentCategory.name} description={metaDescription}>
   <JsonLd data={breadcrumbJsonLd} />
   <!-- Header -->
-  <PageHero image={heroImage} imageAlt={`Catégorie ${currentCategory.name}`}>
+  <PageHero image={heroImage} srcset={heroSrcset} imageAlt={`Catégorie ${currentCategory.name}`}>
     <Breadcrumb
       variant="dark"
       class="mb-6"

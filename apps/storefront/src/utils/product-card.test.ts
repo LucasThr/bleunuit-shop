@@ -38,7 +38,7 @@ describe("mapProductToCard", () => {
 
   it("returns a placeholder image when the product has no featured_image", () => {
     const card = mapProductToCard(makeProduct({ featured_image: null }));
-    expect(card.image).toContain("placehold.co");
+    expect(card.image).toBe("/images/placeholder-product.svg");
   });
 
   it("maps an empty brand to an empty string", () => {

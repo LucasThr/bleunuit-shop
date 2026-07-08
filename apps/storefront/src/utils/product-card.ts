@@ -22,9 +22,7 @@ export function mapProductToCard(product: Product) {
     brand: product.brand || '',
     price: parseFloat(product.price) || 0,
     promoPrice: product.promo_price ? parseFloat(product.promo_price) : undefined,
-    image:
-      product.featured_image ||
-      `https://placehold.co/800x600/e5e7eb/6b7280?text=${encodeURIComponent(product.name || 'Product')}`,
+    image: product.featured_image || '/images/placeholder-product.svg',
     slug: product.slug || '',
     // Routable fallback for a product without a parent category (aligned with
     // the product page fallback), never '' which would yield a `//` URL.

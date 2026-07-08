@@ -4,8 +4,8 @@
 // branded gradient on the homepage tiles, a showroom photo on page heroes).
 const categoryImageMap: Record<string, string> = {
   matelas: "/images/categories/matelas.jpg",
-  sommiers: "/images/categories/sommiers.png",
-  sommier: "/images/categories/sommiers.png",
+  sommiers: "/images/categories/sommiers.jpg",
+  sommier: "/images/categories/sommiers.jpg",
   "tetes-de-lit": "/images/categories/tetes-de-lit.jpg",
   "tete-de-lit": "/images/categories/tetes-de-lit.jpg",
   accessoires: "/images/categories/accessoires.jpg",
