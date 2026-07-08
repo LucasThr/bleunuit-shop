@@ -20,9 +20,7 @@ if (!currentCategory || !currentSubcategory) {
 }
 
 // Verify subcategory belongs to category
-const subcatCategoryId = typeof currentSubcategory.category === 'object'
-  ? currentSubcategory.category.id
-  : currentSubcategory.category;
+const subcatCategoryId = currentSubcategory.category;
 
 if (subcatCategoryId !== currentCategory.id) {
   return Astro.rewrite('/404');

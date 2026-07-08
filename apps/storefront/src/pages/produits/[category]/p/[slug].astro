@@ -58,7 +58,7 @@ const relatedProducts = allProducts
   .slice(0, 3)
   .map(mapProductToCard);
 
-const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+const brandName = product.brand;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const plainDescription = (product.description || '')
   .replace(/<[^>]*>/g, ' ')
@@ -180,8 +180,8 @@ const breadcrumbJsonLd = {
 
         <!-- Product Info -->
         <div>
-          {(typeof product.brand === 'object' ? product.brand?.name : product.brand) && (
-            <p class="text-sm text-gray-500 mb-2">{typeof product.brand === 'object' ? product.brand?.name : product.brand}</p>
+          {product.brand && (
+            <p class="text-sm text-gray-500 mb-2">{product.brand}</p>
           )}
           <h1 class="text-h1 text-marine mb-4">
             {product.name}

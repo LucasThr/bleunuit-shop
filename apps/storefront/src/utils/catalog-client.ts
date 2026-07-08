@@ -72,6 +72,7 @@ type MedusaCategory = {
   description?: string | null;
   rank?: number | null;
   parent_category_id?: string | null;
+  parent_category?: { id: string; name: string; handle: string } | null;
   metadata?: {
     icon?: string | null;
     image?: string | null;
@@ -100,6 +101,7 @@ type MedusaProduct = {
 const PRODUCT_FIELDS =
   "id,title,handle,description,thumbnail,metadata," +
   "categories.id,categories.name,categories.handle,categories.parent_category_id," +
+  "categories.parent_category.id,categories.parent_category.name,categories.parent_category.handle," +
   "variants.id,*variants.calculated_price";
 
 const CATEGORY_FIELDS =
@@ -135,6 +137,10 @@ function toProduct(p: MedusaProduct): Product {
   const cats = p.categories ?? [];
   const parent = cats.find((c) => !c.parent_category_id) ?? null;
   const sub = cats.find((c) => c.parent_category_id) ?? null;
+  // A product assigned only to a subcategory has no parent in `cats`; recover it
+  // from the subcategory's own parent_category so the canonical URL is correct.
+  const parentFromSub = sub?.parent_category ?? null;
+  const effectiveParent = parent ?? parentFromSub;
   const price = p.variants?.[0]?.calculated_price?.calculated_amount;
   const promo = p.metadata?.promo_price;
   return {
@@ -142,8 +148,8 @@ function toProduct(p: MedusaProduct): Product {
     name: p.title,
     slug: p.handle,
     brand: p.metadata?.brand ?? "",
-    category: parent
-      ? { id: parent.id, name: parent.name, slug: parent.handle }
+    category: effectiveParent
+      ? { id: effectiveParent.id, name: effectiveParent.name, slug: effectiveParent.handle }
       : null,
     subcategory: sub
       ? { id: sub.id, name: sub.name, slug: sub.handle }

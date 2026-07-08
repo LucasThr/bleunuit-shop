@@ -26,7 +26,8 @@ export const GET: APIRoute = async ({ site, url }) => {
     }
 
     for (const sub of subcategories) {
-      const categoryId = typeof sub.category === 'object' ? sub.category.id : sub.category;
+      const categoryId = sub.category;
+      if (!categoryId) continue;
       const category = categoriesById.get(categoryId);
       if (category) {
         paths.push(`/produits/${slugFor(category)}/${slugFor(sub)}`);
@@ -34,7 +35,7 @@ export const GET: APIRoute = async ({ site, url }) => {
     }
 
     for (const product of products) {
-      if (!product.slug || typeof product.category !== 'object') continue;
+      if (!product.slug || !product.category) continue;
       paths.push(`/produits/${slugFor(product.category)}/p/${product.slug}`);
     }
 
