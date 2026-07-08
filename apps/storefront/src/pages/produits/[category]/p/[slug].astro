@@ -3,7 +3,7 @@ import Layout from '../../../../layouts/Layout.astro';
 import ProductCard from '../../../../components/ProductCard.astro';
 import JsonLd from '../../../../components/JsonLd.astro';
 import Breadcrumb from '../../../../components/Breadcrumb.astro';
-import { getProductBySlug, getProductsByCategory } from '../../../../utils/catalog-client';
+import { getProductBySlug, getRelatedProducts } from '../../../../utils/catalog-client';
 import { saleMode } from '../../../../utils/sale-mode';
 import { mapProductToCard, productImageUrl as buildImageUrl } from '../../../../utils/product-card';
 import { slugFor } from '../../../../utils/slugs';
@@ -52,10 +52,7 @@ const allImages = [
 
 // Get related products from same category
 const categoryId = productCategory?.id ?? String(product.category);
-const allProducts = await getProductsByCategory(categoryId);
-const relatedProducts = allProducts
-  .filter(p => p.slug !== slug)
-  .slice(0, 3)
+const relatedProducts = (await getRelatedProducts(categoryId, slug!, 3))
   .map(mapProductToCard);
 
 const brandName = product.brand;

@@ -12,8 +12,10 @@ import { resolveCategoryImage } from '../../../utils/category-image';
 const { category, subcategory } = Astro.params;
 
 // Get the current category and subcategory from Medusa
-const currentCategory = await getCategoryBySlug(category!);
-const currentSubcategory = await getSubcategoryBySlug(subcategory!);
+const [currentCategory, currentSubcategory] = await Promise.all([
+  getCategoryBySlug(category!),
+  getSubcategoryBySlug(subcategory!),
+]);
 
 if (!currentCategory || !currentSubcategory) {
   return Astro.rewrite('/404');
