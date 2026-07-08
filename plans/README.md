@@ -14,7 +14,7 @@ statut au commit `297b7c2` — voir « Findings vérifiés » plus bas.
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
 | 001  | Produits sans catégorie parente : sitemap, liens, canonical | P1 | M | — | DONE |
-| 002  | Baseline de vérification : typecheck, tests backend, CI | P1 | M | 001 | TODO |
+| 002  | Baseline de vérification : typecheck, tests backend, CI | P1 | M | 001 | DONE |
 | 003  | Couche catalogue : mémoïsation TTL + requêtes ciblées | P1 | M | 001 | TODO |
 | 004  | Images locales : poids, formats, orphelins, placeholder local | P2 | M | — (conflit doux avec 001 sur `product-card.ts`) | TODO |
 | 005  | Cache-Control sur les pages SSR stables | P2 | S | — | TODO |

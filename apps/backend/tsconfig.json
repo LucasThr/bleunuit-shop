@@ -30,6 +30,8 @@
     "node_modules",
     ".medusa/server",
     ".medusa/admin",
-    ".cache"
+    ".cache",
+    "src/admin"
   ]
+  // src/admin is typechecked/compiled by Vite separately (uses import.meta).
 }

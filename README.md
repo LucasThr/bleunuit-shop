@@ -73,7 +73,7 @@ Run from the repo root:
 | `pnpm backend:dev` | Backend only |
 | `pnpm storefront:dev` | Storefront only |
 | `pnpm build` | Production build of all apps |
-| `pnpm lint` | Lint all apps |
+| `pnpm typecheck` | Typecheck all apps |
 | `pnpm test` | Run all tests |
 | `pnpm backend:seed` | Seed initial backend data |
 
