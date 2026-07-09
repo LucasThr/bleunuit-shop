@@ -1,18 +1,22 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import ProductGrid from '../../components/ProductGrid.astro';
+import JsonLd from '../../components/JsonLd.astro';
 import PageHero from '../../components/PageHero.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getAllProducts, getAllBrands, getAllCategories } from '../../utils/catalog-client';
 import { mapProductToCard } from '../../utils/product-card';
 import { slugFor } from '../../utils/slugs';
 import { resolveCategoryImage } from '../../utils/category-image';
+import { setPageCacheHeader } from '../../utils/http-cache';
 
 const [categories, allProductsData, brandsData] = await Promise.all([
   getAllCategories(),
   getAllProducts(),
   getAllBrands(),
 ]);
+
+setPageCacheHeader(Astro.response);
 
 const allProducts = allProductsData.map(mapProductToCard);
 
@@ -33,12 +37,26 @@ const categoryTints = [
   'from-blue-800 to-blue-600',
   'from-blue-900 to-blue-700',
 ];
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Accueil', item: new URL('/', Astro.site).href },
+    { '@type': 'ListItem', position: 2, name: 'Produits' },
+  ],
+};
 ---
 
 <Layout title="Nos Produits" description="Découvrez notre large gamme de matelas, sommiers, têtes de lit et accessoires de literie">
+  <JsonLd data={breadcrumbJsonLd} />
   <div class="home-sans">
     <!-- Header -->
-    <PageHero image="/images/design/hero-bedroom.jpg" imageAlt="Showroom literie Bleunuit">
+    <PageHero
+      image="/images/design/hero-bedroom.jpg"
+      srcset="/images/design/hero-bedroom-768.jpg 768w, /images/design/hero-bedroom-1280.jpg 1280w, /images/design/hero-bedroom.jpg 1920w"
+      imageAlt="Showroom literie Bleunuit"
+    >
       <Breadcrumb
         variant="dark"
         class="mb-6"

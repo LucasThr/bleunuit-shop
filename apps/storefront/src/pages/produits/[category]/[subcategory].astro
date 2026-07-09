@@ -8,21 +8,22 @@ import { getCategoryBySlug, getSubcategoryBySlug, getProductsBySubcategory } fro
 import { mapProductToCard } from '../../../utils/product-card';
 import { slugFor } from '../../../utils/slugs';
 import { resolveCategoryImage } from '../../../utils/category-image';
+import { setPageCacheHeader } from '../../../utils/http-cache';
 
 const { category, subcategory } = Astro.params;
 
 // Get the current category and subcategory from Medusa
-const currentCategory = await getCategoryBySlug(category!);
-const currentSubcategory = await getSubcategoryBySlug(subcategory!);
+const [currentCategory, currentSubcategory] = await Promise.all([
+  getCategoryBySlug(category!),
+  getSubcategoryBySlug(subcategory!),
+]);
 
 if (!currentCategory || !currentSubcategory) {
   return Astro.rewrite('/404');
 }
 
 // Verify subcategory belongs to category
-const subcatCategoryId = typeof currentSubcategory.category === 'object'
-  ? currentSubcategory.category.id
-  : currentSubcategory.category;
+const subcatCategoryId = currentSubcategory.category;
 
 if (subcatCategoryId !== currentCategory.id) {
   return Astro.rewrite('/404');
@@ -34,6 +35,8 @@ const subcategorySlug = slugFor(currentSubcategory);
 if (category !== categorySlug || subcategory !== subcategorySlug) {
   return Astro.redirect(`/produits/${categorySlug}/${subcategorySlug}`, 301);
 }
+
+setPageCacheHeader(Astro.response);
 
 // Get products filtered by subcategory
 const allProducts = await getProductsBySubcategory(currentSubcategory.id);
@@ -84,6 +87,7 @@ const heroImage = resolveCategoryImage(currentCategory) || '/images/design/hero-
   <!-- Filters and Products -->
   <section class="py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-h2 text-marine mb-8">Nos {currentSubcategory.name.toLowerCase()}</h2>
       <ProductGrid products={products}>
         <Fragment slot="empty">
           <p class="text-base font-semibold text-gray-700">Aucun produit disponible dans cette sous-catégorie pour le moment.</p>

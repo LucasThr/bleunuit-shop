@@ -3,13 +3,14 @@ import Layout from '../../../../layouts/Layout.astro';
 import ProductCard from '../../../../components/ProductCard.astro';
 import JsonLd from '../../../../components/JsonLd.astro';
 import Breadcrumb from '../../../../components/Breadcrumb.astro';
-import { getProductBySlug, getProductsByCategory } from '../../../../utils/catalog-client';
+import { getProductBySlug, getRelatedProducts } from '../../../../utils/catalog-client';
 import { saleMode } from '../../../../utils/sale-mode';
 import { mapProductToCard, productImageUrl as buildImageUrl } from '../../../../utils/product-card';
 import { slugFor } from '../../../../utils/slugs';
 import { sanitizeHtml } from '../../../../utils/sanitize';
 import AddToCartButton from '../../../../components/cart/AddToCartButton.tsx';
 import QuoteRequestForm from '../../../../components/QuoteRequestForm.tsx';
+import { setPageCacheHeader } from '../../../../utils/http-cache';
 
 const { category, slug } = Astro.params;
 
@@ -29,6 +30,8 @@ const categorySlug = productCategory ? slugFor(productCategory) : 'produits';
 if (category !== categorySlug) {
   return Astro.redirect(`/produits/${categorySlug}/p/${slug}`, 301);
 }
+
+setPageCacheHeader(Astro.response);
 
 // Parse product prices
 const productPrice = parseFloat(product.price) || 0;
@@ -52,13 +55,10 @@ const allImages = [
 
 // Get related products from same category
 const categoryId = productCategory?.id ?? String(product.category);
-const allProducts = await getProductsByCategory(categoryId);
-const relatedProducts = allProducts
-  .filter(p => p.slug !== slug)
-  .slice(0, 3)
+const relatedProducts = (await getRelatedProducts(categoryId, slug!, 3))
   .map(mapProductToCard);
 
-const brandName = typeof product.brand === 'object' ? product.brand?.name : product.brand;
+const brandName = product.brand;
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site).href;
 const plainDescription = (product.description || '')
   .replace(/<[^>]*>/g, ' ')
@@ -142,7 +142,7 @@ const breadcrumbJsonLd = {
           <div class="aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 mb-4">
             <img
               id="product-main-image"
-              src={allImages[0] || `https://placehold.co/1200x900/e5e7eb/6b7280?text=${encodeURIComponent(product.name || 'Product')}`}
+              src={allImages[0] || '/images/placeholder-product.svg'}
               alt={product.name}
               class="h-full w-full object-cover object-center"
               width="1200"
@@ -180,8 +180,8 @@ const breadcrumbJsonLd = {
 
         <!-- Product Info -->
         <div>
-          {(typeof product.brand === 'object' ? product.brand?.name : product.brand) && (
-            <p class="text-sm text-gray-500 mb-2">{typeof product.brand === 'object' ? product.brand?.name : product.brand}</p>
+          {product.brand && (
+            <p class="text-sm text-gray-500 mb-2">{product.brand}</p>
           )}
           <h1 class="text-h1 text-marine mb-4">
             {product.name}

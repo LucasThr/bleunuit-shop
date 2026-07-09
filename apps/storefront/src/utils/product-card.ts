@@ -15,21 +15,18 @@ export function productImageUrl(
 
 // Maps a Medusa-backed catalog product to the props expected by <ProductCard />.
 export function mapProductToCard(product: Product) {
-  const category = typeof product.category === 'object' ? product.category : null;
+  const category = product.category;
 
   return {
     title: product.name || 'No title',
-    brand:
-      typeof product.brand === 'object'
-        ? (product.brand as any)?.name || ''
-        : product.brand || '',
+    brand: product.brand || '',
     price: parseFloat(product.price) || 0,
     promoPrice: product.promo_price ? parseFloat(product.promo_price) : undefined,
-    image:
-      product.featured_image ||
-      `https://placehold.co/800x600/e5e7eb/6b7280?text=${encodeURIComponent(product.name || 'Product')}`,
+    image: product.featured_image || '/images/placeholder-product.svg',
     slug: product.slug || '',
-    categorySlug: category ? slugFor(category) : String(product.category ?? ''),
-    categoryName: category ? category.name : String(product.category ?? ''),
+    // Routable fallback for a product without a parent category (aligned with
+    // the product page fallback), never '' which would yield a `//` URL.
+    categorySlug: category ? slugFor(category) : 'produits',
+    categoryName: category ? category.name : 'Produits',
   };
 }

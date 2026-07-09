@@ -8,6 +8,7 @@ import { getCategoryBySlug, getSubcategoriesByCategory, getProductsByCategory } 
 import { mapProductToCard } from '../../utils/product-card';
 import { slugFor } from '../../utils/slugs';
 import { resolveCategoryImage } from '../../utils/category-image';
+import { setPageCacheHeader } from '../../utils/http-cache';
 
 const { category } = Astro.params;
 
@@ -24,6 +25,8 @@ const categorySlug = slugFor(currentCategory);
 if (category !== categorySlug) {
   return Astro.redirect(`/produits/${categorySlug}`, 301);
 }
+
+setPageCacheHeader(Astro.response);
 
 // Get subcategories and products for this category
 const [categorySubcategories, allProducts] = await Promise.all([
@@ -48,12 +51,17 @@ const metaDescription =
   `Découvrez notre sélection de ${currentCategory.name.toLowerCase()} chez Literie Bleunuit : marques reconnues, conseils d'experts et essai en magasin à Bruay-la-Buissière.`;
 
 const heroImage = resolveCategoryImage(currentCategory) || '/images/design/hero-bedroom.jpg';
+// Responsive candidates only apply to the local fallback; a CMS/category photo
+// is served as-is (no generated variants).
+const heroSrcset = heroImage === '/images/design/hero-bedroom.jpg'
+  ? '/images/design/hero-bedroom-768.jpg 768w, /images/design/hero-bedroom-1280.jpg 1280w, /images/design/hero-bedroom.jpg 1920w'
+  : undefined;
 ---
 
 <Layout title={currentCategory.name} description={metaDescription}>
   <JsonLd data={breadcrumbJsonLd} />
   <!-- Header -->
-  <PageHero image={heroImage} imageAlt={`Catégorie ${currentCategory.name}`}>
+  <PageHero image={heroImage} srcset={heroSrcset} imageAlt={`Catégorie ${currentCategory.name}`}>
     <Breadcrumb
       variant="dark"
       class="mb-6"
@@ -90,6 +98,7 @@ const heroImage = resolveCategoryImage(currentCategory) || '/images/design/hero-
   <!-- Filters and Products -->
   <section class="py-12">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h2 class="text-h2 text-marine mb-8">Nos {currentCategory.name.toLowerCase()}</h2>
       <ProductGrid products={products}>
         <Fragment slot="empty">
           <p class="text-base font-semibold text-gray-700">

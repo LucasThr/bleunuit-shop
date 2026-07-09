@@ -10,6 +10,7 @@ import { getHomepage, getAllStores, getTestimonials } from "../utils/cms-client"
 import { mapProductToCard } from "../utils/product-card";
 import { slugFor } from "../utils/slugs";
 import { resolveCategoryImage } from "../utils/category-image";
+import { setPageCacheHeader } from "../utils/http-cache";
 
 // Every call degrades independently: if a collection is missing (migration
 // not run yet) or Medusa is down, the hardcoded fallbacks below render.
@@ -26,6 +27,8 @@ const [products, categories, brandsData, homepage, testimonialsData, storesData]
     getTestimonials().catch(logFail("testimonials")),
     getAllStores().catch(logFail("stores")),
   ]);
+
+setPageCacheHeader(Astro.response);
 
 const featuredProducts = (products ?? []).map(mapProductToCard);
 
@@ -213,6 +216,10 @@ const featuredBrands = (brandsData ?? [])
       class="absolute inset-0 -z-10 h-full w-full object-cover"
       width="1920"
       height="1280"
+      srcset={hero.image === "/images/design/hero-room.jpg"
+        ? "/images/design/hero-room-768.jpg 768w, /images/design/hero-room-1280.jpg 1280w, /images/design/hero-room.jpg 1920w"
+        : undefined}
+      sizes="100vw"
       fetchpriority="high"
       decoding="async"
     />

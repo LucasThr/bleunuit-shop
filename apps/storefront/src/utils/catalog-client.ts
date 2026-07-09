@@ -4,6 +4,7 @@
 // unchanged. Per-product attributes Medusa has no native field for (brand,
 // promo price, featured, stock, subcategory) live in product metadata.
 import { sdk, MEDUSA_REGION_ID } from "./medusa";
+import { memoizeTtl } from "./ttl-cache";
 
 // ---- Directus-compatible shapes the storefront expects --------------------
 
@@ -72,6 +73,7 @@ type MedusaCategory = {
   description?: string | null;
   rank?: number | null;
   parent_category_id?: string | null;
+  parent_category?: { id: string; name: string; handle: string } | null;
   metadata?: {
     icon?: string | null;
     image?: string | null;
@@ -97,10 +99,15 @@ type MedusaProduct = {
   variants?: { id: string; calculated_price?: { calculated_amount?: number } }[];
 };
 
-const PRODUCT_FIELDS =
-  "id,title,handle,description,thumbnail,metadata," +
+// Fields common to product lists and the product detail page. Card lists never
+// read `description` (full HTML), so it is added only in PRODUCT_FIELDS below.
+const PRODUCT_LIST_FIELDS =
+  "id,title,handle,thumbnail,metadata," +
   "categories.id,categories.name,categories.handle,categories.parent_category_id," +
+  "categories.parent_category.id,categories.parent_category.name,categories.parent_category.handle," +
   "variants.id,*variants.calculated_price";
+
+const PRODUCT_FIELDS = `${PRODUCT_LIST_FIELDS},description`;
 
 const CATEGORY_FIELDS =
   "id,name,handle,description,rank,parent_category_id,metadata";
@@ -135,6 +142,10 @@ function toProduct(p: MedusaProduct): Product {
   const cats = p.categories ?? [];
   const parent = cats.find((c) => !c.parent_category_id) ?? null;
   const sub = cats.find((c) => c.parent_category_id) ?? null;
+  // A product assigned only to a subcategory has no parent in `cats`; recover it
+  // from the subcategory's own parent_category so the canonical URL is correct.
+  const parentFromSub = sub?.parent_category ?? null;
+  const effectiveParent = parent ?? parentFromSub;
   const price = p.variants?.[0]?.calculated_price?.calculated_amount;
   const promo = p.metadata?.promo_price;
   return {
@@ -142,8 +153,8 @@ function toProduct(p: MedusaProduct): Product {
     name: p.title,
     slug: p.handle,
     brand: p.metadata?.brand ?? "",
-    category: parent
-      ? { id: parent.id, name: parent.name, slug: parent.handle }
+    category: effectiveParent
+      ? { id: effectiveParent.id, name: effectiveParent.name, slug: effectiveParent.handle }
       : null,
     subcategory: sub
       ? { id: sub.id, name: sub.name, slug: sub.handle }
@@ -162,7 +173,7 @@ function toProduct(p: MedusaProduct): Product {
 
 // ---- Fetch helpers --------------------------------------------------------
 
-async function fetchAllCategories(): Promise<MedusaCategory[]> {
+async function fetchAllCategoriesRaw(): Promise<MedusaCategory[]> {
   const { product_categories } = await sdk.store.category.list({
     limit: 200,
     fields: CATEGORY_FIELDS,
@@ -170,13 +181,19 @@ async function fetchAllCategories(): Promise<MedusaCategory[]> {
   return (product_categories as unknown as MedusaCategory[]) ?? [];
 }
 
+// The category list feeds the nav on every SSR page; memoize it with a short
+// TTL so a page render triggers at most one category.list per window.
+const CATEGORY_TTL_MS = 60_000;
+const fetchAllCategories = memoizeTtl(fetchAllCategoriesRaw, CATEGORY_TTL_MS);
+
 async function fetchProducts(
-  query: Record<string, unknown> = {}
+  query: Record<string, unknown> = {},
+  fields: string = PRODUCT_LIST_FIELDS
 ): Promise<MedusaProduct[]> {
   const { products } = await sdk.store.product.list({
     region_id: MEDUSA_REGION_ID,
     limit: 200,
-    fields: PRODUCT_FIELDS,
+    fields,
     ...query,
   });
   return (products as unknown as MedusaProduct[]) ?? [];
@@ -247,7 +264,7 @@ export async function getFeaturedProducts(limit = 3): Promise<Product[]> {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  const products = await fetchProducts({ handle: slug, limit: 1 });
+  const products = await fetchProducts({ handle: slug, limit: 1 }, PRODUCT_FIELDS);
   return products[0] ? toProduct(products[0]) : null;
 }
 
@@ -263,6 +280,20 @@ export async function getProductsBySubcategory(
 ): Promise<Product[]> {
   const products = await fetchProducts({ category_id: [subcategoryId] });
   return products.map(toProduct);
+}
+
+// Related products for the product page: fetch only what's needed (limit + 1 to
+// absorb excluding the current product) instead of the whole category.
+export async function getRelatedProducts(
+  categoryId: string,
+  excludeSlug: string,
+  limit = 3
+): Promise<Product[]> {
+  const products = await fetchProducts({ category_id: [categoryId], limit: limit + 1 });
+  return products
+    .map(toProduct)
+    .filter((p) => p.slug !== excludeSlug)
+    .slice(0, limit);
 }
 
 // ---- Brands (cms module) --------------------------------------------------

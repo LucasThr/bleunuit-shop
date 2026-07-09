@@ -18,9 +18,11 @@
     "dev": "medusa develop",
     "seed": "medusa exec ./src/migration-scripts/initial-data-seed.ts",
     "seed:bleunuit": "medusa exec ./src/scripts/seed-bleunuit.ts",
+    "typecheck": "tsc --noEmit",
     "test:integration:http": "TEST_TYPE=integration:http NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
     "test:integration:modules": "TEST_TYPE=integration:modules NODE_OPTIONS=--experimental-vm-modules jest --silent=false --runInBand --forceExit",
-    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
+    "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit",
+    "test": "npm run test:unit -- --passWithNoTests"
   },
   "dependencies": {
     "@medusajs/admin-sdk": "2.15.5",
@@ -41,6 +43,7 @@
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.15.5",
+    "@medusajs/utils": "2.15.5",
     "@swc/core": "^1.7.28",
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.13",
