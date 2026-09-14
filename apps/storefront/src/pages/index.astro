@@ -116,16 +116,14 @@ const cta = {
     "Notre équipe vous accueille en magasin pour choisir la literie qui soutient vraiment votre sommeil.",
 };
 
-const testimonials = testimonialsData?.length
-  ? testimonialsData.map((t) => ({ quote: t.quote, name: t.name, city: t.city }))
-  : [
-      {
-        quote:
-          "Un accompagnement précis et bienveillant. Nous avons trouvé un matelas parfaitement adapté.",
-        name: "Camille et Hugo",
-        city: "Bruay-la-Buissière",
-      },
-    ];
+// No fallback here, unlike the other sections: an invented quote signed with an
+// invented customer name would be a fake review. When no testimonial is
+// published, the block below is not rendered at all.
+const testimonials = (testimonialsData ?? []).map((t) => ({
+  quote: t.quote,
+  name: t.name,
+  city: t.city,
+}));
 
 const staticStoreImages: Record<string, string> = {
   "bruay-la-buissiere": "/images/stores/bruay-la-buissiere.jpg",
@@ -627,27 +625,29 @@ const featuredBrands = (brandsData ?? [])
   <section class="bg-page py-20">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-        <div>
-          <p class="text-xs uppercase tracking-[0.3em] text-gray-400">
-            Avis clients
-          </p>
-          <h2 class="text-h1 text-marine mt-4">
-            Ils parlent de leur sommeil.
-          </h2>
-          <div class="mt-8 grid gap-6">
-            {
-              testimonials.map((testimonial) => (
-                <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <p class="text-sm text-gray-700">«&nbsp;{testimonial.quote}&nbsp;»</p>
-                  <p class="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
-                    {testimonial.name}
-                    {testimonial.city && ` · ${testimonial.city}`}
-                  </p>
-                </div>
-              ))
-            }
-          </div>
-        </div>
+        {
+          testimonials.length > 0 && (
+            <div>
+              <p class="text-xs uppercase tracking-[0.3em] text-gray-400">
+                Avis clients
+              </p>
+              <h2 class="text-h1 text-marine mt-4">
+                Ils parlent de leur sommeil.
+              </h2>
+              <div class="mt-8 grid gap-6">
+                {testimonials.map((testimonial) => (
+                  <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <p class="text-sm text-gray-700">«&nbsp;{testimonial.quote}&nbsp;»</p>
+                    <p class="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">
+                      {testimonial.name}
+                      {testimonial.city && ` · ${testimonial.city}`}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        }
         <div>
           <p class="text-xs uppercase tracking-[0.3em] text-gray-400">
             Marques partenaires

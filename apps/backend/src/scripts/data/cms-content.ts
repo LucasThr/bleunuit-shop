@@ -126,26 +126,19 @@ export const stores = [
     additional_info:
       "Parking gratuit devant le magasin. Accès PMR. Financement 0% sur place.",
     description:
-      "Notre magasin phare avec plus de 800 m² d'exposition. Vous y trouverez plus de 200 modèles de matelas, sommiers, têtes de lit et accessoires literie.",
+      "Notre magasin phare avec plus de 400 m² d'exposition. Vous y trouverez plus de 200 modèles de matelas, sommiers, têtes de lit et accessoires literie.",
     image: null,
   },
 ]
 
-export const testimonials = [
-  {
-    quote:
-      "Un accompagnement précis et bienveillant. Nous avons trouvé un matelas parfaitement adapté.",
-    name: "Camille et Hugo",
-    city: "Bruay-la-Buissière",
-    rank: 1,
-    published: true,
-  },
-  {
-    quote:
-      "On a pu essayer plusieurs conforts, comparer, et repartir avec un vrai plan pour mieux dormir.",
-    name: "Nathalie",
-    city: "Lens",
-    rank: 2,
-    published: true,
-  },
-]
+// Deliberately empty: the rows seeded here were placeholder quotes signed with
+// invented customer names, which a visitor reads as real reviews. Genuine
+// reviews are entered through the admin (Contenu > Témoignages); until one
+// exists, the homepage renders no testimonial block at all.
+export const testimonials: {
+  quote: string
+  name: string
+  city?: string | null
+  rank?: number | null
+  published?: boolean
+}[] = []
