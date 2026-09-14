@@ -19,6 +19,7 @@ statut au commit `297b7c2` — voir « Findings vérifiés » plus bas.
 | 004  | Images locales : poids, formats, orphelins, placeholder local | P2 | M | — (conflit doux avec 001 sur `product-card.ts`) | DONE |
 | 005  | Cache-Control sur les pages SSR stables | P2 | S | — | DONE |
 | 006  | Lot SEO on-page : Hn, BreadcrumbList, robots, horaires, filtres blog | P2 | M | — | DONE |
+| 007  | Anciennes URL restantes : catalogue manquant et décisions éditoriales | P0 | M | décisions catalogue du propriétaire | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (avec raison) | REJECTED (avec justification)
 

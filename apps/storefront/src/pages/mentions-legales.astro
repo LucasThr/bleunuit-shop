@@ -1,0 +1,97 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { setPageCacheHeader } from '../utils/http-cache';
+
+setPageCacheHeader(Astro.response);
+
+const linkClass = 'text-royal underline underline-offset-2 transition-colors hover:text-marine';
+---
+
+<Layout
+  title="Mentions légales"
+  description="Mentions légales du site Literie Bleunuit : éditeur, directeur de la publication, hébergeur et propriété intellectuelle."
+>
+  <section class="relative isolate overflow-hidden bg-marine py-16 text-white sm:py-20">
+    <div
+      class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-gold/20 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <h1 class="text-display">Mentions légales</h1>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div
+      class="mx-auto max-w-3xl space-y-10 px-4 text-body-l leading-relaxed text-gray-700 sm:px-6 lg:px-8"
+    >
+      <div class="space-y-3">
+        <h2 class="text-h2 text-marine">Éditeur du site</h2>
+        <p>
+          <strong>LITERIE BLEUNUIT</strong>, société par actions simplifiée (SAS) au capital de
+          10 000,00 €.<br />
+          Siège social : 183 rue des Frères Lumière, 62700 Bruay-la-Buissière, France.<br />
+          RCS Arras 900 904 707 — SIRET (siège) 900 904 707 00016.<br />
+          Numéro de TVA intracommunautaire : FR29900904707.<br />
+          Téléphone : <a href="tel:+33321579871" class={linkClass}>+33 3 21 57 98 71</a><br />
+          Courriel : <a href="mailto:bruay@bleunuit.fr" class={linkClass}>bruay@bleunuit.fr</a>
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-h2 text-marine">Directeur de la publication</h2>
+        <p>Willy Thirion, en qualité de représentant légal de la société.</p>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-h2 text-marine">Hébergeur</h2>
+        <p>
+          Railway Corporation<br />
+          548 Market St Suite 68956, San Francisco, California 94104, États-Unis<br />
+          <a href="https://railway.com" rel="noopener noreferrer" target="_blank" class={linkClass}>
+            railway.com
+          </a>
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-h2 text-marine">Propriété intellectuelle</h2>
+        <p>
+          L'ensemble des contenus de ce site — textes, photographies, illustrations, logos et
+          marques — est protégé par le droit de la propriété intellectuelle. Toute reproduction ou
+          représentation, totale ou partielle, sans autorisation écrite préalable est interdite. Les
+          marques et visuels des fabricants de literie présentés sur ce site restent la propriété de
+          leurs titulaires respectifs.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-h2 text-marine">Données personnelles</h2>
+        <p>
+          Les informations transmises par les formulaires de contact et d'inscription à la lettre
+          d'information sont utilisées uniquement pour répondre aux demandes et, le cas échéant,
+          envoyer les actualités du magasin. Elles ne sont pas cédées à des tiers à des fins
+          commerciales.
+        </p>
+        <p>
+          Conformément au Règlement général sur la protection des données et à la loi Informatique
+          et Libertés, vous disposez d'un droit d'accès, de rectification, d'effacement, de
+          limitation et d'opposition sur les données vous concernant. Pour l'exercer, écrivez à
+          <a href="mailto:bruay@bleunuit.fr" class={linkClass}>bruay@bleunuit.fr</a> ou à l'adresse
+          du siège social indiquée ci-dessus. Vous pouvez également introduire une réclamation
+          auprès de la CNIL.
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <h2 class="text-h2 text-marine">Liens externes</h2>
+        <p>
+          Ce site peut renvoyer vers des sites tiers, notamment ceux des fabricants de literie.
+          Literie Bleunuit n'exerce aucun contrôle sur leur contenu et décline toute responsabilité
+          à leur égard.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>
