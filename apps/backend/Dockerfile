@@ -47,5 +47,8 @@ FROM base AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=build /repo/apps/backend/.medusa/server ./
+# `medusa build` does not emit static/, but the server serves it at /static
+# (login page branding), so copy it in explicitly.
+COPY --from=build /repo/apps/backend/static ./static
 EXPOSE 9000
 CMD ["npm", "run", "start"]
