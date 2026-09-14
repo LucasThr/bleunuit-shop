@@ -1,0 +1,50 @@
+---
+// Rend l'icône d'une catégorie à partir du nom stocké dans `metadata.icon`
+// côté Medusa (noms lucide). Les paths sont inlinés pour éviter d'ajouter une
+// dépendance d'icônes pour quatre catégories. Un nom inconnu ne rend rien.
+const ICONS: Record<string, string[]> = {
+  bed: ["M2 4v16", "M2 8h18a2 2 0 0 1 2 2v10", "M2 17h20", "M6 8v9"],
+  layers: [
+    "M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z",
+    "M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12",
+    "M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17",
+  ],
+  wind: [
+    "M12.8 19.6A2 2 0 1 0 14 16H2",
+    "M17.5 8a2.5 2.5 0 1 1 2 4H2",
+    "M9.8 4.4A2 2 0 1 1 11 8H2",
+  ],
+  layout: [
+    "M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
+    "M3 9h18",
+    "M9 21V9",
+  ],
+};
+
+interface Props {
+  name?: string;
+  class?: string;
+}
+
+const { name, class: className = "h-4 w-4" } = Astro.props;
+const paths = name ? ICONS[name] : undefined;
+---
+
+{
+  paths && (
+    <svg
+      class={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      {paths.map((d) => (
+        <path d={d} />
+      ))}
+    </svg>
+  )
+}

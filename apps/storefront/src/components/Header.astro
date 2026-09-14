@@ -6,6 +6,7 @@ import {
 import { slugFor } from "../utils/slugs";
 import type { Category, Subcategory } from "../utils/catalog-client";
 import CartButton from "./cart/CartButton.tsx";
+import CategoryIcon from "./CategoryIcon.astro";
 
 // Fetch categories and subcategories from Medusa; if the CMS is
 // unreachable the nav falls back to its static links instead of erroring.
@@ -122,9 +123,10 @@ const navigation = [
                           href={child.href}
                           class="flex items-center gap-2 font-semibold text-sm text-gray-900 hover:text-blue-600 transition-colors px-2 py-1 rounded"
                         >
-                          {child.icon && (
-                            <span class="text-lg">{child.icon}</span>
-                          )}
+                          <CategoryIcon
+                            name={child.icon}
+                            class="h-5 w-5 shrink-0"
+                          />
                           {child.name}
                         </a>
                         {child.children && child.children.length > 0 && (
@@ -228,7 +230,7 @@ const navigation = [
                     <details class="group/sub">
                       <summary class="flex cursor-pointer list-none items-center justify-between rounded-md px-3 py-2 text-sm font-semibold text-gray-800 hover:bg-gray-50">
                         <span class="flex items-center gap-2">
-                          {child.icon && <span>{child.icon}</span>}
+                          <CategoryIcon name={child.icon} class="h-4 w-4 shrink-0" />
                           {child.name}
                         </span>
                         <svg
@@ -267,7 +269,7 @@ const navigation = [
                       href={child.href}
                       class="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600"
                     >
-                      {child.icon && <span>{child.icon}</span>}
+                      <CategoryIcon name={child.icon} class="h-4 w-4 shrink-0" />
                       {child.name}
                     </a>
                   )
