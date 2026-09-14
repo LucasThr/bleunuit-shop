@@ -14,7 +14,9 @@ const Store = model.define("cms_store", {
   postal_code: model.text().nullable(),
   phone: model.text().nullable(),
   email: model.text().nullable(),
-  hours: model.json().nullable(), // { monday..sunday: string }
+  // { day, opens, closes }[] — the storefront derives both the visible table
+  // and the OpeningHoursSpecification from this single list.
+  hours: model.json().nullable(),
   map_url: model.text().nullable(),
   // Decimal degrees: `number()` maps to an integer column, which truncated the
   // store coordinates to "50, 3".

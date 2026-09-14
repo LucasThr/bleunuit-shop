@@ -3,6 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { getContact, getAllStores } from '../utils/cms-client';
 import { setPageCacheHeader } from '../utils/http-cache';
+import {
+  DEFAULT_OPENING_HOURS,
+  formatOpeningHours,
+  parseOpeningHours,
+  toOpeningHoursSpecification,
+} from '../utils/opening-hours';
 
 const [contact, stores] = await Promise.all([
   getContact().catch((err) => {
@@ -25,42 +31,20 @@ const addressLines = (
 const phone = contact?.phone || '03 21 57 98 71';
 const phoneHref = phone.replace(/\s+/g, '');
 const email = contact?.email || 'bruay@bleunuit.fr';
-const hours = contact?.hours?.length
-  ? contact.hours
-  : [
-      { label: 'Lundi - Vendredi', value: '9h30 - 12h30 / 14h - 19h' },
-      { label: 'Samedi', value: '9h30 - 19h' },
-      { label: 'Dimanche', value: 'Fermé' },
-    ];
+// Opening hours come from the store record, as a list of intervals. The
+// visible table and the schema.org hours below are derived from that same
+// list, so they can no longer contradict each other.
+const openingHoursOf = (store: { hours?: unknown } | null) => {
+  const intervals = parseOpeningHours(store?.hours);
+  return intervals.length ? intervals : DEFAULT_OPENING_HOURS;
+};
+const hours = formatOpeningHours(openingHoursOf(stores[0] ?? null));
 
 // The per-location FurnitureStore schema now lives here (the /magasins page is
 // retired). Sourced from the cms store record for the discrete address/geo
 // fields the schema needs.
 const pageUrl = new URL('/contact', Astro.site).href;
 
-// The structured schedule matching the static fallback shown above. When the
-// CMS supplies visible hours (free-text French), we omit this from the schema
-// rather than risk contradicting them — an absent schema beats a wrong one.
-const DEFAULT_OPENING_HOURS_SPEC = [
-  {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    opens: '09:30',
-    closes: '12:30',
-  },
-  {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-    opens: '14:00',
-    closes: '19:00',
-  },
-  {
-    '@type': 'OpeningHoursSpecification',
-    dayOfWeek: ['Saturday'],
-    opens: '09:30',
-    closes: '19:00',
-  },
-];
 const storeJsonLd = stores.map((store) => ({
   '@context': 'https://schema.org',
   '@type': 'FurnitureStore',
@@ -82,11 +66,7 @@ const storeJsonLd = stores.map((store) => ({
       longitude: store.longitude,
     },
   }),
-  // Only emit hours when the page shows the static fallback; when the CMS
-  // drives the visible hours, omit rather than risk a contradictory schema.
-  ...(!contact?.hours?.length && {
-    openingHoursSpecification: DEFAULT_OPENING_HOURS_SPEC,
-  }),
+  openingHoursSpecification: toOpeningHoursSpecification(openingHoursOf(store)),
 }));
 ---
 

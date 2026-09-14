@@ -46,7 +46,9 @@ export type Store = {
   postal_code: string;
   phone: string;
   email: string;
-  hours?: Record<string, string> | null;
+  /** `OpeningHoursInterval[]`; validate with `parseOpeningHours` — rows saved
+   *  before that format still carry the old per-day object. */
+  hours?: unknown;
   map_url?: string | null;
   latitude?: number | null;
   longitude?: number | null;

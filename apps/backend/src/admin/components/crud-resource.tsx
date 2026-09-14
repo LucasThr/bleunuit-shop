@@ -21,7 +21,7 @@ import { sdk } from "../lib/sdk"
 export type FieldDef = {
   key: string
   label: string
-  type?: "text" | "textarea" | "number" | "boolean" | "days"
+  type?: "text" | "textarea" | "number" | "boolean" | "hours"
   placeholder?: string
   required?: boolean
 }
@@ -80,28 +80,72 @@ function FieldInput({
     )
   }
 
-  if (field.type === "days") {
-    const obj = value && typeof value === "object" ? value : {}
+  // Opening hours: one row per interval, so a day with a lunch break simply
+  // gets two rows and a day with no row is closed. The storefront renders both
+  // the visible table and the schema.org hours from this list.
+  if (field.type === "hours") {
+    const rows: { day: string; opens: string; closes: string }[] = Array.isArray(value)
+      ? value
+      : []
+    const update = (index: number, patch: Record<string, string>) =>
+      onChange(rows.map((row, i) => (i === index ? { ...row, ...patch } : row)))
+
     return (
       <div className="flex flex-col gap-y-2">
         <Label size="small" weight="plus">
           {field.label}
         </Label>
         <div className="flex flex-col gap-y-2 rounded-lg border border-ui-border-base p-3">
-          {DAYS.map((d) => (
-            <div key={d.key} className="flex items-center gap-x-3">
-              <Text size="small" className="w-24 text-ui-fg-subtle">
-                {d.label}
-              </Text>
+          {rows.length === 0 && (
+            <Text size="small" className="text-ui-fg-subtle">
+              Aucun créneau : le magasin est annoncé fermé toute la semaine.
+            </Text>
+          )}
+          {rows.map((row, index) => (
+            <div key={index} className="flex items-center gap-x-2">
+              <select
+                className="h-8 rounded-md border border-ui-border-base bg-ui-bg-field px-2 text-sm"
+                value={row.day ?? "monday"}
+                onChange={(e) => update(index, { day: e.target.value })}
+              >
+                {DAYS.map((d) => (
+                  <option key={d.key} value={d.key}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
               <Input
-                value={obj[d.key] ?? ""}
-                placeholder="ex. 10h00 – 19h00 / Fermé"
-                onChange={(e) =>
-                  onChange({ ...obj, [d.key]: e.target.value })
-                }
+                type="time"
+                value={row.opens ?? ""}
+                onChange={(e) => update(index, { opens: e.target.value })}
               />
+              <Input
+                type="time"
+                value={row.closes ?? ""}
+                onChange={(e) => update(index, { closes: e.target.value })}
+              />
+              <Button
+                size="small"
+                variant="secondary"
+                type="button"
+                onClick={() => onChange(rows.filter((_, i) => i !== index))}
+              >
+                Retirer
+              </Button>
             </div>
           ))}
+          <div>
+            <Button
+              size="small"
+              variant="secondary"
+              type="button"
+              onClick={() =>
+                onChange([...rows, { day: "monday", opens: "09:30", closes: "12:30" }])
+              }
+            >
+              Ajouter un créneau
+            </Button>
+          </div>
         </div>
       </div>
     )
