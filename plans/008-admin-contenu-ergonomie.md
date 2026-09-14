@@ -2,7 +2,7 @@
 
 Priorité P2 · Effort L (4 lots indépendants de taille S à M) · Dépend de : rien
 
-Statut : TODO
+Statut : en cours (lots A et C implémentés)
 
 ## Constat
 
@@ -334,7 +334,13 @@ depuis la liste.
 
 | Lot | Statut | Commit | Notes |
 |---|---|---|---|
-| A — image upload | TODO | | |
+| A — image upload | Implémenté, à vérifier en dev | | `ImageField` dans `components/image-field.tsx`, type `"image"` dans `CrudResource`, câblé sur blog / marques / magasins / accueil. Typecheck OK. Vérifications 2 à 5 du lot non faites : elles demandent un serveur de dev et un navigateur. |
 | B — éditeur riche | TODO | | |
-| C — date / catégorie / slug | TODO | | |
+| C — date / catégorie / slug | Implémenté, migration de données en attente | | `DatePicker`, `Select` et slug auto (`slugFrom` + `slugify`) dans `CrudResource` ; `slug` (regex) et `category` (enum) durcis dans les validateurs ; unicité du slug dans `createBlogPostStep` / `updateBlogPostStep`. Les données de seed passent de `conseils` à `sleep-tips` (décision : les 3 clés du storefront font foi). **Reste à faire : migrer les articles déjà en base** (`UPDATE blog_post SET category = 'sleep-tips' WHERE category = 'conseils';`) — Postgres était arrêté au moment de l'exécution, le `SELECT DISTINCT category` n'a pas pu être lancé. Tant que cette migration n'est pas passée, un article en `conseils` sera rejeté par l'enum à l'enregistrement. |
 | D — page article | TODO | | |
+
+### Écart constaté hors périmètre du plan
+
+Sur le storefront, `categoryNames[post.category]` est utilisé sans repli sur les badges de catégorie
+(`blog/index.astro:141`, `blog/[slug].astro:100` et `:189`), alors que le filtre, lui, a un repli
+(`index.astro:97`). Une catégorie inconnue affiche donc un badge vide. Non corrigé : hors périmètre.

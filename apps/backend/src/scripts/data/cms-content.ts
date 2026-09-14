@@ -8,7 +8,7 @@ export const blogPosts = [
     slug: "comment-choisir-son-matelas",
     publish_date: "2024-09-15",
     author: "L'équipe Bleu Nuit",
-    category: "conseils",
+    category: "sleep-tips",
     excerpt:
       "Ferme, moelleux, à ressorts ou en latex ? Notre guide complet pour trouver le matelas idéal selon votre morphologie et vos habitudes de sommeil.",
     featured_image: null,
@@ -42,7 +42,7 @@ export const blogPosts = [
     slug: "les-differents-types-de-sommiers",
     publish_date: "2024-10-02",
     author: "L'équipe Bleu Nuit",
-    category: "conseils",
+    category: "sleep-tips",
     excerpt:
       "Sommier tapissier, à lattes, coffre ou plateforme... Décryptage des différents types de sommiers pour faire le bon choix.",
     featured_image: null,
@@ -73,7 +73,7 @@ export const blogPosts = [
     slug: "bien-entretenir-son-matelas",
     publish_date: "2024-11-20",
     author: "L'équipe Bleu Nuit",
-    category: "conseils",
+    category: "sleep-tips",
     excerpt:
       "Un matelas bien entretenu dure jusqu'à 10 ans. Retournement, aération, protection... nos conseils pour préserver votre investissement.",
     featured_image: null,

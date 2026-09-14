@@ -39,7 +39,7 @@ const StoresPage = () => (
       { key: "longitude", label: "Longitude", type: "number" },
       { key: "additional_info", label: "Informations complémentaires", type: "textarea" },
       { key: "description", label: "Description", type: "textarea" },
-      { key: "image", label: "Image (URL)" },
+      { key: "image", label: "Photo", type: "image" },
     ]}
     emptyItem={{
       name: "",

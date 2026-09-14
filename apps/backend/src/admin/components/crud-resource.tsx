@@ -1,12 +1,14 @@
 import {
   Button,
   Container,
+  DatePicker,
   Drawer,
   FocusModal,
   Heading,
   Input,
   Label,
   Prompt,
+  Select,
   Switch,
   Table,
   Text,
@@ -15,15 +17,54 @@ import {
 } from "@medusajs/ui"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState, type ReactNode } from "react"
+import { ImageField } from "./image-field"
 import { sdk } from "../lib/sdk"
 
 // A field in the create/edit form.
 export type FieldDef = {
   key: string
   label: string
-  type?: "text" | "textarea" | "number" | "boolean" | "hours"
+  type?:
+    | "text"
+    | "textarea"
+    | "number"
+    | "boolean"
+    | "hours"
+    | "image"
+    | "date"
+    | "select"
   placeholder?: string
   required?: boolean
+  /** Choices for `type: "select"`. */
+  options?: { value: string; label: string }[]
+  /** Help text shown under the input. */
+  hint?: string
+  /** Key of the field this one is derived from, until edited by hand. */
+  slugFrom?: string
+}
+
+export function slugify(input: string) {
+  return input
+    .normalize("NFD") // split accented letters into letter + combining mark
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+}
+
+// Dates are stored as plain "YYYY-MM-DD" strings. Build them from the local
+// calendar fields: toISOString() would shift to the previous day for any French
+// evening after 22:00.
+function toIsoDate(date: Date) {
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const day = String(date.getDate()).padStart(2, "0")
+  return `${date.getFullYear()}-${month}-${day}`
+}
+
+function fromIsoDate(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value ?? "")
+  if (!match) return null
+  return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
 }
 
 // A column in the list table.
@@ -76,6 +117,48 @@ function FieldInput({
           {field.label}
         </Label>
         <Switch checked={!!value} onCheckedChange={onChange} />
+      </div>
+    )
+  }
+
+  if (field.type === "image") {
+    return (
+      <ImageField label={field.label} value={value ?? ""} onChange={onChange} />
+    )
+  }
+
+  if (field.type === "date") {
+    return (
+      <div className="flex flex-col gap-y-2">
+        <Label size="small" weight="plus">
+          {field.label}
+        </Label>
+        <DatePicker
+          value={fromIsoDate(value)}
+          onChange={(d) => onChange(d ? toIsoDate(d) : "")}
+        />
+      </div>
+    )
+  }
+
+  if (field.type === "select") {
+    return (
+      <div className="flex flex-col gap-y-2">
+        <Label size="small" weight="plus">
+          {field.label}
+        </Label>
+        <Select value={value ?? ""} onValueChange={onChange}>
+          <Select.Trigger>
+            <Select.Value placeholder="Choisir…" />
+          </Select.Trigger>
+          <Select.Content>
+            {(field.options ?? []).map((o) => (
+              <Select.Item key={o.value} value={o.value}>
+                {o.label}
+              </Select.Item>
+            ))}
+          </Select.Content>
+        </Select>
       </div>
     )
   }
@@ -180,6 +263,11 @@ function FieldInput({
           }
         />
       )}
+      {field.hint && (
+        <Text size="xsmall" className="text-ui-fg-subtle">
+          {field.hint}
+        </Text>
+      )}
     </div>
   )
 }
@@ -194,6 +282,29 @@ function FormBody({
   form: Record<string, any>
   set: (key: string, v: any) => void
 }) {
+  // A derived field (the slug) follows its source until someone edits it by
+  // hand. An existing value counts as edited, so renaming an article never
+  // silently changes a published URL.
+  const [pinned, setPinned] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(
+      fields.filter((f) => f.slugFrom).map((f) => [f.key, !!form[f.key]])
+    )
+  )
+
+  const change = (field: FieldDef, v: any) => {
+    if (field.slugFrom) {
+      setPinned((p) => ({ ...p, [field.key]: true }))
+      set(field.key, v)
+      return
+    }
+    set(field.key, v)
+    for (const derived of fields) {
+      if (derived.slugFrom === field.key && !pinned[derived.key]) {
+        set(derived.key, slugify(String(v ?? "")))
+      }
+    }
+  }
+
   return (
     <div className="flex flex-col gap-y-4">
       {fields.map((f) => (
@@ -201,7 +312,7 @@ function FormBody({
           key={f.key}
           field={f}
           value={form[f.key]}
-          onChange={(v) => set(f.key, v)}
+          onChange={(v) => change(f, v)}
         />
       ))}
     </div>

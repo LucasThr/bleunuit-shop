@@ -1,6 +1,22 @@
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { CrudResource } from "../../../components/crud-resource"
 
+// Mirrors `categoryNames` in apps/storefront/src/pages/blog/index.astro and
+// blog/[slug].astro, and BLOG_CATEGORIES in the API validators. Duplicated on
+// purpose: the two apps share no code.
+const BLOG_CATEGORY_OPTIONS = [
+  { value: "sleep-tips", label: "Conseils sommeil" },
+  { value: "product-guides", label: "Guides produits" },
+  { value: "company-news", label: "Actualités" },
+]
+
+const todayIso = () => {
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, "0")
+  const day = String(now.getDate()).padStart(2, "0")
+  return `${now.getFullYear()}-${month}-${day}`
+}
+
 type BlogPost = {
   id: string
   title: string
@@ -31,19 +47,26 @@ const BlogPage = () => (
       { key: "title", label: "Titre", required: true },
       {
         key: "slug",
-        label: "Slug (URL)",
+        label: "Adresse de la page",
         required: true,
         placeholder: "comment-choisir-son-matelas",
+        slugFrom: "title",
+        hint: "Adresse de la page : /blog/<slug>",
       },
-      { key: "category", label: "Catégorie", placeholder: "conseils" },
+      {
+        key: "category",
+        label: "Catégorie",
+        type: "select",
+        options: BLOG_CATEGORY_OPTIONS,
+      },
       { key: "author", label: "Auteur" },
       {
         key: "publish_date",
         label: "Date de publication",
-        placeholder: "2024-10-02",
+        type: "date",
       },
       { key: "excerpt", label: "Extrait", type: "textarea" },
-      { key: "featured_image", label: "Image à la une (URL)" },
+      { key: "featured_image", label: "Image à la une", type: "image" },
       { key: "content", label: "Contenu (HTML)", type: "textarea" },
       { key: "published", label: "Publié", type: "boolean" },
     ]}
@@ -52,7 +75,7 @@ const BlogPage = () => (
       slug: "",
       category: "",
       author: "",
-      publish_date: "",
+      publish_date: todayIso(),
       excerpt: "",
       featured_image: "",
       content: "",

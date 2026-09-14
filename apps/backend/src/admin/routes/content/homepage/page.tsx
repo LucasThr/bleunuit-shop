@@ -11,6 +11,7 @@ import {
 } from "@medusajs/ui"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useEffect, useState, type ReactNode } from "react"
+import { ImageField } from "../../../components/image-field"
 import { sdk } from "../../../lib/sdk"
 
 type Pair = { title: string; description: string }
@@ -272,10 +273,9 @@ const HomepageContentPage = () => {
           value={form.hero_subtitle}
           onChange={(v) => set("hero_subtitle", v)}
         />
-        <Field
-          label="Image (URL)"
+        <ImageField
+          label="Image"
           value={form.hero_image}
-          placeholder="https://… (laisser vide pour l'image par défaut)"
           onChange={(v) => set("hero_image", v)}
         />
         <ListEditor

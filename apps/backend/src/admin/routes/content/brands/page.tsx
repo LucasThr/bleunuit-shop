@@ -23,7 +23,7 @@ const BrandsPage = () => (
     fields={[
       { key: "name", label: "Nom", required: true },
       { key: "slug", label: "Slug", required: true, placeholder: "simmons" },
-      { key: "logo", label: "Logo (URL)" },
+      { key: "logo", label: "Logo", type: "image" },
       { key: "website", label: "Site web" },
       { key: "description", label: "Description", type: "textarea" },
       { key: "rank", label: "Ordre d'affichage", type: "number" },
