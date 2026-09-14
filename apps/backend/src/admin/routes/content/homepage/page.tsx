@@ -59,9 +59,14 @@ const QUERY_KEY = ["cms-homepage"]
 // Normalize a homepage row (which may have null fields) into form state.
 function toForm(hp: Partial<HomepageForm> | null): HomepageForm {
   if (!hp) return { ...EMPTY }
+  // Keep only the editable fields: the row also carries id/created_at/… which
+  // the update endpoint rejects.
+  const editable = Object.fromEntries(
+    Object.entries(hp).filter(([key]) => key in EMPTY)
+  )
   return {
     ...EMPTY,
-    ...hp,
+    ...editable,
     hero_highlights: (hp.hero_highlights as Pair[]) ?? [],
     value_props: (hp.value_props as ValueProp[]) ?? [],
     method_steps: (hp.method_steps as Pair[]) ?? [],

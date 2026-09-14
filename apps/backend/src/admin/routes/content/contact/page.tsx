@@ -36,9 +36,14 @@ const QUERY_KEY = ["cms-contact"]
 // Normalize a contact row (which may have null fields) into form state.
 function toForm(c: Partial<ContactForm> | null): ContactForm {
   if (!c) return { ...EMPTY }
+  // Keep only the editable fields: the row also carries id/created_at/… which
+  // the update endpoint rejects.
+  const editable = Object.fromEntries(
+    Object.entries(c).filter(([key]) => key in EMPTY)
+  )
   return {
     ...EMPTY,
-    ...c,
+    ...editable,
     hours: (c.hours as HoursRow[]) ?? [],
   } as ContactForm
 }

@@ -227,7 +227,12 @@ export function CrudResource<T extends { id: string }>({
   })
 
   const startEdit = (item: T) => {
-    setEditForm({ ...emptyItem, ...item })
+    // Keep only the editable fields: the row also carries id/created_at/… which
+    // the update endpoint rejects.
+    const editable = Object.fromEntries(
+      Object.entries(item).filter(([key]) => key in emptyItem)
+    )
+    setEditForm({ ...emptyItem, ...editable })
     setEditItem(item)
   }
 
@@ -245,8 +250,7 @@ export function CrudResource<T extends { id: string }>({
       toast.error("Veuillez remplir les champs obligatoires")
       return
     }
-    const { id, ...body } = editForm
-    updateMutation.mutate({ id: editItem.id, body })
+    updateMutation.mutate({ id: editItem.id, body: editForm })
   }
 
   return (
