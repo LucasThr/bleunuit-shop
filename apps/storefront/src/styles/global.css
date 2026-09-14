@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Styles the `prose` blocks that render CMS HTML: blog articles and product
+   descriptions. */
+@plugin "@tailwindcss/typography";
 
 /* =========================================================================
    Bleu Nuit — design tokens (single source of truth)
