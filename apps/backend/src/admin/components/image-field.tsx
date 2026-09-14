@@ -1,8 +1,6 @@
-import { Button, Input, Label, Text, toast } from "@medusajs/ui"
+import { Button, Input, Label, Text } from "@medusajs/ui"
 import { useRef, useState } from "react"
-import { sdk } from "../lib/sdk"
-
-const MAX_BYTES = 5 * 1024 * 1024
+import { uploadImage } from "../lib/upload-image"
 
 // Image picker storing the uploaded file's public URL as a plain string, so the
 // CMS models and the storefront keep reading a URL. Manual URL entry stays
@@ -21,24 +19,10 @@ export function ImageField({
   const [manual, setManual] = useState(false)
 
   const upload = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Seules les images sont acceptées (JPG, PNG, WebP…)")
-      return
-    }
-    if (file.size > MAX_BYTES) {
-      toast.error("Image trop lourde : 5 Mo maximum")
-      return
-    }
-
     setUploading(true)
-    try {
-      const { files } = await sdk.admin.upload.create({ files: [file] })
-      onChange(files[0].url)
-    } catch (e: any) {
-      toast.error(e?.message || "Échec de l'envoi de l'image")
-    } finally {
-      setUploading(false)
-    }
+    const url = await uploadImage(file)
+    setUploading(false)
+    if (url) onChange(url)
   }
 
   return (

@@ -67,7 +67,7 @@ const BlogPage = () => (
       },
       { key: "excerpt", label: "Extrait", type: "textarea" },
       { key: "featured_image", label: "Image à la une", type: "image" },
-      { key: "content", label: "Contenu (HTML)", type: "textarea" },
+      { key: "content", label: "Contenu", type: "richtext" },
       { key: "published", label: "Publié", type: "boolean" },
     ]}
     emptyItem={{

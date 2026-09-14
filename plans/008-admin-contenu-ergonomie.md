@@ -2,7 +2,7 @@
 
 Priorité P2 · Effort L (4 lots indépendants de taille S à M) · Dépend de : rien
 
-Statut : en cours (lots A et C implémentés)
+Statut : en cours (lots A, B et C implémentés ; lot D restant)
 
 ## Constat
 
@@ -335,7 +335,7 @@ depuis la liste.
 | Lot | Statut | Commit | Notes |
 |---|---|---|---|
 | A — image upload | Implémenté, à vérifier en dev | | `ImageField` dans `components/image-field.tsx`, type `"image"` dans `CrudResource`, câblé sur blog / marques / magasins / accueil. Typecheck OK. Vérifications 2 à 5 du lot non faites : elles demandent un serveur de dev et un navigateur. |
-| B — éditeur riche | TODO | | |
+| B — éditeur riche | Implémenté, à vérifier en dev | | Tiptap 3.31.3 épinglé : `@tiptap/react`, `@tiptap/core`, `@tiptap/pm`, `@tiptap/starter-kit`, `@tiptap/extension-image`. En v3 `extension-link` est fourni par `starter-kit`, donc 3 paquets utiles au lieu des 4 prévus. `components/rich-text-field.tsx` + type `"richtext"` dans `CrudResource` ; le cas spécial `rows` sur `content` est retiré. L'upload d'image est factorisé dans `lib/upload-image.ts`, partagé avec `ImageField`. Pas de `@tailwindcss/typography` dans le build admin : la zone d'édition est stylée en Tailwind scopé (`[&_h2]:…`) plutôt qu'en `prose`. Le STOP « skew `@types/react` » ne s'est pas déclenché : `medusa build` passe. Vérifications 2 à 5 du lot non faites (navigateur requis). |
 | C — date / catégorie / slug | Implémenté, migration de données en attente | | `DatePicker`, `Select` et slug auto (`slugFrom` + `slugify`) dans `CrudResource` ; `slug` (regex) et `category` (enum) durcis dans les validateurs ; unicité du slug dans `createBlogPostStep` / `updateBlogPostStep`. Les données de seed passent de `conseils` à `sleep-tips` (décision : les 3 clés du storefront font foi). **Reste à faire : migrer les articles déjà en base** (`UPDATE blog_post SET category = 'sleep-tips' WHERE category = 'conseils';`) — Postgres était arrêté au moment de l'exécution, le `SELECT DISTINCT category` n'a pas pu être lancé. Tant que cette migration n'est pas passée, un article en `conseils` sera rejeté par l'enum à l'enregistrement. |
 | D — page article | TODO | | |
 

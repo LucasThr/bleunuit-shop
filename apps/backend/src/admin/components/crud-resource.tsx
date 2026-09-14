@@ -18,6 +18,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState, type ReactNode } from "react"
 import { ImageField } from "./image-field"
+import { RichTextField } from "./rich-text-field"
 import { sdk } from "../lib/sdk"
 
 // A field in the create/edit form.
@@ -31,6 +32,7 @@ export type FieldDef = {
     | "boolean"
     | "hours"
     | "image"
+    | "richtext"
     | "date"
     | "select"
   placeholder?: string
@@ -124,6 +126,16 @@ function FieldInput({
   if (field.type === "image") {
     return (
       <ImageField label={field.label} value={value ?? ""} onChange={onChange} />
+    )
+  }
+
+  if (field.type === "richtext") {
+    return (
+      <RichTextField
+        label={field.label}
+        value={value ?? ""}
+        onChange={onChange}
+      />
     )
   }
 
@@ -244,7 +256,7 @@ function FieldInput({
         <Textarea
           value={value ?? ""}
           placeholder={field.placeholder}
-          rows={field.key === "content" ? 12 : 4}
+          rows={4}
           onChange={(e) => onChange(e.target.value)}
         />
       ) : (
