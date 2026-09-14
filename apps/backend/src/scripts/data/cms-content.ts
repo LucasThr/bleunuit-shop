@@ -102,10 +102,10 @@ export const stores = [
   {
     name: "Bleu Nuit Bruay-la-Buissière",
     slug: "bruay-la-buissiere",
-    address: "12 Avenue du Président Wilson",
+    address: "183 rue des Frères Lumière",
     city: "Bruay-la-Buissière",
     postal_code: "62700",
-    phone: "03 21 52 XX XX",
+    phone: "03 21 57 98 71",
     email: "bruay@bleunuit.fr",
     hours: {
       monday: "Fermé",

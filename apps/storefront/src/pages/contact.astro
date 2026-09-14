@@ -17,14 +17,14 @@ setPageCacheHeader(Astro.response);
 // Editable contact details, with fallbacks to the previous static values.
 const storeName = contact?.store_name || 'Bruay-la-Buissière';
 const addressLines = (
-  contact?.address || 'Centre Commercial Auchan\n62700 Bruay-la-Buissière'
+  contact?.address || '183 rue des Frères Lumière\n62700 Bruay-la-Buissière'
 )
   .split('\n')
   .map((line) => line.trim())
   .filter(Boolean);
-const phone = contact?.phone || '03 21 53 21 45';
+const phone = contact?.phone || '03 21 57 98 71';
 const phoneHref = phone.replace(/\s+/g, '');
-const email = contact?.email || 'contact@bleunuit.fr';
+const email = contact?.email || 'bruay@bleunuit.fr';
 const hours = contact?.hours?.length
   ? contact.hours
   : [

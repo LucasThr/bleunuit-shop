@@ -16,8 +16,10 @@ const Store = model.define("cms_store", {
   email: model.text().nullable(),
   hours: model.json().nullable(), // { monday..sunday: string }
   map_url: model.text().nullable(),
-  latitude: model.number().nullable(),
-  longitude: model.number().nullable(),
+  // Decimal degrees: `number()` maps to an integer column, which truncated the
+  // store coordinates to "50, 3".
+  latitude: model.float().nullable(),
+  longitude: model.float().nullable(),
   additional_info: model.text().nullable(),
   description: model.text().nullable(),
   image: model.text().nullable(), // full image URL
