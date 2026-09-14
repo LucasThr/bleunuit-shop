@@ -77,6 +77,7 @@ Then in the service settings:
   STORE_CORS=https://www.bleunuit.fr
   ADMIN_CORS=https://api.bleunuit.fr
   AUTH_CORS=https://api.bleunuit.fr,https://www.bleunuit.fr
+  STOREFRONT_URL=https://www.bleunuit.fr
   S3_ENDPOINT=https://<accountid>.r2.cloudflarestorage.com
   S3_ACCESS_KEY_ID=<r2 key>
   S3_SECRET_ACCESS_KEY=<r2 secret>
@@ -87,6 +88,11 @@ Then in the service settings:
 
   Do **not** set `DATABASE_SSL` — Railway's internal Postgres connection isn't
   over TLS. (Optional Stripe: `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`.)
+
+  `STOREFRONT_URL` is the one value here that is read at **build** time: the
+  admin bundle inlines it to build its "view on the site" links. The Dockerfile
+  declares it as a build arg, and Railway passes service variables to the build,
+  so changing it requires a redeploy to take effect.
 
 - **Settings → Deploy → Pre-Deploy Command:** `npx medusa db:migrate`
   (runs core + module migrations between build and release, on the private

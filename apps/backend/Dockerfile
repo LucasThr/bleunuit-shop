@@ -36,6 +36,10 @@ COPY apps/backend ./apps/backend
 # separate `FROM base` stage), so the real secrets injected by the deploy env
 # at runtime are still the only ones the running server ever sees.
 ENV JWT_SECRET=build COOKIE_SECRET=build
+# The admin bundle inlines the storefront URL at build time, so it has to be a
+# build arg: setting it only as a runtime variable would ship the default.
+ARG STOREFRONT_URL=http://localhost:4321
+ENV STOREFRONT_URL=$STOREFRONT_URL
 RUN pnpm --filter @dtc/backend build
 
 # Install production deps inside the emitted server (npm = flat, copy-safe).

@@ -17,6 +17,7 @@ import {
 } from "@medusajs/ui"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useState, type ReactNode } from "react"
+import { Link } from "react-router-dom"
 import { ImageField } from "./image-field"
 import { RichTextField } from "./rich-text-field"
 import { sdk } from "../lib/sdk"
@@ -90,6 +91,15 @@ export type CrudResourceProps<T> = {
   fields: FieldDef[]
   /** Blank form values for the create form. */
   emptyItem: Record<string, any>
+  /**
+   * When set, "Modifier" links to this address instead of opening the edit
+   * drawer. For resources with a long body, which need a full page.
+   */
+  editHref?: (item: T) => string
+  /** When set, "Créer" runs this instead of opening the create modal. */
+  onCreate?: () => void
+  /** Disables "Créer" while `onCreate` is still running. */
+  createPending?: boolean
 }
 
 const DAYS: { key: string; label: string }[] = [
@@ -103,7 +113,7 @@ const DAYS: { key: string; label: string }[] = [
 ]
 
 // Renders one form field based on its type.
-function FieldInput({
+export function FieldInput({
   field,
   value,
   onChange,
@@ -284,26 +294,28 @@ function FieldInput({
   )
 }
 
-// Shared form body used by both create and edit.
-function FormBody({
-  fields,
-  form,
-  set,
-}: {
-  fields: FieldDef[]
-  form: Record<string, any>
+/**
+ * Returns the change handler that keeps derived fields (the slug) in sync.
+ * A derived field follows its source until someone edits it by hand; an
+ * existing value counts as edited, so renaming an article never silently
+ * changes a published URL.
+ *
+ * Exported because the article page lays the same fields out in several
+ * columns: the title and the slug it feeds live in different blocks, so they
+ * need one handler shared across them rather than one per block.
+ */
+export function useDerivedFields(
+  fields: FieldDef[],
+  form: Record<string, any>,
   set: (key: string, v: any) => void
-}) {
-  // A derived field (the slug) follows its source until someone edits it by
-  // hand. An existing value counts as edited, so renaming an article never
-  // silently changes a published URL.
+) {
   const [pinned, setPinned] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(
       fields.filter((f) => f.slugFrom).map((f) => [f.key, !!form[f.key]])
     )
   )
 
-  const change = (field: FieldDef, v: any) => {
+  return (field: FieldDef, v: any) => {
     if (field.slugFrom) {
       setPinned((p) => ({ ...p, [field.key]: true }))
       set(field.key, v)
@@ -316,6 +328,19 @@ function FormBody({
       }
     }
   }
+}
+
+// Shared form body used by both create and edit.
+function FormBody({
+  fields,
+  form,
+  set,
+}: {
+  fields: FieldDef[]
+  form: Record<string, any>
+  set: (key: string, v: any) => void
+}) {
+  const change = useDerivedFields(fields, form, set)
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -340,6 +365,9 @@ export function CrudResource<T extends { id: string }>({
   columns,
   fields,
   emptyItem,
+  editHref,
+  onCreate,
+  createPending,
 }: CrudResourceProps<T>) {
   const queryClient = useQueryClient()
   const [createOpen, setCreateOpen] = useState(false)
@@ -431,7 +459,11 @@ export function CrudResource<T extends { id: string }>({
             </Text>
           )}
         </div>
-        <Button size="small" onClick={() => setCreateOpen(true)}>
+        <Button
+          size="small"
+          isLoading={createPending}
+          onClick={() => (onCreate ? onCreate() : setCreateOpen(true))}
+        >
           Créer
         </Button>
       </div>
@@ -467,13 +499,19 @@ export function CrudResource<T extends { id: string }>({
                   ))}
                   <Table.Cell>
                     <div className="flex items-center justify-end gap-x-2">
-                      <Button
-                        size="small"
-                        variant="secondary"
-                        onClick={() => startEdit(item)}
-                      >
-                        Modifier
-                      </Button>
+                      {editHref ? (
+                        <Button size="small" variant="secondary" asChild>
+                          <Link to={editHref(item)}>Modifier</Link>
+                        </Button>
+                      ) : (
+                        <Button
+                          size="small"
+                          variant="secondary"
+                          onClick={() => startEdit(item)}
+                        >
+                          Modifier
+                        </Button>
+                      )}
                       <Prompt>
                         <Prompt.Trigger asChild>
                           <Button size="small" variant="transparent">

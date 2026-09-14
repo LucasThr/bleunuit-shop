@@ -93,6 +93,13 @@ module.exports = defineConfig({
       cookieSecret,
     },
   },
+  admin: {
+    // Public address of the storefront, used by the admin to link a piece of
+    // content to its public page. Medusa inlines it into the admin bundle as
+    // __STOREFRONT_URL__, so it is read when `medusa build` runs, not at
+    // runtime: changing it requires rebuilding the admin.
+    storefrontUrl: process.env.STOREFRONT_URL || 'http://localhost:4321',
+  },
   modules: [
     {
       resolve: '@medusajs/medusa/payment',
