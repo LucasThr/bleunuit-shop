@@ -36,6 +36,12 @@ const siteOrigin = Astro.site ?? new URL(Astro.url.origin);
 const canonicalURL = new URL(Astro.url.pathname, siteOrigin);
 const imageURL = new URL(image, canonicalURL);
 
+// Only the canonical host set through PUBLIC_SITE_URL may be indexed. Any other
+// host serving the same deployment (the Railway preview URL, a temporary
+// domain) answers `noindex` while staying crawlable, so Google can read the
+// directive instead of guessing from a blocked robots.txt.
+const isNoindex = noindex || Astro.url.host !== siteOrigin.host;
+
 // Site-wide brand entity + website. The per-location FurnitureStore schema
 // lives on /contact; this is the parent Organization that ties the brand,
 // logo and contact details together for Google's Knowledge Graph.
@@ -73,7 +79,7 @@ const websiteJsonLd = {
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
-    <meta name="robots" content={noindex ? 'noindex' : 'index, max-image-preview:large, max-snippet:-1'} />
+    <meta name="robots" content={isNoindex ? 'noindex' : 'index, max-image-preview:large, max-snippet:-1'} />
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon-64.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
