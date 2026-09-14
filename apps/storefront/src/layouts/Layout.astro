@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import JsonLd from '../components/JsonLd.astro';
 import CartDrawer from '../components/cart/CartDrawer.tsx';
+import { SOCIAL_LINKS } from '../utils/social-links';
 
 interface Props {
   title: string;
@@ -61,6 +62,7 @@ const organizationJsonLd = {
     areaServed: 'FR',
     availableLanguage: 'French',
   },
+  sameAs: Object.values(SOCIAL_LINKS),
 };
 const websiteJsonLd = {
   '@context': 'https://schema.org',
