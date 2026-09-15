@@ -8,7 +8,7 @@ import { saleMode } from '../../../../utils/sale-mode';
 import { mapProductToCard, productImageUrl as buildImageUrl } from '../../../../utils/product-card';
 import { slugFor } from '../../../../utils/slugs';
 import { sanitizeHtml } from '../../../../utils/sanitize';
-import AddToCartButton from '../../../../components/cart/AddToCartButton.tsx';
+import ProductBuyBox from '../../../../components/ProductBuyBox.tsx';
 import QuoteRequestForm from '../../../../components/QuoteRequestForm.tsx';
 import { setPageCacheHeader } from '../../../../utils/http-cache';
 
@@ -84,18 +84,35 @@ const productJsonLd = {
   // Only online/both products advertise a purchasable Offer; an in-store-only
   // product isn't buyable online, so it gets no Offer.
   ...(sale.online && productPrice > 0 && {
-    offers: {
-      '@type': 'Offer',
-      url: canonicalUrl,
-      priceCurrency: 'EUR',
-      price: (hasPromo ? productPromoPrice! : productPrice).toFixed(2),
-      priceValidUntil,
-      itemCondition: 'https://schema.org/NewCondition',
-      availability: product.in_stock
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      seller: { '@type': 'Organization', name: 'Literie Bleunuit' },
-    },
+    // Several sizes at different prices are an AggregateOffer: a single `price`
+    // would contradict the range the page actually shows.
+    offers: product.variants.length > 1
+      ? {
+          '@type': 'AggregateOffer',
+          url: canonicalUrl,
+          priceCurrency: 'EUR',
+          lowPrice: Math.min(...product.variants.map((v) => v.price)).toFixed(2),
+          highPrice: Math.max(...product.variants.map((v) => v.price)).toFixed(2),
+          offerCount: product.variants.length,
+          priceValidUntil,
+          itemCondition: 'https://schema.org/NewCondition',
+          availability: product.in_stock
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          seller: { '@type': 'Organization', name: 'Literie Bleunuit' },
+        }
+      : {
+          '@type': 'Offer',
+          url: canonicalUrl,
+          priceCurrency: 'EUR',
+          price: (hasPromo ? productPromoPrice! : productPrice).toFixed(2),
+          priceValidUntil,
+          itemCondition: 'https://schema.org/NewCondition',
+          availability: product.in_stock
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          seller: { '@type': 'Organization', name: 'Literie Bleunuit' },
+        },
   }),
 };
 
@@ -187,38 +204,6 @@ const breadcrumbJsonLd = {
             {product.name}
           </h1>
 
-          {/* Promo badge */}
-          {hasPromo && (
-            <div class="inline-block rounded-full bg-promo px-4 py-1 text-sm font-bold text-white mb-4">
-              -{discount}% de réduction
-            </div>
-          )}
-
-          {/* Price */}
-          {productPrice > 0 && (
-            <div class="mb-8">
-              {hasPromo ? (
-                <div>
-                  <div class="flex items-baseline gap-3">
-                    <span class="text-4xl font-bold text-promo">
-                      {productPromoPrice?.toLocaleString('fr-FR')}€
-                    </span>
-                    <span class="text-xl text-gray-500 line-through">
-                      {productPrice.toLocaleString('fr-FR')}€
-                    </span>
-                  </div>
-                  <p class="mt-2 text-sm text-promo font-medium">
-                    Économisez {(productPrice - productPromoPrice!).toLocaleString('fr-FR')}€
-                  </p>
-                </div>
-              ) : (
-                <span class="text-4xl font-bold text-gray-900">
-                  {productPrice.toLocaleString('fr-FR')}€
-                </span>
-              )}
-            </div>
-          )}
-
           {/* Stock status */}
           <div class="mb-6">
             {product.in_stock ? (
@@ -243,14 +228,15 @@ const breadcrumbJsonLd = {
               is always offered, and a quiet devis text link when a product is
               sold both ways. An out-of-stock online product gets a disabled
               primary in its place. */}
+          {/* Price, size picker and cart button move together: picking a size
+              changes both the price shown and the variant added to the cart. */}
+          <ProductBuyBox
+            client:visible
+            variants={product.variants}
+            canCheckout={sale.canCheckout}
+          />
+
           <div class="mb-8 flex flex-col gap-3">
-            {sale.canCheckout && (
-              <AddToCartButton
-                client:visible
-                variantId={product.variantId!}
-                size="block"
-              />
-            )}
             {sale.online && !sale.canCheckout && !product.in_stock && (
               <button
                 type="button"

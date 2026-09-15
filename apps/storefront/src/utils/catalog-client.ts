@@ -33,6 +33,19 @@ export type ProductCategoryRef = { id: string; name: string; slug: string };
 // A product is sold online (cart + Stripe), in-store only (devis), or both.
 export type SaleChannel = "online" | "in_store" | "both";
 
+// One buyable size of a product. `title` is the variant label Medusa builds
+// from its option values ("140×190"); `options` keeps them addressable by
+// option name so the picker can label the control ("Dimensions").
+export type ProductVariant = {
+  id: string;
+  title: string;
+  options: Record<string, string>;
+  // Price to charge. When the variant is on sale (a `sale` price list is
+  // active), `originalPrice` holds the pre-sale price to strike through.
+  price: number;
+  originalPrice: number | null;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -50,8 +63,12 @@ export type Product = {
   // Which channel(s) sell this product. The storefront derives cart vs. devis
   // CTAs from this via saleMode() (src/utils/sale-mode.ts).
   sale_channel: SaleChannel;
-  // First variant id, needed to add the product to the cart for online sale.
+  // Cheapest variant id — the default selection, and the one whose price the
+  // card and the product page show before the buyer picks a size.
   variantId: string | null;
+  // Every buyable size. Card lists don't request option values, so there it
+  // carries prices only (used for the "à partir de" floor).
+  variants: ProductVariant[];
 };
 
 export type Brand = {
@@ -96,7 +113,20 @@ type MedusaProduct = {
     sale_channel?: SaleChannel;
   } | null;
   categories?: MedusaCategory[];
-  variants?: { id: string; calculated_price?: { calculated_amount?: number } }[];
+  variants?: MedusaVariant[];
+};
+
+type MedusaVariant = {
+  id: string;
+  title?: string | null;
+  options?: { value: string; option?: { title?: string | null } | null }[];
+  calculated_price?: {
+    calculated_amount?: number;
+    original_amount?: number;
+    // Nested twice: the outer key is the calculated price *set*, the inner one
+    // the price that won. `price_list_type === "sale"` is what marks a sale.
+    calculated_price?: { price_list_type?: string | null } | null;
+  };
 };
 
 // Fields common to product lists and the product detail page. Card lists never
@@ -107,7 +137,11 @@ const PRODUCT_LIST_FIELDS =
   "categories.parent_category.id,categories.parent_category.name,categories.parent_category.handle," +
   "variants.id,*variants.calculated_price";
 
-const PRODUCT_FIELDS = `${PRODUCT_LIST_FIELDS},description`;
+// The product page additionally needs each variant's label and option values
+// to render the size picker. Lists never show a picker, so they skip this.
+const PRODUCT_FIELDS =
+  `${PRODUCT_LIST_FIELDS},description,` +
+  "variants.title,variants.options.value,variants.options.option.title";
 
 const CATEGORY_FIELDS =
   "id,name,handle,description,rank,parent_category_id,metadata";
@@ -138,7 +172,29 @@ function toSubcategory(c: MedusaCategory): Subcategory {
   };
 }
 
-function toProduct(p: MedusaProduct): Product {
+function toVariant(v: MedusaVariant): ProductVariant {
+  const calc = v.calculated_price;
+  const price = calc?.calculated_amount ?? 0;
+  // Medusa only treats a `sale` price list as a discount; an `override` list
+  // reports the same amount twice, which must not render as a struck price.
+  const onSale = calc?.calculated_price?.price_list_type === "sale";
+  const original = calc?.original_amount;
+  return {
+    id: v.id,
+    title: v.title ?? "",
+    options: Object.fromEntries(
+      (v.options ?? [])
+        .filter((o) => o.option?.title)
+        .map((o) => [o.option!.title!, o.value])
+    ),
+    price,
+    originalPrice: onSale && original != null && original > price ? original : null,
+  };
+}
+
+// Exported for tests: this is where sale detection and the cheapest-variant
+// rule live, and both are easy to get subtly wrong.
+export function toProduct(p: MedusaProduct): Product {
   const cats = p.categories ?? [];
   const parent = cats.find((c) => !c.parent_category_id) ?? null;
   const sub = cats.find((c) => c.parent_category_id) ?? null;
@@ -146,8 +202,20 @@ function toProduct(p: MedusaProduct): Product {
   // from the subcategory's own parent_category so the canonical URL is correct.
   const parentFromSub = sub?.parent_category ?? null;
   const effectiveParent = parent ?? parentFromSub;
-  const price = p.variants?.[0]?.calculated_price?.calculated_amount;
-  const promo = p.metadata?.promo_price;
+  // Sorted cheapest-first: the picker shows sizes in ascending price (which for
+  // bedding is also ascending size), and variants[0] is the default selection —
+  // the one whose price the card advertises as "à partir de".
+  const variants = (p.variants ?? [])
+    .map(toVariant)
+    .sort((a, b) => a.price - b.price);
+  const cheapest = variants[0] ?? null;
+  // A sale price list already gives us both numbers. `metadata.promo_price` is
+  // the pre-price-list way of doing this; it stays as a fallback until the last
+  // product using it is migrated.
+  const legacyPromo = p.metadata?.promo_price;
+  const price = cheapest?.originalPrice ?? cheapest?.price;
+  const promo =
+    cheapest?.originalPrice != null ? cheapest.price : legacyPromo ?? null;
   return {
     id: p.id,
     name: p.title,
@@ -167,7 +235,8 @@ function toProduct(p: MedusaProduct): Product {
     featured: p.metadata?.featured === true,
     in_stock: p.metadata?.in_stock !== false,
     sale_channel: p.metadata?.sale_channel ?? "in_store",
-    variantId: p.variants?.[0]?.id ?? null,
+    variantId: cheapest?.id ?? null,
+    variants,
   };
 }
 

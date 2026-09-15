@@ -22,6 +22,8 @@ export function mapProductToCard(product: Product) {
     brand: product.brand || '',
     price: parseFloat(product.price) || 0,
     promoPrice: product.promo_price ? parseFloat(product.promo_price) : undefined,
+    // Several sizes means the card price is a floor, not the price.
+    priceFrom: product.variants.length > 1,
     image: product.featured_image || '/images/placeholder-product.svg',
     slug: product.slug || '',
     // Routable fallback for a product without a parent category (aligned with

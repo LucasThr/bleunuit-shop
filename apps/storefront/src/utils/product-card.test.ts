@@ -19,6 +19,7 @@ function makeProduct(overrides: Partial<Product> = {}): Product {
     in_stock: true,
     sale_channel: "in_store",
     variantId: null,
+    variants: [],
     ...overrides,
   };
 }

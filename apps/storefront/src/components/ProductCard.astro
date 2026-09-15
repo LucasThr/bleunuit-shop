@@ -4,13 +4,15 @@ interface Props {
   brand: string;
   price: number;
   promoPrice?: number;
+  // The product sells in several sizes, so `price` is the cheapest one.
+  priceFrom?: boolean;
   image: string;
   slug: string;
   categorySlug: string;
   categoryName?: string;
 }
 
-const { title, brand, price, promoPrice, image, slug, categorySlug } = Astro.props;
+const { title, brand, price, promoPrice, priceFrom, image, slug, categorySlug } = Astro.props;
 const hasPromo = promoPrice && promoPrice < price;
 const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0;
 ---
@@ -50,7 +52,11 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
 
       <!-- Price -->
       {price > 0 && (
-        <div class="flex items-baseline gap-2">
+        <div>
+          {priceFrom && (
+            <p class="mb-0.5 text-xs text-gray-500">À partir de</p>
+          )}
+          <div class="flex items-baseline gap-2">
           {hasPromo ? (
             <>
               <span class="text-2xl font-bold text-promo">
@@ -65,6 +71,7 @@ const discount = hasPromo ? Math.round(((price - promoPrice) / price) * 100) : 0
               {price.toLocaleString('fr-FR')}€
             </span>
           )}
+          </div>
         </div>
       )}
 
