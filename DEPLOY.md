@@ -7,7 +7,7 @@ One Railway **project** with four services, plus Cloudflare R2 for uploaded imag
 | `backend` | repo → [apps/backend/Dockerfile](apps/backend/Dockerfile) | Medusa Store/Admin API + admin dashboard at `/app` (`api.bleunuit.fr`) |
 | `storefront` | repo → [apps/storefront/Dockerfile](apps/storefront/Dockerfile) | Astro SSR (`www.bleunuit.fr`) |
 | `Postgres` | Railway database plugin | catalog + orders |
-| `Redis` | Railway database plugin | cache / events / background jobs |
+| `Redis` | Railway database plugin | cache / events / background jobs + admin login sessions |
 
 Object storage is **Cloudflare R2** (free tier, S3-compatible) — Railway has no
 native bucket, and the container disk is ephemeral.

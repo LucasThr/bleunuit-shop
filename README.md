@@ -19,7 +19,8 @@ the custom `quotes` module.
   (ships with Node): `corepack enable pnpm`
 - **PostgreSQL** — dev DB defaults to `localhost:5432`, database `medusa-backend`
 - **Redis** *(optional in dev)* — Medusa falls back to in-memory implementations if
-  `REDIS_URL` is unset
+  `REDIS_URL` is unset. That includes admin login sessions, so without a running
+  Redis every backend restart logs you out of the dashboard
 
 ## Getting started
 

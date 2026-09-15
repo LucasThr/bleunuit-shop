@@ -79,6 +79,16 @@ const fileModule = process.env.S3_ENDPOINT
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    // Backs the admin dashboard's login sessions with Redis. Without it
+    // express-session keeps them in the process memory, so every deploy or
+    // restart logs every admin out (and a second instance never sees them).
+    redisUrl: process.env.REDIS_URL,
+    sessionOptions: {
+      // Defaults are a fixed 10h with no renewal; make the session last a week
+      // and slide forward on each request so active users stay logged in.
+      ttl: 7 * 24 * 60 * 60 * 1000,
+      rolling: true,
+    },
     // Managed Postgres providers usually require TLS; enable it with
     // DATABASE_SSL=true in the deploy env (no effect on local dev).
     databaseDriverOptions:
